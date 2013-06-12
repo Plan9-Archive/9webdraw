@@ -1,0 +1,31 @@
+/*
+  riobg: #9cefef
+  riofg: #52aaad
+*/
+
+#webdraw {
+    border-width: medium;
+    border-style: solid;
+    border-color: #9cefef;
+    width: 800px;
+    height: 600px;
+}
+
+#cons {
+    border-style: solid;
+    border-color: #52aaad;
+    width: 80em;
+    height: 25em;
+    overflow-y: scroll; /* XXX non-standard! */
+    font-family: monospace;
+}
+
+#cons span {
+    float: left;
+    clear: left;
+}
+
+#settings label{
+    float: left;
+    clear: left;
+}
