@@ -3,16 +3,13 @@ package main
 import (
 	"code.google.com/p/go.net/websocket"
 	"os/exec"
-/*	"encoding/base64"
-	"flag"
-*/	"io"
-/*	"log"
-	"net"
-*/	"net/http"
+	"io"
+	"net/http"
 )
 
 func srv9p(ws *websocket.Conn){
 	defer ws.Close();
+	ws.PayloadType = websocket.BinaryFrame;
 
 	srvcat := exec.Command("srvcat", "webdraw");
 	stdin, err := srvcat.StdinPipe();
