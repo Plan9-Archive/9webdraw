@@ -17,12 +17,14 @@ function setevent(elem, evt, handler){
 var cons;
 var mouse;
 var settings;
+var ninep;
 
 window.onload = function(){
 
 cons = new Cons();
 mouse = new Mouse();
 settings = new Settings();
+ninep = new NineP("ws://192.168.12.24/9p");
 
 addevent(elem("webdraw"), "click", function(){cons.write("lol clicked whee");});
 setevent(document, "keydown", function(e){return mouse.handlefkeys(e, mouse.states.down);});

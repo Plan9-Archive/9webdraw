@@ -23,7 +23,6 @@ function Settings(){
     }
 
     for(var setting in this.settings){
-	alert(this.settings[setting]);
 	this.set(this.settings[setting], localStorage.getItem(this.settings[setting]) == "true"? true: false);
 	this.addsetting(this.settings[setting]);
     }
