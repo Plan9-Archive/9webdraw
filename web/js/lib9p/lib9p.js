@@ -7,6 +7,8 @@ NineP = function(path){
 	this.buffer = [];
 };
 
+NineP.NOTAG = (~0) & 0xFFFF;
+
 NineP.packets = {
 	Tversion:	100,
 	Rversion:	101,
@@ -51,17 +53,30 @@ NineP.PBIT32 = function(p,v){
 }
 NineP.PBIT64 = function(p,v){ throw("JAVASCRIPT CANNOT INTO INTEGERS!"); };
 
+NineP.getpktsize = function(buf){ return NineP.GBIT32(buf.slice(0,4)); };
+NineP.getpkttype = function(buf){ return buf[4]; };
+NineP.getpkttag = function(buf){ return NineP.GBIT16(buf.slice(5, 7)); };
+
+/* XXX This will die horribly on non-ASCII strings! */
+NineP.mkstring = function(str){
+	var arr = [];
+	NineP.PBIT16(arr, str.length);
+	arr.append(str.split());
+	return arr;
+}
+
 NineP.prototype.rawpktin = function(pkt){
 	var pktarr = Uint8Array(pkt);
 
-	this.buffer.push.apply(this.buffer, pktarr);
+	//this.buffer.push.apply(this.buffer, pktarr);
+	this.buffer.append(pktarr);
 	cons.log(this.buffer);
 
 	if(this.buffer.length < 4){
 		return;
 	}
 
-	var size = NineP.GBIT32(this.buffer.slice(0,4));
+	var size = NineP.getpktsize(this.buffer);
 
 	if(this.buffer.length >= size){
 		this.processpkt(this.buffer.splice(0, size));
@@ -69,11 +84,34 @@ NineP.prototype.rawpktin = function(pkt){
 }
 
 NineP.prototype.processpkt = function(pkt){
-	cons.log(pkt[4]);
-	for(var p in NineP.packets){
-		if(pkt[4] == NineP.packets[p]){
-			cons.log(p);
+	switch(NineP.getpkttype(pkt)){
+		case NineP.packets.Tversion:
+			this.Rversion(pkt);
 			break;
-		}
+		case NineP.packets.Tauth:
+			this.Rerror(pkt, "no authentication required");
+			break;
+		case NineP.packets.Tattach:
+		case NineP.packets.Terror:
+		case NineP.packets.Tflush:
+		case NineP.packets.Twalk:
+		case NineP.packets.Topen:
+		case NineP.packets.Tcreate:
+		case NineP.packets.Tread:
+		case NineP.packets.Twrite:
+		case NineP.packets.Tclunk:
+		case NineP.packets.Tremove:
+		case NineP.packets.Tstat:
+		case NineP.packets.Twstat:
+		case NineP.packets.Tmax:
+		default:
+			this.Rerror(pkt, "request not supported");
 	}
 }
+
+NineP.prototype.Rversion = function(pkt){
+}
+
+NineP.prototype.Rerror = function(pkt, msg){
+	var tag = NineP.getpkttag(pkt);
+	var buf = [NineP.packets.Rerror];
