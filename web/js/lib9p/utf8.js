@@ -19,7 +19,7 @@ String.prototype.toUTF8Array = function(){
 			arr.push(0x80 | ((c & 0xFC0) >> 6));
 			arr.push(0x80 | ((c & 0x3F)));
 		}else if(c > 0x0800){ /* 3 bytes */
-			arr.push(0xE0 | ((c & 0xF000) >> 12)));
+			arr.push(0xE0 | ((c & 0xF000) >> 12));
 			arr.push(0x80 | ((c & 0xFC0) >> 6));
 			arr.push(0x80 | ((c & 0x3F)));
 		}else if(c > 0x0080){ /* 2 bytes */
@@ -39,6 +39,7 @@ String.fromUTF8Array = function(arr){
 	for(var i = 0; i < arr.length; ++i){
 		var codepoint = 0;
 
+		/* Convert from UTF-8 to Unicode codepoint. */
 		if((arr[i] & 0x80) == 0){ /* one byte */
 			codepoint = arr[i] & 0x7F;
 		}else if((arr[i] & 0xE0) == 0xC0){ /* two bytes */
@@ -62,7 +63,12 @@ String.fromUTF8Array = function(arr){
 		}else{
 			/* five- and six- byte UTF-8 are now illegal. */
 		}
+
+		/* Convert from Unicode codepoint to UTF-16. */
 		if(codepoint & 0x10000){
+			units.push(0xD800 | ((codepoint >> 10) & 0x3FF));
+			units.push(0xDC00 | (codepoint & 0x3FF));
 		}
 	}
+	return units.join("");
 }

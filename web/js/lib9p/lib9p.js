@@ -61,15 +61,14 @@ NineP.getpkttag = function(buf){ return NineP.GBIT16(buf.slice(5, 7)); };
 NineP.mkstring = function(str){
 	var arr = [];
 	NineP.PBIT16(arr, str.length);
-	arr.append(str.split());
+	arr.push.apply(arr, str.split());
 	return arr;
 }
 
 NineP.prototype.rawpktin = function(pkt){
 	var pktarr = Uint8Array(pkt);
 
-	//this.buffer.push.apply(this.buffer, pktarr);
-	this.buffer.append(pktarr);
+	this.buffer.push.apply(this.buffer, pktarr);
 	cons.log(this.buffer);
 
 	if(this.buffer.length < 4){
@@ -115,3 +114,4 @@ NineP.prototype.Rversion = function(pkt){
 NineP.prototype.Rerror = function(pkt, msg){
 	var tag = NineP.getpkttag(pkt);
 	var buf = [NineP.packets.Rerror];
+}
