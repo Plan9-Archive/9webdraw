@@ -3,7 +3,8 @@ function Socket(path, read){
 	this.sock.binaryType = "arraybuffer";
 
 	this.write = function(data){
-		this.sock.send(data);
+		var u8 = new Uint8Array(data);
+		this.sock.send(u8.buffer);
 	}
 
 	this.sock.onmessage = function(e){
