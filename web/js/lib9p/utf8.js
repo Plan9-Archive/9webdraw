@@ -68,7 +68,9 @@ String.fromUTF8Array = function(arr){
 		if(codepoint & 0x10000){
 			units.push(0xD800 | ((codepoint >> 10) & 0x3FF));
 			units.push(0xDC00 | (codepoint & 0x3FF));
+		}else{
+			units.push(codepoint);
 		}
 	}
-	return units.join("");
+	return String.fromCharCode.apply(null, units);
 }
