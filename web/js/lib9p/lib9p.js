@@ -1,12 +1,11 @@
 NineP = function(path){
 	var that = this;
 	this.socket = new Socket(path, function(e){that.rawpktin(e);});
-	/* this.write = function(s){ this.socket.write(s);}; */
 
 	this.maxbufsz = 32768;
 	this.buffer = [];
 	this.fids = [];
-	this.qids = [new NineP.Qid(0, 0, NineP.QTDIR)];
+	this.qids = [new NineP.Qid(0, 0, NineP.QTDIR, {})];
 };
 
 NineP.NOTAG = (~0) & 0xFFFF;
@@ -87,8 +86,13 @@ NineP.mkwirestring = function(str){
 	return arr;
 }
 
+NineP.getwirestring = function(pkt){
+	var len = NineP.GBIT16(pkt.splice(0,2));
+	return String.fromUTF8Array(pkt.splice(0,len));
+}
+
 NineP.prototype.rawpktin = function(pkt){
-	var pktarr = Uint8Array(pkt);
+	var pktarr = new Uint8Array(pkt);
 
 	this.buffer.push.apply(this.buffer, pktarr);
 	cons.log(this.buffer);
@@ -111,14 +115,20 @@ NineP.prototype.processpkt = function(pkt){
 			this.Rversion(pkt, tag);
 			break;
 		case NineP.packets.Tauth:
-			this.Rerror(pkt, tag, "no authentication required");
+			this.Rerror(tag, "no authentication required");
 			break;
 		case NineP.packets.Tattach:
 			this.Tattach(pkt, tag);
 			break;
 		case NineP.packets.Terror:
+			this.Rerror(tag, "terror");
+			break;
 		case NineP.packets.Tflush:
+			this.Tflush(pkt, tag);
+			break;
 		case NineP.packets.Twalk:
+			this.Twalk(pkt, tag);
+			break;
 		case NineP.packets.Topen:
 		case NineP.packets.Tcreate:
 		case NineP.packets.Tread:
@@ -129,7 +139,7 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Twstat:
 		case NineP.packets.Tmax:
 		default:
-			this.Rerror(pkt, tag, "request not supported");
+			this.Rerror(tag, "request not supported");
 	}
 }
 
@@ -149,7 +159,7 @@ NineP.prototype.Tattach = function(pkt, tag){
 	var fid = NineP.GBIT32(pkt.slice(7));
 
 	if(this.fids[fid]){
-		this.Rerror(pkt, tag, "fid already in use");
+		this.Rerror(tag, "fid already in use");
 	}else{
 		this.fids[fid] = 0;
 		this.Rattach(tag, fid);
@@ -166,11 +176,68 @@ NineP.prototype.Rattach = function(tag, fid){
 }
 	
 
-NineP.prototype.Rerror = function(pkt, tag, msg){
+NineP.prototype.Rerror = function(tag, msg){
 	var buf = [0,0,0,0, NineP.packets.Rerror];
 	buf.push.apply(buf, tag);
 	buf = buf.concat(NineP.mkwirestring(msg));
 	NineP.PBIT32(buf, buf.length);
 	cons.log(buf);
 	this.socket.write(buf);
+}
+
+NineP.prototype.Tflush = function(pkt, tag){
+	this.Rerror(tag, "flush not implemented");
+}
+
+NineP.prototype.Twalk = function(pkt, tag){
+	pkt.splice(0, 7);
+	var oldfid = NineP.GBIT32(pkt.splice(0, 4));
+	var newfid = NineP.GBIT32(pkt.splice(0, 4));
+	var nwname = NineP.GBIT16(pkt.splice(0, 2));
+	var names = [];
+	var i;
+	for(i = 0; i < nwname; ++i){
+		names.push(NineP.getwirestring(pkt));
+	}
+	cons.log("twalk components: " + names + "(" + nwname + ")");
+
+	if(this.fids[oldfid] == undefined){
+		return this.Rerror(tag, "invalid fid");
+	}
+	if(this.fids[newfid]){
+		return this.Rerror(tag, "newfid in use");
+	}
+
+	var fakeqid = this.fids[oldfid];
+	var interqids = [];
+
+	try{
+		for(i = 0; i < nwname; ++i){
+			fakeqid = this.walk1(fakeqid, names[i]);
+			interqids.push(fakeqid);
+		}
+		this.fids[newfid] = fakeqid;
+	}catch(e){alert("except");
+		if(i == 0){
+			return this.Rerror(tag, "could not walk");
+		}
+	}
+	this.Rwalk(tag, interqids.length, interqids);
+}
+
+NineP.prototype.Rwalk = function(tag, nwqid, qids){
+	var pkt = [0, 0, 0, 0, NineP.packets.Rwalk];
+	var i;
+
+	pkt = pkt.concat(tag);
+	pkt = pkt.concat(NineP.PBIT16([], nwqid));
+
+	for(i = 0; i < nwqid; ++i){
+		pkt = pkt.concat((new NineP.Qid(qid, 0, NineP.QTDIR, {})).toWireQid());
+	}
+
+	NineP.PBIT32(pkt, pkt.length);
+	cons.log(pkt);
+	this.socket.write(pkt);
+	//this.Rerror(tag, "walk not implemented");
 }

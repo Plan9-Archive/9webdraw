@@ -6,10 +6,11 @@ NineP.QTAUTH = 0x08;
 NineP.QTTMP = 0x04;
 NineP.QTFILE = 0x00;
 
-NineP.Qid = function(path, vers, type){
+NineP.Qid = function(path, vers, type, callback){
 	this.path = path;
 	this.vers = vers;
 	this.type = type;
+	this.callback = callback;
 }
 
 NineP.Qid.prototype.toString = function(){

@@ -24,6 +24,7 @@ window.onload = function(){
 cons = new Cons();
 mouse = new Mouse();
 settings = new Settings();
+NineP.initlocal();
 ninep = new NineP("ws://192.168.12.24/9p");
 
 addevent(elem("webdraw"), "click", function(){cons.write("lol clicked whee");});
