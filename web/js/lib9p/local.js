@@ -1,10 +1,10 @@
 
 NineP.initlocal = function(){
 	NineP.prototype.walk1 = function(qid, name){
-		var qid = this.qids[qid];
-		if(qid == 0){
+		var path = qid.path;
+		if(path == 0){
 			if(name == ".."){
-				return 0;
+				return new NineP.Qid(0, 0, NineP.QTDIR);
 			}else{
 				throw("could not walk");
 			}

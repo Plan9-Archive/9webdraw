@@ -5,7 +5,6 @@ NineP = function(path){
 	this.maxbufsz = 32768;
 	this.buffer = [];
 	this.fids = [];
-	this.qids = [new NineP.Qid(0, 0, NineP.QTDIR, {})];
 };
 
 NineP.NOTAG = (~0) & 0xFFFF;
@@ -112,23 +111,17 @@ NineP.prototype.processpkt = function(pkt){
 	var tag = NineP.PBIT16([], NineP.getpkttag(pkt));
 	switch(NineP.getpkttype(pkt)){
 		case NineP.packets.Tversion:
-			this.Rversion(pkt, tag);
-			break;
+			return this.Rversion(pkt, tag);
 		case NineP.packets.Tauth:
-			this.Rerror(tag, "no authentication required");
-			break;
+			return this.Rerror(tag, "no authentication required");
 		case NineP.packets.Tattach:
-			this.Tattach(pkt, tag);
-			break;
+			return this.Tattach(pkt, tag);
 		case NineP.packets.Terror:
-			this.Rerror(tag, "terror");
-			break;
+			return this.Rerror(tag, "terror");
 		case NineP.packets.Tflush:
-			this.Tflush(pkt, tag);
-			break;
+			return this.Tflush(pkt, tag);
 		case NineP.packets.Twalk:
-			this.Twalk(pkt, tag);
-			break;
+			return this.Twalk(pkt, tag);
 		case NineP.packets.Topen:
 		case NineP.packets.Tcreate:
 		case NineP.packets.Tread:
@@ -139,7 +132,7 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Twstat:
 		case NineP.packets.Tmax:
 		default:
-			this.Rerror(tag, "request not supported");
+			return this.Rerror(tag, "request not supported");
 	}
 }
 
@@ -161,7 +154,7 @@ NineP.prototype.Tattach = function(pkt, tag){
 	if(this.fids[fid]){
 		this.Rerror(tag, "fid already in use");
 	}else{
-		this.fids[fid] = 0;
+		this.fids[fid] = new NineP.Qid(0, 0, NineP.QTDIR);
 		this.Rattach(tag, fid);
 	}
 }
@@ -169,7 +162,7 @@ NineP.prototype.Tattach = function(pkt, tag){
 NineP.prototype.Rattach = function(tag, fid){
 	var buf = [0, 0, 0, 0, NineP.packets.Rattach];
 	buf = buf.concat(tag);
-	buf = buf.concat(this.qids[this.fids[fid]].toWireQid());
+	buf = buf.concat(this.fids[fid].toWireQid());
 	NineP.PBIT32(buf, buf.length);
 	cons.log(buf);
 	this.socket.write(buf);
@@ -204,7 +197,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 	if(this.fids[oldfid] == undefined){
 		return this.Rerror(tag, "invalid fid");
 	}
-	if(this.fids[newfid]){
+	if(this.fids[newfid] != undefined){
 		return this.Rerror(tag, "newfid in use");
 	}
 
@@ -217,7 +210,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 			interqids.push(fakeqid);
 		}
 		this.fids[newfid] = fakeqid;
-	}catch(e){alert("except");
+	}catch(e){
 		if(i == 0){
 			return this.Rerror(tag, "could not walk");
 		}
@@ -233,11 +226,10 @@ NineP.prototype.Rwalk = function(tag, nwqid, qids){
 	pkt = pkt.concat(NineP.PBIT16([], nwqid));
 
 	for(i = 0; i < nwqid; ++i){
-		pkt = pkt.concat((new NineP.Qid(qid, 0, NineP.QTDIR, {})).toWireQid());
+		pkt = pkt.concat(qids[i].toWireQid());
 	}
 
 	NineP.PBIT32(pkt, pkt.length);
 	cons.log(pkt);
 	this.socket.write(pkt);
-	//this.Rerror(tag, "walk not implemented");
 }
