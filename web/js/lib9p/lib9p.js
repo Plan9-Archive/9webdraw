@@ -44,7 +44,12 @@ NineP.packets = {
 NineP.GBIT8 = function(p){ return (p[0]); };
 NineP.GBIT16 = function(p){ return (p[0])|(p[1]<<8); };
 NineP.GBIT32 = function(p){ return (p[0])|(p[1]<<8)|(p[2]<<16)|(p[3]<<24); };
-NineP.GBIT64 = function(p){ throw("JAVASCRIPT CANNOT INTO INTEGERS!"); };
+/* XXX Javascript will do unpleasant things to integers over 32 bits! */
+NineP.GBIT64 = function(p){
+	/* throw("JAVASCRIPT CANNOT INTO INTEGERS!"); */
+	return (p[0]) | (p[1]<<8) | (p[2]<<16) | (p[3]<<24) |
+		(p[4]<<32) | (p[5]<<40) | (p[6]<<48) | (p[7]<<56);
+};
 NineP.PBIT8 = function(p,v){
 	p[0] = (v)&0xFF;
 	return p;
@@ -128,7 +133,9 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Twrite:
 		case NineP.packets.Tclunk:
 		case NineP.packets.Tremove:
+			return this.Rerror(tag, "request not supported");
 		case NineP.packets.Tstat:
+			return this.Tstat(pkt, tag);
 		case NineP.packets.Twstat:
 		case NineP.packets.Tmax:
 		default:
@@ -175,6 +182,7 @@ NineP.prototype.Rerror = function(tag, msg){
 	buf = buf.concat(NineP.mkwirestring(msg));
 	NineP.PBIT32(buf, buf.length);
 	cons.log(buf);
+	cons.log("error: " + msg);
 	this.socket.write(buf);
 }
 
@@ -228,6 +236,44 @@ NineP.prototype.Rwalk = function(tag, nwqid, qids){
 	for(i = 0; i < nwqid; ++i){
 		pkt = pkt.concat(qids[i].toWireQid());
 	}
+
+	NineP.PBIT32(pkt, pkt.length);
+	cons.log(pkt);
+	this.socket.write(pkt);
+}
+
+NineP.prototype.Tclunk = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt);
+
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "fid not in use");
+	}
+
+	delete this.fids[fid];
+
+	return this.Rclunk(tag);
+}
+
+NineP.prototype.Rclunk = function(tag){
+	var buf = [0, 0, 0, 0, NineP.packets.Rclunk].concat(tag);
+
+	cons.log(buf);
+	this.socket.write(buf);
+}
+
+NineP.prototype.Tstat = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt);
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "invalid fid");
+	}
+	return this.Rstat(tag, this.stat(this.fids[fid]));
+}
+
+NineP.prototype.Rstat = function(tag, stat){
+	var pkt = [0, 0, 0, 0, NineP.packets.Rstat].concat(tag);
+	pkt = pkt.concat(stat.toWireStat());
 
 	NineP.PBIT32(pkt, pkt.length);
 	cons.log(pkt);

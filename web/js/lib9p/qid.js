@@ -19,7 +19,7 @@ NineP.Qid.prototype.toString = function(){
 
 NineP.Qid.prototype.toWireQid = function(){
 	var buf = [];
-	buf = buf.concat([this.type]);
+	buf = buf.concat(NineP.PBIT8([], this.type));
 	buf = buf.concat(NineP.PBIT32([], this.vers));
 	buf = buf.concat(NineP.PBIT64([], this.path));
 	return buf;
