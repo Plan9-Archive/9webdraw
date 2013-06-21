@@ -6,6 +6,11 @@ NineP.QTAUTH = 0x08;
 NineP.QTTMP = 0x04;
 NineP.QTFILE = 0x00;
 
+NineP.DMDIR = 0x80000000;
+NineP.DMAPPEND = 0x40000000;
+NineP.DMEXCL = 0x20000000;
+NineP.DMTMP = 0x04000000;
+
 NineP.Qid = function(path, vers, type, callback){
 	this.path = path;
 	this.vers = vers;

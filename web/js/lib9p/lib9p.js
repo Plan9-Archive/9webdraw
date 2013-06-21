@@ -128,12 +128,17 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Twalk:
 			return this.Twalk(pkt, tag);
 		case NineP.packets.Topen:
+			return this.Topen(pkt, tag);
 		case NineP.packets.Tcreate:
+			return this.Rerror(tag, "cannot create");
 		case NineP.packets.Tread:
+			return this.Rerror(tag, "cannot read");
 		case NineP.packets.Twrite:
+			return this.Rerror(tag, "cannot write");
 		case NineP.packets.Tclunk:
+			return this.Tclunk(pkt, tag);
 		case NineP.packets.Tremove:
-			return this.Rerror(tag, "request not supported");
+			return this.Rerror(tag, "cannot remove");
 		case NineP.packets.Tstat:
 			return this.Tstat(pkt, tag);
 		case NineP.packets.Twstat:
@@ -240,6 +245,18 @@ NineP.prototype.Rwalk = function(tag, nwqid, qids){
 	NineP.PBIT32(pkt, pkt.length);
 	cons.log(pkt);
 	this.socket.write(pkt);
+}
+
+NineP.prototype.Topen = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt.splice(0, 4));
+	var mode = NineP.GBIT8(pkt.splice(0, 1));
+
+	return this.Ropen(tag, fid, mode);
+}
+
+NineP.prototype.Ropen = function(tag, fid, mode){
+	return this.Rerror(tag, "open not supported");
 }
 
 NineP.prototype.Tclunk = function(pkt, tag){
