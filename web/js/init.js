@@ -25,7 +25,7 @@ cons = new Cons();
 mouse = new Mouse();
 settings = new Settings();
 NineP.initlocal();
-ninep = new NineP("ws://192.168.12.24/9p");
+ninep = new NineP(window.location.toString().replace(/^http/, "ws").concat("9p"));
 
 addevent(elem("webdraw"), "click", function(){cons.write("lol clicked whee");});
 setevent(document, "keydown", function(e){return mouse.handlefkeys(e, mouse.states.down);});
