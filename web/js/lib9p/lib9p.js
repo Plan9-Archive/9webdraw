@@ -165,10 +165,10 @@ NineP.prototype.Rversion = function(pkt, tag){
 NineP.prototype.Tattach = function(pkt, tag){
 	var fid = NineP.GBIT32(pkt.slice(7));
 
-	if(this.fids[fid]){
+	if(this.fids[fid] != undefined){
 		this.Rerror(tag, "fid already in use");
 	}else{
-		this.fids[fid] = new NineP.Qid(0, 0, NineP.QTDIR);
+		this.fids[fid] = new NineP.Fid(fid, new NineP.Qid(0, 0, NineP.QTDIR));
 		this.Rattach(tag, fid);
 	}
 }
@@ -176,7 +176,7 @@ NineP.prototype.Tattach = function(pkt, tag){
 NineP.prototype.Rattach = function(tag, fid){
 	var buf = [0, 0, 0, 0, NineP.packets.Rattach];
 	buf = buf.concat(tag);
-	buf = buf.concat(this.fids[fid].toWireQid());
+	buf = buf.concat(this.fids[fid].qid.toWireQid());
 	NineP.PBIT32(buf, buf.length);
 	cons.log(buf);
 	this.socket.write(buf);
@@ -216,7 +216,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 		return this.Rerror(tag, "newfid in use");
 	}
 
-	var fakeqid = this.fids[oldfid];
+	var fakeqid = this.fids[oldfid].qid;
 	var interqids = [];
 
 	try{
@@ -224,7 +224,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 			fakeqid = this.local.walk1(fakeqid, names[i]);
 			interqids.push(fakeqid);
 		}
-		this.fids[newfid] = fakeqid;
+		this.fids[newfid] = new NineP.Fid(newfid, fakeqid);
 	}catch(e){
 		if(i == 0){
 			return this.Rerror(tag, "could not walk");
@@ -287,7 +287,7 @@ NineP.prototype.Tstat = function(pkt, tag){
 	if(this.fids[fid] == undefined){
 		return this.Rerror(tag, "invalid fid");
 	}
-	return this.Rstat(tag, this.local.stat(this.fids[fid]));
+	return this.Rstat(tag, this.local.stat(this.fids[fid]).qid);
 }
 
 NineP.prototype.Rstat = function(tag, stat){
