@@ -144,7 +144,7 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Tcreate:
 			return this.Rerror(tag, "cannot create");
 		case NineP.packets.Tread:
-			return this.Rerror(tag, "cannot read");
+			return this.Tread(pkt, tag);
 		case NineP.packets.Twrite:
 			return this.Rerror(tag, "cannot write");
 		case NineP.packets.Tclunk:
@@ -288,6 +288,41 @@ NineP.prototype.Ropen = function(tag, fid){
 	buf = buf.concat(NineP.PBIT32([], 0));
 
 	NineP.PBIT32(buf, buf.length);
+	cons.log(buf);
+	this.socket.write(buf);
+}
+
+NineP.prototype.Tread = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt.splice(0, 4));
+	var offset = NineP.GBIT64(pkt.splice(0, 8));
+	var count = NineP.GBIT32(pkt.splice(0, 4));
+
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "invalid fid");
+	}
+	var mode = this.fids[fid].mode;
+	if(mode != NineP.OREAD && mode != NineP.ORDWR){
+		return this.Rerror(tag, "fid not opened for reading");
+	}
+
+	if(this.fids[fid].qid.type & NineP.QTDIR){
+		return this.Rread(tag, this.dirread(fid, offset, count));
+	}else{
+		return this.Rread(tag, this.local.read(this.fids[fid], offset, count));
+	}
+}
+
+NineP.prototype.dirread = function(fid, offset, count){
+	return [];
+}
+
+NineP.prototype.Rread = function(tag, data){
+	var buf = [0, 0, 0, 0, NineP.packets.Rread].concat(tag);
+	alert(data);
+	buf = buf.concat(NineP.PBIT32([], data.length)).concat(data);
+	NineP.PBIT32(buf, buf.length)
+
 	cons.log(buf);
 	this.socket.write(buf);
 }

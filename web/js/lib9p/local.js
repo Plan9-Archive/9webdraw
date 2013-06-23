@@ -82,6 +82,10 @@ NinepLocal.walk1.drawdir = function(path, name){
 	}
 }
 
+NinepLocal.read = function(fid, offset, count){
+	return [];
+}
+
 NinepLocal.stat = function(qid){
 	with(this.Qids){
 		var path = qid.path;
