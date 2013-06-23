@@ -289,7 +289,7 @@ NineP.prototype.Tstat = function(pkt, tag){
 	}
 
 	try{
-		return this.Rstat(tag, this.local.stat(this.fids[fid]).qid);
+		return this.Rstat(tag, this.local.stat(this.fids[fid].qid));
 	}catch(e){
 		return this.Rerror(tag, e);
 	}
