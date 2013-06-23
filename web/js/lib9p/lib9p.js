@@ -5,6 +5,8 @@ NineP = function(path){
 	this.maxbufsz = 32768;
 	this.buffer = [];
 	this.fids = [];
+
+	this.local = NinepLocal;
 };
 
 NineP.NOTAG = (~0) & 0xFFFF;
@@ -219,7 +221,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 
 	try{
 		for(i = 0; i < nwname; ++i){
-			fakeqid = this.walk1(fakeqid, names[i]);
+			fakeqid = this.local.walk1(fakeqid, names[i]);
 			interqids.push(fakeqid);
 		}
 		this.fids[newfid] = fakeqid;
@@ -285,7 +287,7 @@ NineP.prototype.Tstat = function(pkt, tag){
 	if(this.fids[fid] == undefined){
 		return this.Rerror(tag, "invalid fid");
 	}
-	return this.Rstat(tag, this.stat(this.fids[fid]));
+	return this.Rstat(tag, this.local.stat(this.fids[fid]));
 }
 
 NineP.prototype.Rstat = function(tag, stat){
