@@ -287,7 +287,12 @@ NineP.prototype.Tstat = function(pkt, tag){
 	if(this.fids[fid] == undefined){
 		return this.Rerror(tag, "invalid fid");
 	}
-	return this.Rstat(tag, this.local.stat(this.fids[fid]).qid);
+
+	try{
+		return this.Rstat(tag, this.local.stat(this.fids[fid]).qid);
+	}catch(e){
+		return this.Rerror(tag, e);
+	}
 }
 
 NineP.prototype.Rstat = function(tag, stat){
