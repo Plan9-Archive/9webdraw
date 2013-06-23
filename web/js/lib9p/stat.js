@@ -54,3 +54,7 @@ NineP.Stat.prototype.toWireStat = function(){
 
 	return stat;
 }
+
+NineP.Stat.prototype.toString = function(){
+	return JSON.stringify(this);
+}

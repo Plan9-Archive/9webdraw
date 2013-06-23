@@ -88,7 +88,7 @@ NinepLocal.stat = function(qid){
 		if(path == QROOT){
 			return new NineP.Stat({
 				qid: qid,
-				mode: NineP.DMDIR,
+				mode: NineP.DMDIR|NineP.DMREAD|NineP.DMEXEC,
 				name: "/"
 			});
 		}else if(path == QCONS){

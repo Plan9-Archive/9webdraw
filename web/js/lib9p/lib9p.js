@@ -85,6 +85,10 @@ NineP.getpktsize = function(buf){ return NineP.GBIT32(buf.slice(0,4)); };
 NineP.getpkttype = function(buf){ return buf[4]; };
 NineP.getpkttag = function(buf){ return NineP.GBIT16(buf.slice(5, 7)); };
 
+NineP.mkwirebuf = function(buf){
+	return NineP.PBIT16([], buf.length).concat(buf);
+}
+
 NineP.mkwirestring = function(str){
 	var arr = str.toUTF8Array();
 	var len = NineP.PBIT16([], arr.length);
@@ -207,7 +211,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 	for(i = 0; i < nwname; ++i){
 		names.push(NineP.getwirestring(pkt));
 	}
-	cons.log("twalk components: " + names + "(" + nwname + ")");
+	cons.log("twalk components: " + names + " (" + nwname + ")");
 
 	if(this.fids[oldfid] == undefined){
 		return this.Rerror(tag, "invalid fid");
@@ -277,6 +281,7 @@ NineP.prototype.Tclunk = function(pkt, tag){
 NineP.prototype.Rclunk = function(tag){
 	var buf = [0, 0, 0, 0, NineP.packets.Rclunk].concat(tag);
 
+	buf = NineP.PBIT32(buf, buf.length);
 	cons.log(buf);
 	this.socket.write(buf);
 }
@@ -291,13 +296,13 @@ NineP.prototype.Tstat = function(pkt, tag){
 	try{
 		return this.Rstat(tag, this.local.stat(this.fids[fid].qid));
 	}catch(e){
-		return this.Rerror(tag, e);
+		return this.Rerror(tag, e.toString());
 	}
 }
 
 NineP.prototype.Rstat = function(tag, stat){
 	var pkt = [0, 0, 0, 0, NineP.packets.Rstat].concat(tag);
-	pkt = pkt.concat(stat.toWireStat());
+	pkt = pkt.concat(NineP.mkwirebuf(stat.toWireStat()));
 
 	NineP.PBIT32(pkt, pkt.length);
 	cons.log(pkt);
