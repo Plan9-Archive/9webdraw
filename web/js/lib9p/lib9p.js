@@ -11,6 +11,12 @@ NineP = function(path){
 
 NineP.NOTAG = (~0) & 0xFFFF;
 
+NineP.OREAD = 0;
+NineP.OWRITE = 1;
+NineP.ORDWR = 2;
+NineP.OEXEC = 3;
+NineP.ORCLOSE = 0x40;
+
 NineP.packets = {
 	Tversion:	100,
 	Rversion:	101,
@@ -258,11 +264,32 @@ NineP.prototype.Topen = function(pkt, tag){
 	var fid = NineP.GBIT32(pkt.splice(0, 4));
 	var mode = NineP.GBIT8(pkt.splice(0, 1));
 
-	return this.Ropen(tag, fid, mode);
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "invalid fid");
+	}
+
+	var qid = this.fids[fid].qid;
+
+	if(qid.type & NineP.QTDIR){
+		if(mode != NineP.OREAD){
+			return this.Rerror(tag, "cannot write to directory");
+		}
+	}
+
+	this.fids[fid].mode = mode;
+
+	return this.Ropen(tag, fid);
 }
 
-NineP.prototype.Ropen = function(tag, fid, mode){
-	return this.Rerror(tag, "open not supported");
+NineP.prototype.Ropen = function(tag, fid){
+	var buf = [0, 0, 0, 0, NineP.packets.Ropen].concat(tag);
+
+	buf = buf.concat(this.fids[fid].qid.toWireQid());
+	buf = buf.concat(NineP.PBIT32([], 0));
+
+	NineP.PBIT32(buf, buf.length);
+	cons.log(buf);
+	this.socket.write(buf);
 }
 
 NineP.prototype.Tclunk = function(pkt, tag){
