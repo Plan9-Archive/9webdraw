@@ -142,7 +142,7 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Topen:
 			return this.Topen(pkt, tag);
 		case NineP.packets.Tcreate:
-			return this.Rerror(tag, "cannot create");
+			return this.Tcreate(pkt, tag);
 		case NineP.packets.Tread:
 			return this.Tread(pkt, tag);
 		case NineP.packets.Twrite:
@@ -288,6 +288,40 @@ NineP.prototype.Ropen = function(tag, fid){
 	buf = buf.concat(NineP.PBIT32([], 0));
 
 	NineP.PBIT32(buf, buf.length);
+	cons.log(buf);
+	this.socket.write(buf);
+}
+
+NineP.prototype.Tcreate = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt.splice(0, 4));
+	var name = NineP.getwirestring(pkt);
+	var perm = NineP.GBIT32(pkt.splice(0, 4));
+	var mode = NineP.GBIT8(pkt.splice(0, 1));
+
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "invalid fid");
+	}else if(!(this.fids[fid].qid.type & NineP.QTDIR)){
+		return this.Rerror(tag, "cannot create in non-directory");
+	}
+
+	try{
+		var qid = this.local.create(name, perm, mode);
+		this.fids[fid] = new NineP.Fid(fid, qid);
+	}catch(e){
+		return this.Rerror(tag, e.toString());
+	}
+
+	return this.Rcreate(tag, qid);
+}
+
+NineP.prototype.Rcreate = function(tag, qid){
+	var buf = [0, 0, 0, 0, NineP.packets.Rcreate].concat(tag);
+	var buf = buf.concat(qid.toWireQid());
+	var buf = buf.concat(NineP.PBIT32([], 0));
+
+	NineP.PBIT32(buf, buf.length);
+
 	cons.log(buf);
 	this.socket.write(buf);
 }

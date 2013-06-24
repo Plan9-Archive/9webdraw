@@ -82,6 +82,10 @@ NinepLocal.walk1drawdir = function(path, name){
 	}
 }
 
+NinepLocal.create = function(name, perm, mode){
+	throw("creation not implemented");
+}
+
 NinepLocal.read = function(fid, offset, count){
 	return [];
 }
