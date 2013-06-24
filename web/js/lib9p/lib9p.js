@@ -150,7 +150,7 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Tclunk:
 			return this.Tclunk(pkt, tag);
 		case NineP.packets.Tremove:
-			return this.Rerror(tag, "cannot remove");
+			return this.Tremove(pkt, tag);
 		case NineP.packets.Tstat:
 			return this.Tstat(pkt, tag);
 		case NineP.packets.Twstat:
@@ -399,6 +399,32 @@ NineP.prototype.Rclunk = function(tag){
 	var buf = [0, 0, 0, 0, NineP.packets.Rclunk].concat(tag);
 
 	buf = NineP.PBIT32(buf, buf.length);
+	cons.log(buf);
+	this.socket.write(buf);
+}
+
+NineP.prototype.Tremove = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt);
+
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "fid not in use");
+	}
+
+	try{
+		this.local.remove(this.fids[fid].qid);
+	}catch(e){
+		return this.Rerror(tag, e.toString());
+	}
+
+	delete this.fids[fid];
+	return this.Rremove(tag);
+}
+
+NineP.prototype.Rremove = function(tag){
+	var buf = [0, 0, 0, 0, NineP.packets.Rremove].concat(tag);
+
+	NineP.PBIT32(buf, buf.length);
 	cons.log(buf);
 	this.socket.write(buf);
 }

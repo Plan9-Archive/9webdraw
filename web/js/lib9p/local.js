@@ -116,6 +116,10 @@ NinepLocal.dirent = function(qid, offset){
 	}
 }
 
+NinepLocal.remove = function(qid){
+	throw("cannot remove");
+}
+
 NinepLocal.stat = function(qid){
 	with(this.Qids){
 		if(qid == QROOT){
