@@ -44,18 +44,18 @@ NinepLocal.walk1 = function(qid, name){
 				throw("file not found");
 			}
 		}else if(path >= QDRAWBASE){
-			return this.walk1.drawdir(path, name);
+			return this.walk1drawdir(path, name);
 		}else{
-			throw("could not walk");
+			throw("file not found");
 		}
 	}
 }
 
-NinepLocal.walk1.drawdir = function(path, name){
+NinepLocal.walk1drawdir = function(path, name){
 	with(this.Qids){
-		var drawfile = path % QDRAWSTEP;
+		var drawfile = (path - QDRAWBASE) % QDRAWSTEP;
 		var drawdir = (path - QDRAWBASE) / QDRAWSTEP;
-	
+
 		if(path < QDRAWBASE){
 			throw("could not walk");
 		}
@@ -86,82 +86,110 @@ NinepLocal.read = function(fid, offset, count){
 	return [];
 }
 
+NinepLocal.dirent = function(qid, offset){
+	with(this.Qids){
+	try{
+		if(qid.path == QROOT){
+			return this.stat([QCONS, QMOUSE, QDRAW][offset]);
+		}else if(qid.path == QDRAW){
+			/* XXX must dynamically append active draw dirs. */
+			return this.stat([QDRAWNEW][offset]);
+		}else if(qid.path >= QDRAWBASE){
+			var drawfile = (qid.path - QDRAWBASE) % QDRAWSTEP;
+			var drawdir = (qid.path - QDRAWBASE) / QDRAWSTEP;
+
+			if(drawfile == 0){
+				return this.stat([
+					QDRAWCTL, QDRAWDATA,
+					QDRAWCOLORMAP, QDRAWREFRESH
+				][offset] + (drawdir * QDRAWSTEP) + QDRAWBASE);
+			}
+		}
+		return undefined;
+	}catch(e){
+		return undefined;
+	}
+	}
+}
+
 NinepLocal.stat = function(qid){
 	with(this.Qids){
-		var path = qid.path;
-		if(path == QROOT){
+		if(qid == QROOT){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(QROOT, 0, NineP.QTDIR),
 				mode: NineP.DMDIR|NineP.DMREAD|NineP.DMEXEC,
 				name: "/"
 			});
-		}else if(path == QCONS){
+		}else if(qid == QCONS){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(QCONS, 0, 0),
 				mode: 0,
 				name: "cons"
 			});
-		}else if(path == QMOUSE){
+		}else if(qid == QMOUSE){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(QMOUSE, 0, 0),
 				mode: NineP.DMAPPEND,
 				length: 49,
 				name: "mouse"
 			});
-		}else if(path == QDRAW){
+		}else if(qid == QDRAW){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(QDRAW, 0, NineP.QTDIR),
 				mode: NineP.DMDIR,
 				name: "draw"
 			});
-		}else if(path == QDRAWNEW){
+		}else if(qid == QDRAWNEW){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(QDRAWNEW, 0, 0),
 				mode: 0,
 				name: "new"
 			});
-		}else if(path >= QDRAWBASE){
-			return this.stat.drawdir(qid, name);
+		}else if(qid >= QDRAWBASE){
+			return this.statdrawdir(qid, name);
 		}else{
 			throw("invalid qid");
 		}
 	}
 }
 
-NinepLocal.stat.drawdir = function(qid, name){
+NinepLocal.statdrawdir = function(qid, name){
 	with(this.Qids){
-		var path = qid.path;
-		var drawfile = (path - QDRAWBASE) % QDRAWSTEP;
-		var drawdir = (path - QDRAWBASE) / QDRAWSTEP;
+		var drawfile = (qid - QDRAWBASE) % QDRAWSTEP;
+		var drawdir = (qid - QDRAWBASE) / QDRAWSTEP;
 	
-		if(path < QDRAWBASE){
+		if(qid < QDRAWBASE){
 			throw("could not stat");
 		}
 		if(drawfile == 0){
-			throw("could not stat");
+			return new NineP.Stat({
+				qid: new NineP.Qid(qid, 0, NineP.QTDIR),
+				mode: 0,
+				name: String(drawdir)
+			});
 		}
 	
 		if(drawfile == QDRAWCTL){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "ctl"
 			});
 		}else if(drawfile == QDRAWDATA){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "data"
 			});
 		}else if(drawfile == QDRAWCOLORMAP){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "colormap"
 			});
 		}else if(drawfile == QDRAWREFRESH){
 			return new NineP.Stat({
-				qid: qid,
+				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "refresh"
 			});

@@ -307,19 +307,40 @@ NineP.prototype.Tread = function(pkt, tag){
 	}
 
 	if(this.fids[fid].qid.type & NineP.QTDIR){
-		return this.Rread(tag, this.dirread(fid, offset, count));
+		return this.Rread(tag, this.dirread(this.fids[fid], offset, count));
 	}else{
 		return this.Rread(tag, this.local.read(this.fids[fid], offset, count));
 	}
 }
 
 NineP.prototype.dirread = function(fid, offset, count){
-	return [];
+	var dirindex;
+	var buf = [];
+	if(offset == 0){
+		dirindex = 0;
+	}else{
+		dirindex = fid.dirindex;
+	}
+
+	while(buf.length < count){
+		var tmpstat = this.local.dirent(fid.qid, dirindex);
+		if(tmpstat == undefined){
+			break;
+		}
+		var tmpbuf = tmpstat.toWireStat();
+		if((buf.length + tmpbuf.length) > count){
+			break;
+		}
+		buf = buf.concat(tmpbuf);
+		dirindex += 1;
+	}
+	fid.dirindex = dirindex;
+	return buf;
 }
 
 NineP.prototype.Rread = function(tag, data){
 	var buf = [0, 0, 0, 0, NineP.packets.Rread].concat(tag);
-	alert(data);
+
 	buf = buf.concat(NineP.PBIT32([], data.length)).concat(data);
 	NineP.PBIT32(buf, buf.length)
 
@@ -356,7 +377,7 @@ NineP.prototype.Tstat = function(pkt, tag){
 	}
 
 	try{
-		return this.Rstat(tag, this.local.stat(this.fids[fid].qid));
+		return this.Rstat(tag, this.local.stat(this.fids[fid].qid.path));
 	}catch(e){
 		return this.Rerror(tag, e.toString());
 	}
