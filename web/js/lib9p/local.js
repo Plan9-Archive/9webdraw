@@ -116,6 +116,10 @@ NinepLocal.dirent = function(qid, offset){
 	}
 }
 
+NinepLocal.write = function(qid, offset, data){
+	throw("cannot write");
+}
+
 NinepLocal.remove = function(qid){
 	throw("cannot remove");
 }

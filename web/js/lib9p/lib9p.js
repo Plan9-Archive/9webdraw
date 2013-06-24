@@ -146,7 +146,7 @@ NineP.prototype.processpkt = function(pkt){
 		case NineP.packets.Tread:
 			return this.Tread(pkt, tag);
 		case NineP.packets.Twrite:
-			return this.Rerror(tag, "cannot write");
+			return this.Twrite(pkt, tag);
 		case NineP.packets.Tclunk:
 			return this.Tclunk(pkt, tag);
 		case NineP.packets.Tremove:
@@ -381,6 +381,40 @@ NineP.prototype.Rread = function(tag, data){
 	cons.log(buf);
 	this.socket.write(buf);
 }
+
+NineP.prototype.Twrite = function(pkt, tag){
+	pkt.splice(0, 7);
+	var fid = NineP.GBIT32(pkt.splice(0, 4));
+	var offset = NineP.GBIT64(pkt.splice(0, 8));
+	var count = NineP.GBIT32(pkt.splice(0, 4));
+	var data = pkt.splice(0, count);
+
+	if(this.fids[fid] == undefined){
+		return this.Rerror(tag, "invalid fid");
+	}
+	var mode = this.fids[fid].mode;
+	if(mode != NineP.OWRITE && mode != NineP.ORDWR){
+		return this.Rerror(tag, "file not opened for writing");
+	}
+
+	try{
+		var bytes = this.local.write(this.fids[fid].qid, offset, data);
+	}catch(e){
+		return this.Rerror(tag, e.toString());
+	}
+
+	return this.Rwrite(tag, bytes);
+}
+
+NineP.prototype.Rwrite = function(tag, count){
+	var buf = [0, 0, 0, 0, NineP.packets.Rwrite].concat(tag);
+	buf = buf.concat(NineP.PBIT32([], count));
+
+	NineP.PBIT32(buf, buf.length);
+	cons.log(buf);
+	this.socket.write(buf);
+}
+
 
 NineP.prototype.Tclunk = function(pkt, tag){
 	pkt.splice(0, 7);
