@@ -7,6 +7,7 @@ NineP = function(path){
 	this.fids = [];
 
 	this.local = NinepLocal;
+	this.local.create("wat", 0);
 };
 
 NineP.NOTAG = (~0) & 0xFFFF;
