@@ -1,6 +1,6 @@
-NinepLocal = {};
+Draw9p = {};
 
-NinepLocal.Qids = {
+Draw9p.Qids = {
 	QROOT: 0,
 	QCONS: 1,
 	QMOUSE: 2,
@@ -14,7 +14,7 @@ NinepLocal.Qids = {
 	QDRAWSTEP: 10
 }
 
-NinepLocal.walk1 = function(qid, name){
+Draw9p.walk1 = function(qid, name){
 	with(this.Qids){
 		var path = qid.path;
 		if(path == QROOT){
@@ -51,7 +51,7 @@ NinepLocal.walk1 = function(qid, name){
 	}
 }
 
-NinepLocal.walk1drawdir = function(path, name){
+Draw9p.walk1drawdir = function(path, name){
 	with(this.Qids){
 		var drawfile = (path - QDRAWBASE) % QDRAWSTEP;
 		var drawdir = (path - QDRAWBASE) / QDRAWSTEP;
@@ -82,15 +82,15 @@ NinepLocal.walk1drawdir = function(path, name){
 	}
 }
 
-NinepLocal.create = function(name, perm, mode){
+Draw9p.create = function(name, perm, mode){
 	throw("creation not implemented");
 }
 
-NinepLocal.read = function(fid, offset, count){
+Draw9p.read = function(fid, offset, count){
 	return [];
 }
 
-NinepLocal.dirent = function(qid, offset){
+Draw9p.dirent = function(qid, offset){
 	with(this.Qids){
 	try{
 		if(qid.path == QROOT){
@@ -116,15 +116,15 @@ NinepLocal.dirent = function(qid, offset){
 	}
 }
 
-NinepLocal.write = function(qid, offset, data){
+Draw9p.write = function(qid, offset, data){
 	throw("cannot write");
 }
 
-NinepLocal.remove = function(qid){
+Draw9p.remove = function(qid){
 	throw("cannot remove");
 }
 
-NinepLocal.stat = function(qid){
+Draw9p.stat = function(qid){
 	with(this.Qids){
 		if(qid == QROOT){
 			return new NineP.Stat({
@@ -165,7 +165,7 @@ NinepLocal.stat = function(qid){
 	}
 }
 
-NinepLocal.statdrawdir = function(qid, name){
+Draw9p.statdrawdir = function(qid, name){
 	with(this.Qids){
 		var drawfile = (qid - QDRAWBASE) % QDRAWSTEP;
 		var drawdir = (qid - QDRAWBASE) / QDRAWSTEP;

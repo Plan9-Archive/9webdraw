@@ -1,4 +1,4 @@
-NineP = function(path){
+NineP = function(path, callbacks){
 	var that = this;
 	this.socket = new Socket(path, function(e){that.rawpktin(e);});
 
@@ -6,7 +6,7 @@ NineP = function(path){
 	this.buffer = [];
 	this.fids = [];
 
-	this.local = NinepLocal;
+	this.local = callbacks;
 };
 
 NineP.NOTAG = (~0) & 0xFFFF;
