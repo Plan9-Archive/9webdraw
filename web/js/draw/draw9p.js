@@ -14,6 +14,23 @@ Draw9p.Qids = {
 	QDRAWSTEP: 10
 }
 
+Draw9p.conns = [];
+Draw9p.nextconn = 1;
+
+Draw9p.Conn = function(connid){
+	this.id = connid;
+}
+
+Draw9p.connqids = function(){
+	var qids = [];
+	for(var i = 0; i < this.conns.length; ++i){
+		if(this.conns[i] != undefined){
+			qids.push(this.Qids.QDRAWBASE + (i * this.Qids.QDRAWSTEP));
+		}
+	}
+	return qids;
+}
+
 Draw9p.walk1 = function(qid, name){
 	with(this.Qids){
 		var path = qid.path;
@@ -59,6 +76,10 @@ Draw9p.walk1drawdir = function(path, name){
 		if(path < QDRAWBASE){
 			throw("could not walk");
 		}
+
+		if(this.conns[drawdir] == undefined){
+			throw("file not found");
+		}
 	
 		if(drawfile == 0){
 			if(name == ".."){
@@ -82,12 +103,72 @@ Draw9p.walk1drawdir = function(path, name){
 	}
 }
 
+Draw9p.open = function(fid, mode){
+	with(this.Qids){
+		if(fid.qid.path == QDRAWNEW){
+			this.conns[this.nextconn] = new this.Conn(this.nextconn);
+			fid.drawconn = this.nextconn;
+			this.nextconn += 1;
+		}
+	}
+}
+
 Draw9p.create = function(name, perm, mode){
 	throw("creation not implemented");
 }
 
+Draw9p.pad11 = function(x){
+	var buf = [];
+	var s = String(x);
+	var i;
+
+	//do{
+	//	buf[i] = Math.floor(x % 10);
+	//	i += 1;
+	//}while(x = Math.floor(x / 10));
+
+	for(i = 0; i < 11 - s.length; ++i){
+		buf[i] = " ".charCodeAt(0);
+	}
+
+	for(i; i < 11; ++i){
+		buf[i] = s.charCodeAt(i - (11 - s.length));
+	}
+
+	return buf;
+}
+
 Draw9p.read = function(fid, offset, count){
-	return [];
+	with(this.Qids){
+		if(fid.qid.path == QDRAWNEW){
+			if(offset == 0){
+				return this.readdrawnew(fid.drawconn);
+			}else{
+				return [];
+			}
+		}else{
+			return [];
+		}
+	}
+}
+
+Draw9p.readdrawnew = function(conn){
+	var buf = [];
+
+	buf = buf.concat(this.pad11(conn)).concat(" ");
+	buf = buf.concat(this.pad11(0)).concat(" ");
+	buf = buf.concat(this.pad11("r8g8b8")).concat(" ");
+	buf = buf.concat(this.pad11(0)).concat(" ");
+	buf = buf.concat(this.pad11(0)).concat(" ");
+	buf = buf.concat(this.pad11(0)).concat(" ");
+	buf = buf.concat(this.pad11(640)).concat(" ");
+	buf = buf.concat(this.pad11(480)).concat(" ");
+	buf = buf.concat(this.pad11(0)).concat(" ");
+	buf = buf.concat(this.pad11(0)).concat(" ");
+	buf = buf.concat(this.pad11(640)).concat(" ");
+	buf = buf.concat(this.pad11(480)).concat(" ");
+
+	return buf;
 }
 
 Draw9p.dirent = function(qid, offset){
@@ -97,7 +178,7 @@ Draw9p.dirent = function(qid, offset){
 			return this.stat([QCONS, QMOUSE, QDRAW][offset]);
 		}else if(qid.path == QDRAW){
 			/* XXX must dynamically append active draw dirs. */
-			return this.stat([QDRAWNEW][offset]);
+			return this.stat([QDRAWNEW].concat(this.connqids())[offset]);
 		}else if(qid.path >= QDRAWBASE){
 			var drawfile = (qid.path - QDRAWBASE) % QDRAWSTEP;
 			var drawdir = (qid.path - QDRAWBASE) / QDRAWSTEP;
@@ -118,6 +199,14 @@ Draw9p.dirent = function(qid, offset){
 
 Draw9p.write = function(qid, offset, data){
 	throw("cannot write");
+}
+
+Draw9p.clunk = function(fid){
+	with(this.Qids){
+		if(fid.qid.path == QDRAWNEW){
+			delete this.conns[fid.drawconn];
+		}
+	}
 }
 
 Draw9p.remove = function(qid){
@@ -153,8 +242,9 @@ Draw9p.stat = function(qid){
 			});
 		}else if(qid == QDRAWNEW){
 			return new NineP.Stat({
-				qid: new NineP.Qid(QDRAWNEW, 0, 0),
+				qid: new NineP.Qid(QDRAWNEW, this.nextconn, 0),
 				mode: 0,
+				length: 144,
 				name: "new"
 			});
 		}else if(qid >= QDRAWBASE){
@@ -173,6 +263,11 @@ Draw9p.statdrawdir = function(qid, name){
 		if(qid < QDRAWBASE){
 			throw("could not stat");
 		}
+
+		if(this.conns[drawdir] == undefined){
+			throw("file not found");
+		}
+
 		if(drawfile == 0){
 			return new NineP.Stat({
 				qid: new NineP.Qid(qid, 0, NineP.QTDIR),

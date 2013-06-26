@@ -276,6 +276,12 @@ NineP.prototype.Topen = function(pkt, tag){
 		}
 	}
 
+	try{
+		this.local.open(this.fids[fid], mode);
+	}catch(e){
+		return this.Rerror(tag, e.toString());
+	}
+
 	this.fids[fid].mode = mode;
 
 	return this.Ropen(tag, fid);
@@ -424,6 +430,8 @@ NineP.prototype.Tclunk = function(pkt, tag){
 	if(this.fids[fid] == undefined){
 		return this.Rerror(tag, "fid not in use");
 	}
+
+	this.local.clunk(this.fids[fid]);
 
 	delete this.fids[fid];
 
