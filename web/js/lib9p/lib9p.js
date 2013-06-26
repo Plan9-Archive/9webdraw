@@ -308,6 +308,7 @@ NineP.prototype.Tcreate = function(pkt, tag){
 	try{
 		var qid = this.local.create(name, perm, mode);
 		this.fids[fid] = new NineP.Fid(fid, qid);
+		this.fids[fid].mode = mode;
 	}catch(e){
 		return this.Rerror(tag, e.toString());
 	}
