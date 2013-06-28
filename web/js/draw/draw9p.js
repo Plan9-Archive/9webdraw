@@ -14,6 +14,16 @@ Draw9p.Qids = {
 	QDRAWSTEP: 10
 }
 
+Draw9p.drawdir = function(path){
+	with(this.Qids){
+		return {
+			drawfile: (path - QDRAWBASE) % QDRAWSTEP,
+			drawdir: Math.floor((path - QDRAWBASE) / QDRAWSTEP)
+		}
+	}
+}
+
+
 Draw9p.conns = [];
 Draw9p.nextconn = 1;
 
@@ -70,18 +80,17 @@ Draw9p.walk1 = function(qid, name){
 
 Draw9p.walk1drawdir = function(path, name){
 	with(this.Qids){
-		var drawfile = (path - QDRAWBASE) % QDRAWSTEP;
-		var drawdir = (path - QDRAWBASE) / QDRAWSTEP;
+		var dd = this.drawdir(path);
 
 		if(path < QDRAWBASE){
 			throw("could not walk");
 		}
 
-		if(this.conns[drawdir] == undefined){
+		if(this.conns[dd.drawdir] == undefined){
 			throw("file not found");
 		}
 	
-		if(drawfile == 0){
+		if(dd.drawfile == 0){
 			if(name == ".."){
 				return new NineP.Qid(QDRAW, 0, NineP.QTDIR);
 			}else if(name == "ctl"){
@@ -177,17 +186,15 @@ Draw9p.dirent = function(qid, offset){
 		if(qid.path == QROOT){
 			return this.stat([QCONS, QMOUSE, QDRAW][offset]);
 		}else if(qid.path == QDRAW){
-			/* XXX must dynamically append active draw dirs. */
 			return this.stat([QDRAWNEW].concat(this.connqids())[offset]);
 		}else if(qid.path >= QDRAWBASE){
-			var drawfile = (qid.path - QDRAWBASE) % QDRAWSTEP;
-			var drawdir = (qid.path - QDRAWBASE) / QDRAWSTEP;
+			var dd = this.drawdir(qid.path);
 
-			if(drawfile == 0){
+			if(dd.drawfile == 0){
 				return this.stat([
 					QDRAWCTL, QDRAWDATA,
 					QDRAWCOLORMAP, QDRAWREFRESH
-				][offset] + (drawdir * QDRAWSTEP) + QDRAWBASE);
+				][offset] + (dd.drawdir * QDRAWSTEP) + QDRAWBASE);
 			}
 		}
 		return undefined;
@@ -248,53 +255,52 @@ Draw9p.stat = function(qid){
 				name: "new"
 			});
 		}else if(qid >= QDRAWBASE){
-			return this.statdrawdir(qid, name);
+			return this.statdrawdir(qid);
 		}else{
 			throw("invalid qid");
 		}
 	}
 }
 
-Draw9p.statdrawdir = function(qid, name){
+Draw9p.statdrawdir = function(qid){
 	with(this.Qids){
-		var drawfile = (qid - QDRAWBASE) % QDRAWSTEP;
-		var drawdir = (qid - QDRAWBASE) / QDRAWSTEP;
+		var dd = this.drawdir(qid);
 	
 		if(qid < QDRAWBASE){
 			throw("could not stat");
 		}
 
-		if(this.conns[drawdir] == undefined){
+		if(this.conns[dd.drawdir] == undefined){
 			throw("file not found");
 		}
 
-		if(drawfile == 0){
+		if(dd.drawfile == 0){
 			return new NineP.Stat({
 				qid: new NineP.Qid(qid, 0, NineP.QTDIR),
 				mode: 0,
-				name: String(drawdir)
+				name: String(dd.drawdir)
 			});
 		}
 	
-		if(drawfile == QDRAWCTL){
+		if(dd.drawfile == QDRAWCTL){
 			return new NineP.Stat({
 				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "ctl"
 			});
-		}else if(drawfile == QDRAWDATA){
+		}else if(dd.drawfile == QDRAWDATA){
 			return new NineP.Stat({
 				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "data"
 			});
-		}else if(drawfile == QDRAWCOLORMAP){
+		}else if(dd.drawfile == QDRAWCOLORMAP){
 			return new NineP.Stat({
 				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
 				name: "colormap"
 			});
-		}else if(drawfile == QDRAWREFRESH){
+		}else if(dd.drawfile == QDRAWREFRESH){
 			return new NineP.Stat({
 				qid: new NineP.Qid(qid, 0, 0),
 				mode: 0,
