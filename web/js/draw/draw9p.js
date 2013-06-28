@@ -134,6 +134,13 @@ Draw9p.read = function(fid, offset, count){
 			}else{
 				return [];
 			}
+		}else if(fid.qid.path >= QDRAWBASE){
+			var dd = this.drawdir(fid.qid.path);
+			if(dd.drawfile == QDRAWCTL){
+				return this.readdrawctl(fid, offset);
+			}else{
+				return [];
+			}
 		}else{
 			return [];
 		}
@@ -165,7 +172,18 @@ Draw9p.dirent = function(qid, offset){
 }
 
 Draw9p.write = function(qid, offset, data){
-	throw("cannot write");
+	with(this.Qids){
+		if(qid.path >= QDRAWBASE){
+			var dd = this.drawdir(qid.path);
+			if(dd.drawfile == QDRAWDATA){
+				return this.writedrawdata(dd.drawdir, offset, data);
+			}else{
+				throw("writing impermissible");
+			}
+		}else{
+			throw("cannot write");
+		}
+	}
 }
 
 Draw9p.clunk = function(fid){
