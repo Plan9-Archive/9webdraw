@@ -205,6 +205,8 @@ Draw9p.write = function(qid, offset, data){
 			var dd = this.drawdir(qid.path);
 			if(dd.drawfile == QDRAWDATA){
 				return this.writedrawdata(dd.drawdir, offset, data);
+			}else if(dd.drawfile == QDRAWCTL){
+				return this.writedrawctl(dd.drawdir, offset, data);
 			}else{
 				throw("writing impermissible");
 			}
