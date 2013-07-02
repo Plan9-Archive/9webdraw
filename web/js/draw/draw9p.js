@@ -1,5 +1,33 @@
 Draw9p = {};
 
+Draw9p.DBGCHAR = function(p){
+	return p.splice(0, 1)[0];
+}
+Draw9p.BGSHORT = function(p){
+	return (p[0]<<0) | (p[1]<<8);
+}
+Draw9p.DBGSHORT = function(p){
+	return BGSHORT(p.splice(0, 4));
+}
+Draw9p.BGLONG = function(p){
+	return (p[0]<<0) | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
+}
+Draw9p.DBGLONG = function(p){
+	return BGLONG(p.splice(0, 4));
+}
+Draw9p.BPSHORT = function(p, v){
+	p[0] = (v) & 0xFF;
+	p[1] = (v >> 8) & 0xFF;
+	return p;
+}
+Draw9p.BPLONG = function(p, v){
+	p[0] = (v) & 0xFF;
+	p[1] = (v >> 8) & 0xFF;
+	p[2] = (v >>16) & 0xFF;
+	p[3] = (v >> 24) & 0xFF;
+	return p;
+}
+
 Draw9p.Qids = {
 	QROOT: 0,
 	QCONS: 1,
