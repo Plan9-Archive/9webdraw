@@ -1,18 +1,27 @@
 Draw9p = {};
 
 Draw9p.DBGCHAR = function(p){
+	if(p.length < 1){
+		throw("array too short");
+	}
 	return p.splice(0, 1)[0];
 }
 Draw9p.BGSHORT = function(p){
 	return (p[0]<<0) | (p[1]<<8);
 }
 Draw9p.DBGSHORT = function(p){
+	if(p.length < 2){
+		throw("array too short");
+	}
 	return BGSHORT(p.splice(0, 4));
 }
 Draw9p.BGLONG = function(p){
 	return (p[0]<<0) | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
 }
 Draw9p.DBGLONG = function(p){
+	if(p.length < 4){
+		throw("array too short");
+	}
 	return BGLONG(p.splice(0, 4));
 }
 Draw9p.BPSHORT = function(p, v){
