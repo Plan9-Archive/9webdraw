@@ -79,6 +79,7 @@ Draw9p.nextconn = 1;
 
 Draw9p.Conn = function(connid){
 	this.id = connid;
+	this.imgs = [];
 }
 
 Draw9p.connqids = function(){

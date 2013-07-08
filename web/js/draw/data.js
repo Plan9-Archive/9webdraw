@@ -38,6 +38,14 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[id] != undefined){
+			throw("image id in use");
+		}
+		/* XXX Change this once we implement screens. */
+		if(screenid){
+			throw("screen does not exist");
+		}
+		conn.imgs[id] = new Image(refresh, chan, repl, r, clipr, color);
 		return offset;
 	},
 	"c": function(conn, offset, data){
