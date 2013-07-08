@@ -13,7 +13,7 @@ Draw9p.DBGSHORT = function(p){
 	if(p.length < 2){
 		throw("array too short");
 	}
-	return BGSHORT(p.splice(0, 4));
+	return this.BGSHORT(p.splice(0, 4));
 }
 Draw9p.BGLONG = function(p){
 	return (p[0]<<0) | (p[1]<<8) | (p[2]<<16) | (p[3]<<24);
@@ -22,7 +22,7 @@ Draw9p.DBGLONG = function(p){
 	if(p.length < 4){
 		throw("array too short");
 	}
-	return BGLONG(p.splice(0, 4));
+	return this.BGLONG(p.splice(0, 4));
 }
 Draw9p.BPSHORT = function(p, v){
 	p[0] = (v) & 0xFF;
@@ -35,6 +35,19 @@ Draw9p.BPLONG = function(p, v){
 	p[2] = (v >>16) & 0xFF;
 	p[3] = (v >> 24) & 0xFF;
 	return p;
+}
+
+Draw9p.DGPOINT = function(p){
+	return {
+		x: this.DBGLONG(p),
+		y: this.DBGLONG(p)
+	}
+}
+Draw9p.DGRECT = function(p){
+	return {
+		min: this.DGPOINT(p),
+		max: this.DGPOINT(p)
+	}
 }
 
 Draw9p.Qids = {

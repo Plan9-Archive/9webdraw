@@ -32,10 +32,8 @@ Draw9p.drawdatahandlers = {
 			var refresh = DBGCHAR(data);
 			var chan = DBGLONG(data);
 			var repl = DBGCHAR(data);
-			var r = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
-			var clipr = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
+			var r = DGRECT(data);
+			var clipr = DGRECT(data);
 			var color = DBGLONG(data);
 		}catch(e){
 			throw("short draw message");
@@ -46,8 +44,7 @@ Draw9p.drawdatahandlers = {
 		try{
 			var dstid = DBGLONG(data);
 			var repl = DBGCHAR(data);
-			var clipr = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
+			var clipr = DGRECT(data);
 		}catch(e){
 			throw("short draw message");
 		}
@@ -58,10 +55,9 @@ Draw9p.drawdatahandlers = {
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
 			var maskid = DBGLONG(data);
-			var dstr = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
-			var srcp = [DBGLONG(data), DBGLONG(data)];
-			var maskp = [DBGLONG(data), DBGLONG(data)];
+			var dstr = DGRECT(data);
+			var srcp = DGPOINT(data);
+			var maskp = DGPOINT(data);
 		}catch(e){
 			throw("short draw message");
 		}
@@ -79,11 +75,11 @@ Draw9p.drawdatahandlers = {
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
-			var c = [DBGLONG(data), DBGLONG(data)];
+			var c = DGPOINT(data);
 			var a = DBGLONG(data);
 			var b = DBGLONG(data);
 			var thick = DBGLONG(data);
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var sp = DGPOINT(data);
 			var alpha = DBGLONG(data);
 			var phi = DBGLONG(data);
 		}catch(e){
@@ -95,11 +91,11 @@ Draw9p.drawdatahandlers = {
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
-			var center = [DBGLONG(data), DBGLONG(data)];
+			var center = DGPOINT(data);
 			var a = DBGLONG(data);
 			var b = DBGLONG(data);
 			var thick = DBGLONG(data);
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var sp = DGPOINT(data);
 			var alpha = DBGLONG(data);
 			var phi = DBGLONG(data);
 		}catch(e){
@@ -138,9 +134,8 @@ Draw9p.drawdatahandlers = {
 			var cacheid = DBGLONG(data);
 			var srcid = DBGLONG(data);
 			var index = DBGSHORT(data);
-			var r = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var r = DGRECT(data);
+			var sp = DGPOINT(data);
 			var left = DBGCHAR(data);
 			var width = DBGCHAR(data);
 		}catch(e){
@@ -151,13 +146,13 @@ Draw9p.drawdatahandlers = {
 	"L": function(conn, offset, data){
 		try{
 			var dstid = DBGLONG(data);
-			var p0 = [DBGLONG(data), DBGLONG(data)];
-			var p1 = [DBGLONG(data), DBGLONG(data)];
+			var p0 = DGPOINT(data);
+			var p1 = DGPOINT(data);
 			var end0 = DBGLONG(data);
 			var end1 = DBGLONG(data);
 			var thick = DBGLONG(data);
 			var srcid = DBGLONG(data);
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var sp = DGPOINT(data);
 		}catch(e){
 			throw("short draw message");
 		}
@@ -187,8 +182,8 @@ Draw9p.drawdatahandlers = {
 	"o": function(conn, offset, data){
 		try{
 			var id = DBGLONG(data);
-			var rmin = [DBGLONG(data), DBGLONG(data)];
-			var scr = [DBGLONG(data), DBGLONG(data)];
+			var rmin = DGPOINT(data);
+			var scr = DGPOINT(data);
 		}catch(e){
 			throw("short draw message");
 		}
@@ -210,10 +205,10 @@ Draw9p.drawdatahandlers = {
 			var end1 = DBGLONG(data);
 			var thick = DBGLONG(data);
 			var srcid = DBGLONG(data);
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var sp = DGPOINT(data);
 			var dp = [];
 			for(var i = 0; i < n; ++i){
-				dp[i] = [DBGLONG(data), DBGLONG(data)];
+				dp[i] = DGPOINT(data);
 			}
 		}catch(e){
 			throw("short draw message");
@@ -225,12 +220,12 @@ Draw9p.drawdatahandlers = {
 			var dstid = DBGLONG(data);
 			var n = DBGSHORT(data);
 			var wind = DBGLONG(data);
-			var ignore = [DBGLONG(data), DBGLONG(data)];
+			var ignore = DGPOINT(data);
 			var srcid = DBGLONG(data);
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var sp = DGPOINT(data);
 			var dp = [];
 			for(var i = 0; i < n; ++i){
-				dp[i] = [DBGSHORT(data), DBGSHORT(data)];
+				dp[i] = DGPOINT(data);
 			}
 		}catch(e){
 			throw("short draw message");
@@ -240,8 +235,7 @@ Draw9p.drawdatahandlers = {
 	"r": function(conn, offset, data){
 		try{
 			var id = DBGLONG(data);
-			var r = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
+			var r = DGRECT(data);
 		}catch(e){
 			throw("short draw message");
 		}
@@ -252,10 +246,9 @@ Draw9p.drawdatahandlers = {
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
 			var fontid = DBGLONG(data);
-			var p = [DBGLONG(data), DBGLONG(data)];
-			var clipr = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var p = DGPOINT(data);
+			var clipr = DGRECT(data);
+			var sp = DGPOINT(data);
 			var n = DBGSHORT(data);
 			var index = [];
 			for(var i = 0; i < n; ++i){
@@ -271,13 +264,12 @@ Draw9p.drawdatahandlers = {
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
 			var fontid = DBGLONG(data);
-			var dp = [DBGLONG(data), DBGLONG(data)];
-			var clipr = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
-			var sp = [DBGLONG(data), DBGLONG(data)];
+			var dp = DGPOINT(data);
+			var clipr = DGRECT(data);
+			var sp = DGPOINT(data);
 			var n = DBGSHORT(data);
 			var bgid = DBGLONG(data);
-			var bp = [DBGLONG(data), DBGLONG(data)];
+			var bp = DGPOINT(data);
 			var index = [];
 			for(var i = 0; i < n; ++i){
 				index[i] = DBGSHORT(data);
@@ -315,8 +307,7 @@ Draw9p.drawdatahandlers = {
 	"y": function(conn, offset, data){
 		try{
 			var id = DBGLONG(data);
-			var r = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
+			var r = DGRECT(data);
 			var buf = []; /* XXX what is x? */
 		}catch(e){
 			throw("short draw message");
@@ -326,8 +317,7 @@ Draw9p.drawdatahandlers = {
 	"Y": function(conn, offset, data){
 		try{
 			var id = DBGLONG(data);
-			var r = [DBGLONG(data), DBGLONG(data),
-				DBGLONG(data), DBGLONG(data)];
+			var r = DGRECT(data);
 			var buf = []; /* XXX what is x? */
 		}catch(e){
 			throw("short draw message");
