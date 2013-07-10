@@ -79,7 +79,8 @@ Draw9p.nextconn = 1;
 
 Draw9p.Conn = function(connid){
 	this.id = connid;
-	this.imgs = [];
+	this.imgs = [Draw9p.RootImage()];
+	this.op = Memdraw.Ops.SoverD;
 }
 
 Draw9p.connqids = function(){

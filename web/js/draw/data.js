@@ -164,6 +164,14 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[dstid] == undefined){
+			throw("invalid image id");
+		}
+		if(conn.imgs[srcid] == undefined){
+			throw("invalid image id");
+		}
+		Memdraw.line(conn.imgs[dstid], p0, p1, end0, end1, thick,
+			conn.imgs[srcid], sp, conn.op);
 		return offset;
 	},
 	"N": function(conn, offset, data){
@@ -203,6 +211,7 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		conn.op = op;
 		return offset;
 	},
 	"p": function(conn, offset, data){

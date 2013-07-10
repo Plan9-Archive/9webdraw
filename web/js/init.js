@@ -27,6 +27,8 @@ settings = new Settings();
 ninep = new NineP(window.location.toString().replace(/^http/, "ws").concat("9p"),
 	Draw9p);
 
+Draw9p.rootcanvas = elem("webdraw");
+
 addevent(elem("webdraw"), "click", function(){cons.write("lol clicked whee");});
 setevent(document, "keydown", function(e){return mouse.handlefkeys(e, mouse.states.down);});
 setevent(document, "keyup", function(e){return mouse.handlefkeys(e, mouse.states.up);});
