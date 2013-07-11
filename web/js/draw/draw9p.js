@@ -178,23 +178,23 @@ Draw9p.create = function(name, perm, mode){
 	throw("creation not implemented");
 }
 
-Draw9p.read = function(fid, offset, count){
+Draw9p.read = function(fid, offset, count, callback){
 	with(this.Qids){
 		if(fid.qid.path == QDRAWNEW){
 			if(offset == 0){
-				return this.readdrawnew(fid.drawconn);
+				return callback(this.readdrawnew(fid.drawconn));
 			}else{
-				return [];
+				return callback([]);
 			}
 		}else if(fid.qid.path >= QDRAWBASE){
 			var dd = this.drawdir(fid.qid.path);
 			if(dd.drawfile == QDRAWCTL){
-				return this.readdrawctl(fid, offset);
+				return callback(this.readdrawctl(fid, offset));
 			}else{
-				return [];
+				return callback([]);
 			}
 		}else{
-			return [];
+			return callback([]);
 		}
 	}
 }

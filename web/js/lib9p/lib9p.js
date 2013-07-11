@@ -350,7 +350,10 @@ NineP.prototype.Tread = function(pkt, tag){
 	if(this.fids[fid].qid.type & NineP.QTDIR){
 		return this.Rread(tag, this.dirread(this.fids[fid], offset, count));
 	}else{
-		return this.Rread(tag, this.local.read(this.fids[fid], offset, count));
+		var that = this;
+		return this.local.read(this.fids[fid], offset, count, function(data){
+			return that.Rread.call(that, tag, data);
+		});
 	}
 }
 
