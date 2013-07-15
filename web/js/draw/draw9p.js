@@ -183,19 +183,27 @@ Draw9p.read = function(fid, offset, count, callback){
 	with(this.Qids){
 		if(fid.qid.path == QDRAWNEW){
 			if(offset == 0){
-				return callback(this.readdrawnew(fid.drawconn));
+				try{
+					return callback.read(this.readdrawnew(fid.drawconn));
+				}catch(e){
+					return callback.error(e.toString());
+				}
 			}else{
-				return callback([]);
+				return callback.read([]);
 			}
 		}else if(fid.qid.path >= QDRAWBASE){
 			var dd = this.drawdir(fid.qid.path);
 			if(dd.drawfile == QDRAWCTL){
-				return callback(this.readdrawctl(fid, offset));
+				try{
+					return callback.read(this.readdrawctl(fid, offset));
+				}catch(e){
+					return callback.error(e.toString());
+				}
 			}else{
-				return callback([]);
+				return callback.read([]);
 			}
 		}else{
-			return callback([]);
+			return callback.read([]);
 		}
 	}
 }

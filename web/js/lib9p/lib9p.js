@@ -351,8 +351,13 @@ NineP.prototype.Tread = function(pkt, tag){
 		return this.Rread(tag, this.dirread(this.fids[fid], offset, count));
 	}else{
 		var that = this;
-		return this.local.read(this.fids[fid], offset, count, function(data){
-			return that.Rread.call(that, tag, data);
+		return this.local.read(this.fids[fid], offset, count, {
+			read: function(data){
+				return that.Rread.call(that, tag, data);
+			},
+			error: function(data){
+				return that.Rerror.call(that, tag, data);
+			}
 		});
 	}
 }
