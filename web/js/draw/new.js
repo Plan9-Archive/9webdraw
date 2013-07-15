@@ -16,24 +16,25 @@ Draw9p.pad11 = function(x){
 		buf[i] = s.charCodeAt(i - (11 - s.length));
 	}
 
+	buf[11] = " ".charCodeAt(0);
 	return buf;
 }
 
 Draw9p.readdrawnew = function(conn){
 	var buf = [];
 
-	buf = buf.concat(this.pad11(conn)).concat(" ");
-	buf = buf.concat(this.pad11(0)).concat(" ");
-	buf = buf.concat(this.pad11("r8g8b8")).concat(" ");
-	buf = buf.concat(this.pad11(0)).concat(" ");
-	buf = buf.concat(this.pad11(0)).concat(" ");
-	buf = buf.concat(this.pad11(0)).concat(" ");
-	buf = buf.concat(this.pad11(640)).concat(" ");
-	buf = buf.concat(this.pad11(480)).concat(" ");
-	buf = buf.concat(this.pad11(0)).concat(" ");
-	buf = buf.concat(this.pad11(0)).concat(" ");
-	buf = buf.concat(this.pad11(640)).concat(" ");
-	buf = buf.concat(this.pad11(480)).concat(" ");
+	buf = buf.concat(this.pad11(conn));
+	buf = buf.concat(this.pad11(0));
+	buf = buf.concat(this.pad11("r8g8b8"));
+	buf = buf.concat(this.pad11(0));
+	buf = buf.concat(this.pad11(0));
+	buf = buf.concat(this.pad11(0));
+	buf = buf.concat(this.pad11(640));
+	buf = buf.concat(this.pad11(480));
+	buf = buf.concat(this.pad11(0));
+	buf = buf.concat(this.pad11(0));
+	buf = buf.concat(this.pad11(640));
+	buf = buf.concat(this.pad11(480));
 
 	return buf;
 }
