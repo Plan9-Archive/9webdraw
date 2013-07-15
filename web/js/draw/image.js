@@ -2,6 +2,7 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 	this.refresh = refresh;
 	this.chan = chan;
 	this.repl = repl;
+	this.r = r;
 	this.clipr = clipr;
 	this.canvas = document.createElement("canvas");
 	this.canvas.width = r.max.x - r.min.x;
