@@ -25,7 +25,7 @@ cons = new Cons();
 mouse = new Mouse();
 settings = new Settings();
 ninep = new NineP(window.location.toString().replace(/^http/, "ws").concat("9p"),
-	Draw9p);
+	Draw9p, cons.log);
 
 Draw9p.rootcanvas = elem("webdraw");
 

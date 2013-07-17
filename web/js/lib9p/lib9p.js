@@ -1,4 +1,4 @@
-NineP = function(path, callbacks){
+NineP = function(path, callbacks, cons){
 	var that = this;
 	this.socket = new Socket(path, function(e){that.rawpktin(e);});
 
@@ -7,6 +7,7 @@ NineP = function(path, callbacks){
 	this.fids = [];
 
 	this.local = callbacks;
+	this.cons = cons;
 };
 
 NineP.NOTAG = (~0) & 0xFFFF;
@@ -111,7 +112,7 @@ NineP.prototype.rawpktin = function(pkt){
 	var pktarr = new Uint8Array(pkt);
 
 	this.buffer.push.apply(this.buffer, pktarr);
-	cons.log(this.buffer);
+	this.log(this.buffer);
 
 	if(this.buffer.length < 4){
 		return;
@@ -168,7 +169,7 @@ NineP.prototype.Rversion = function(pkt, tag){
 	buf = buf.concat(NineP.PBIT32([], this.maxbufsz));
 	buf = buf.concat(NineP.mkwirestring("9P2000"));
 	NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -188,7 +189,7 @@ NineP.prototype.Rattach = function(tag, fid){
 	buf = buf.concat(tag);
 	buf = buf.concat(this.fids[fid].qid.toWireQid());
 	NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 	
@@ -198,8 +199,8 @@ NineP.prototype.Rerror = function(tag, msg){
 	buf.push.apply(buf, tag);
 	buf = buf.concat(NineP.mkwirestring(msg));
 	NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
-	cons.log("error: " + msg);
+	this.log(buf);
+	this.log("error: " + msg);
 	this.socket.write(buf);
 }
 
@@ -217,7 +218,7 @@ NineP.prototype.Twalk = function(pkt, tag){
 	for(i = 0; i < nwname; ++i){
 		names.push(NineP.getwirestring(pkt));
 	}
-	cons.log("twalk components: " + names + " (" + nwname + ")");
+	this.log("twalk components: " + names + " (" + nwname + ")");
 
 	if(this.fids[oldfid] == undefined){
 		return this.Rerror(tag, "invalid fid");
@@ -255,7 +256,7 @@ NineP.prototype.Rwalk = function(tag, nwqid, qids){
 	}
 
 	NineP.PBIT32(pkt, pkt.length);
-	cons.log(pkt);
+	this.log(pkt);
 	this.socket.write(pkt);
 }
 
@@ -294,7 +295,7 @@ NineP.prototype.Ropen = function(tag, fid){
 	buf = buf.concat(NineP.PBIT32([], 0));
 
 	NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -329,7 +330,7 @@ NineP.prototype.Rcreate = function(tag, qid){
 
 	NineP.PBIT32(buf, buf.length);
 
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -393,7 +394,7 @@ NineP.prototype.Rread = function(tag, data){
 	buf = buf.concat(NineP.PBIT32([], data.length)).concat(data);
 	NineP.PBIT32(buf, buf.length)
 
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -426,7 +427,7 @@ NineP.prototype.Rwrite = function(tag, count){
 	buf = buf.concat(NineP.PBIT32([], count));
 
 	NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -450,7 +451,7 @@ NineP.prototype.Rclunk = function(tag){
 	var buf = [0, 0, 0, 0, NineP.packets.Rclunk].concat(tag);
 
 	buf = NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -476,7 +477,7 @@ NineP.prototype.Rremove = function(tag){
 	var buf = [0, 0, 0, 0, NineP.packets.Rremove].concat(tag);
 
 	NineP.PBIT32(buf, buf.length);
-	cons.log(buf);
+	this.log(buf);
 	this.socket.write(buf);
 }
 
@@ -499,6 +500,6 @@ NineP.prototype.Rstat = function(tag, stat){
 	pkt = pkt.concat(NineP.mkwirebuf(stat.toWireStat()));
 
 	NineP.PBIT32(pkt, pkt.length);
-	cons.log(pkt);
+	this.log(pkt);
 	this.socket.write(pkt);
 }
