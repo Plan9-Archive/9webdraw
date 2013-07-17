@@ -1,3 +1,3 @@
-NineP.log = function(s){
+NineP.prototype.log = function(s){
 	this.cons.log(s);
 }

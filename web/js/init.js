@@ -25,7 +25,7 @@ window.onload = function(){
 	cons = new Cons();
 	mouse = new Mouse();
 	settings = new Settings();
-	ninep = new NineP(wsurl, Draw9p, cons.log);
+	ninep = new NineP(wsurl, Draw9p, cons);
 
 	Draw9p.rootcanvas = elem("webdraw");
 
