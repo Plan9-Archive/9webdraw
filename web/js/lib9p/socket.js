@@ -11,3 +11,7 @@ function Socket(path, read){
 		read(e.data);
 	}
 }
+/* I couldn't find a better way to get a Websocket to the same server. */
+Socket.wsurl = function(url){
+	return url.replace(/^http/, "ws").concat("9p");
+}
