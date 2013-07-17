@@ -1,9 +1,9 @@
 function elem(name){
-    return document.getElementById(name);
+	return document.getElementById(name);
 }
 
 function addevent(elem, evt, handler){
-    elem.addEventListener(evt, handler, false);
+	elem.addEventListener(evt, handler, false);
 }
 
 /* this should not be necessary, but */
@@ -20,18 +20,22 @@ var settings;
 var ninep;
 
 window.onload = function(){
+	var wsurl = Socket.wsurl(window.location.toString());
 
-var wsurl = Socket.wsurl(window.location.toString());
+	cons = new Cons();
+	mouse = new Mouse();
+	settings = new Settings();
+	ninep = new NineP(wsurl, Draw9p, cons.log);
 
-cons = new Cons();
-mouse = new Mouse();
-settings = new Settings();
-ninep = new NineP(wsurl, Draw9p, cons.log);
+	Draw9p.rootcanvas = elem("webdraw");
 
-Draw9p.rootcanvas = elem("webdraw");
-
-addevent(elem("webdraw"), "click", function(){cons.write("lol clicked whee");});
-setevent(document, "keydown", function(e){return mouse.handlefkeys(e, mouse.states.down);});
-setevent(document, "keyup", function(e){return mouse.handlefkeys(e, mouse.states.up);});
-
+	addevent(elem("webdraw"), "click", function(){
+		cons.write("lol clicked whee");
+	});
+	setevent(document, "keydown", function(e){
+		return mouse.handlefkeys(e, mouse.states.down);
+	});
+	setevent(document, "keyup", function(e){
+	return mouse.handlefkeys(e, mouse.states.up);
+	});
 }
