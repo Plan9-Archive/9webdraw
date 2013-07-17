@@ -199,6 +199,8 @@ Draw9p.read = function(fid, offset, count, callback){
 				}catch(e){
 					return callback.error(e.toString());
 				}
+			}else if(dd.drawfile == QDRAWREFRESH){
+				return this.readdrawrefresh(dd, offset, callback);
 			}else{
 				return callback.read([]);
 			}
