@@ -34,8 +34,8 @@ Memdraw = {
 		}
 
 		var points = [];
-		points.append({x: q.x-dx, y: q.y+dy});
-		points.append({x: q.x+dx, y: q.y-dy});
+		points = points.concat({x: q.x-dx, y: q.y+dy});
+		points = points.concat({x: q.x+dx, y: q.y-dy});
 		return;
 	},
 	fillpoly: function(dst, vertices, w, src, sp, op){
