@@ -27,7 +27,15 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 
 /* XXX Creating a new rootwindow object for each connection will probably */
 /* break once we start doing more advanced things. */
+/* XXX These parameters should not be hardcoded. */
 Draw9p.RootImage = function(){
-	this.canvas = Draw9p.rootcanvas;
-	this.ctx = this.canvas.getContext("2d")
+	var image =  new this.Image(0, "r8g8b8", 0,
+		{min: {x: 0, y: 0}, max: {x: 640, y: 480}},
+		{min: {x: 0, y: 0}, max: {x: 640, y: 480}},
+		0xFFFFFFFF);
+
+	image.canvas = Draw9p.rootcanvas;
+	image.ctx = image.canvas.getContext("2d");
+
+	return image;
 }
