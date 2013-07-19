@@ -9,6 +9,7 @@ var icossin2 = function(dx, dy){
 
 /* XXX doesn't work! */
 /* XXX ignores op. */
+/* XXX XXX XXX DRAWING IS FUZZY! XXX XXX XXX */
 var draw = function(dst, r, src, sp, op){
 	dst.ctx.save();
 
