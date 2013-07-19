@@ -13,9 +13,9 @@ var draw = function(dst, r, src, sp, op){
 	dst.ctx.save();
 
 	/* XXX what about clipping on src? */
-	dst.ctx.fillStyle = dst.ctx.createPattern(src.data,
+	dst.ctx.fillStyle = dst.ctx.createPattern(src.canvas,
 		src.repl? "repeat" : "no-repeat");
-
+	dst.ctx.fill();
 	dst.ctx.restore();
 	return;
 }
@@ -36,7 +36,9 @@ Memdraw = {
 		var points = [];
 		points = points.concat({x: q.x-dx, y: q.y+dy});
 		points = points.concat({x: q.x+dx, y: q.y-dy});
-		return;
+
+		/* XXX setting w incorrectly! */
+		return this.fillpoly(dst, points, 0, src, sp, op);
 	},
 	fillpoly: function(dst, vertices, w, src, sp, op){
 		if(vertices.length < 1){
@@ -50,6 +52,7 @@ Memdraw = {
 		}
 		dst.ctx.clip();
 		/* fill background here */
+		draw(dst, {min: {x: 0, y: 0}, max: {x: 500, y: 500}}, src, sp, op);
 		dst.ctx.restore();
 		return;
 	},
