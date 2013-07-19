@@ -7,6 +7,19 @@ var icossin2 = function(dx, dy){
 	}
 }
 
+/* XXX doesn't work! */
+/* XXX ignores op. */
+var draw = function(dst, r, src, sp, op){
+	dst.ctx.save();
+
+	/* XXX what about clipping on src? */
+	dst.ctx.fillStyle = dst.ctx.createPattern(src.data,
+		src.repl? "repeat" : "no-repeat");
+
+	dst.ctx.restore();
+	return;
+}
+
 Memdraw = {
 	/* XXX Implement line endings. */
 	line: function(dst, p0, p1, end0, end1, radius, src, sp, op){
@@ -23,6 +36,21 @@ Memdraw = {
 		var points = [];
 		points.append({x: q.x-dx, y: q.y+dy});
 		points.append({x: q.x+dx, y: q.y-dy});
+		return;
+	},
+	fillpoly: function(dst, vertices, w, src, sp, op){
+		if(vertices.length < 1){
+			return;
+		}
+		dst.ctx.save();
+		dst.ctx.beginPath();
+		dst.ctx.moveTo(vertices[0].x, vertices[0].y);
+		for(var i = 1; i < vertices.length; ++i){
+			dst.ctx.lineTo(vertices[i].x, vertices[i].y);
+		}
+		dst.ctx.clip();
+		/* fill background here */
+		dst.ctx.restore();
 		return;
 	},
 	Ops: {
