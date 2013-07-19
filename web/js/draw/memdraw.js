@@ -22,6 +22,7 @@ var draw = function(dst, r, src, sp, op){
 
 Memdraw = {
 	/* XXX Implement line endings. */
+	/* XXX rectangular line ending is distorted! */
 	line: function(dst, p0, p1, end0, end1, radius, src, sp, op){
 		var angle = icossin2(p1.y - p0.y, p1.x - p0.x);
 		var dx = (angle.sin * (2 * radius + 1))/2;
@@ -36,6 +37,14 @@ Memdraw = {
 		var points = [];
 		points = points.concat({x: q.x-dx, y: q.y+dy});
 		points = points.concat({x: q.x+dx, y: q.y-dy});
+
+		q = {
+			x: p1.x + 1/2 + angle.cos/2,
+			y: p1.y + 1/2 + angle.sin/2
+		}
+
+		points = points.concat({x: q.x+dx, y: q.y-dy});
+		points = points.concat({x: q.x-dx, y: q.y+dy});
 
 		/* XXX setting w incorrectly! */
 		return this.fillpoly(dst, points, 0, src, sp, op);
