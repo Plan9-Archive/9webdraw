@@ -230,6 +230,15 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[dstid] == undefined){
+			throw("invalid image id");
+		}
+		if(conn.imgs[srcid] == undefined){
+			throw("invalid image id");
+		}
+		var dst = conn.imgs[dstid];
+		var src = conn.imgs[srcid];
+		Memdraw.poly(dst, dp, end0, end1, thick, src, sp, conn.op);
 		return offset;
 	},
 	"P": function(conn, offset, data){

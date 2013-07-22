@@ -66,6 +66,16 @@ Memdraw = {
 		dst.ctx.restore();
 		return;
 	},
+	poly: function(dst, points, end0, end1, radius, src, sp, op){
+		if(points.length < 2){
+			return;
+		}
+		for(var i = 1; i < points.length; ++i){
+			/* XXX calculate ends here; see C source. */
+			/* XXX calculate change in sp; requires point operations. */
+			this.line(dst, points[i-1], points[i], 0, 0, radius, src, sp, op);
+		}
+	},
 	Ops: {
 		Clear: 0,
 		SinD: 8,
