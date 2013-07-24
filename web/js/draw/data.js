@@ -256,6 +256,15 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[dstid] == undefined){
+			throw("invalid image id");
+		}
+		if(conn.imgs[srcid] == undefined){
+			throw("invalid image id");
+		}
+		var dst = conn.imgs[dstid];
+		var src = conn.imgs[srcid];
+		Memdraw.fillpoly(dst, dp, wind, src, sp, conn.op);
 		return offset;
 	},
 	"r": function(conn, offset, data){
