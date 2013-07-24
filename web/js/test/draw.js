@@ -54,3 +54,29 @@ Testdraw.poly = function(){
 
 	Memdraw.poly(root, pts, 0, 0, 15, src, {x:0, y:0}, 0);
 }
+
+/* XXX Doesn't work, and would fail if it did. */
+Testdraw.mask = function(){
+	var root = Draw9p.RootImage();
+
+	var alpha = new Draw9p.Image(0, "r8g8b8a8", 1,
+		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+		0x000000FF);
+
+	var red = new Draw9p.Image(0, "r8g8b8a8", 1,
+		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+		0xFF0000FF);
+
+	var mask = new Draw9p.Image(0, "r8g8b8a8", 0,
+		{min: {x: 0, y: 0}, max: {x: 100, y: 100}},
+		{min: {x: 0, y: 0}, max: {x: 100, y: 100}},
+		0x000000FF);
+
+	Memdraw.line(mask, {x: 10, y: 10}, {x: 90, y: 90},
+		0, 0, 10, alpha, {x: 0, y: 0}, 0);
+
+	Memdraw.drawmasked(root, mask.clipr, red, {x: 0, y: 0},
+		mask, {x: 0, y: 0}, 0);
+}

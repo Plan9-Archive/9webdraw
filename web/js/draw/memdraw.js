@@ -12,6 +12,7 @@ var icossin2 = function(dx, dy){
 /* XXX XXX XXX DRAWING IS FUZZY! XXX XXX XXX */
 var draw = function(dst, r, src, sp, op){
 	dst.ctx.save();
+	dst.ctx.globalCompositeOperation = Memdraw.Ops[op];
 
 	/* XXX what about clipping on src? */
 	dst.ctx.fillStyle = dst.ctx.createPattern(src.canvas,
@@ -24,11 +25,11 @@ var draw = function(dst, r, src, sp, op){
 var drawmasked = function(dst, r, src, sp, mask, mp, op){
 	var img = new Draw9p.Image(0, "r8g8b8a8", 0, r, r, 0);
 	/* XXX Hack; we should have a way to create blank images. */
-	img.canvas.clearRect(0, 0, r.max.x, r.max.y);
+	img.ctx.clearRect(0, 0, r.max.x, r.max.y);
 
 	/* XXX We shouldn't be setting the point in both places. */
-	draw(img, r, mask, mp, Memdraw.Ops.S);
-	draw(img, r, src, sp, Memdraw.Ops.SatopD);
+	draw(img, r, mask, mp, Memdraw.Opdefs.S.key);
+	draw(img, r, src, sp, Memdraw.Opdefs.SatopD.key);
 	draw(dst, r, img, sp, op);
 }
 
@@ -87,23 +88,31 @@ Memdraw = {
 			this.line(dst, points[i-1], points[i], 0, 0, radius, src, sp, op);
 		}
 	},
-	Ops: {
-		Clear: 0,
-		SinD: 8,
-		DinS: 4,
-		SoutD: 2,
-		DoutS: 1,
+	Opdefs: {
+		Clear: {key: 0, op: undefined},
+		SinD: {key: 8, op: "source-in"},
+		DinS: {key: 4, op: "destination-in"},
+		SoutD: {key: 2, op: "source-out"},
+		DoutS: {key: 1, op: "destination-out"},
 
-		S: this.SinD|this.SoutD,
-		SoverD: this.SinD|this.SoutD|this.DoutS,
-		SatopD: this.SinD|this.DoutS,
-		SxorD: this.SoutD|this.DoutS,
+		S: {key: 10, op: "copy"}, /* SinD | SoutD */
+		SoverD: {key: 11, op: "source-over"}, /* SinD | SoutD | DoutS */
+		SatopD: {key: 9, op: "source-atop"}, /* SinD | DoutS */
+		SxorD: {key: 3, op: "xor"}, /* SoutD | DoutS */
 
-		D: this.DinS|this.DoutS,
-		DoverS: this.DinS|this.DoutS|this.SoutD,
-		DatopS: this.DinS|this.SoutD,
-		DxorS: this.DoutS|this.SoutD,
+		D: {key: 5, op: undefined}, /* DinS | DoutS */
+		DoverS: {key: 7, op: "destination-over"}, /* DinS | DoutS | SoutD */
+		DatopS: {key: 6, op: "destination-atop"}, /* DinS | SoutD */
+		DxorS: {key: 3, op: "xor"}, /* DoutS | SoutD */
 
-		Ncomp: 12
+		/* Ncomp: 12 */
 	}
 }
+
+Memdraw.Ops = (function(o){
+	var ops = [];
+	for(var k in o){
+		ops[o[k].key] = o[k].op;
+	}
+	return ops;
+})(Memdraw.Opdefs);
