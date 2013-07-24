@@ -21,6 +21,17 @@ var draw = function(dst, r, src, sp, op){
 	return;
 }
 
+var drawmasked = function(dst, r, src, sp, mask, mp, op){
+	var img = new Draw9p.Image(0, "r8g8b8a8", 0, r, r, 0);
+	/* XXX Hack; we should have a way to create blank images. */
+	img.canvas.clearRect(0, 0, r.max.x, r.max.y);
+
+	/* XXX We shouldn't be setting the point in both places. */
+	draw(img, r, mask, mp, Memdraw.Ops.S);
+	draw(img, r, src, sp, Memdraw.Ops.SatopD);
+	draw(dst, r, img, sp, op);
+}
+
 Memdraw = {
 	/* XXX Implement line endings. */
 	/* XXX rectangular line ending is distorted! */
