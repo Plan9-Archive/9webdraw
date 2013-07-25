@@ -33,6 +33,45 @@ var drawmasked = function(dst, r, src, sp, mask, mp, op){
 	draw(dst, r, img, sp, op);
 }
 
+var arrowend = function(tip, points, pp, end, sin, cos, radius){
+	var x1, x2, x3;
+
+	if(end == Memdraw.End.arrow){
+		x1 = 8;
+		x2 = 10;
+		x3 = 3;
+	}else{
+		x1 = (end >> 5) & 0x1FF;
+		x2 = (end >>14) & 0x1FF;
+		x3 = (end >> 23) & 0x1FF;
+	}
+
+	points[pp] = { /* upper side of shaft */
+		x: tip.x+((2*radius+1)*sin/2-x1*cos),
+		y: tip.y-((2*radius+1)*cos/2+x1*sin)
+	};
+	++pp;
+	points[pp] = { /* upper barb */
+		x: tip.x+((2*radius+2*x3+1)*sin/2-x2*cos),
+		y: tip.y-((2*radius+2*x3+1)*cos/2+x2*sin)
+	};
+	++pp;
+	points[pp] = {
+		x: tip.x,
+		y: tip.y
+	};
+	++pp;
+	points[pp] = { /* lower barb */
+		x: tip.x+(-(2*radius+2*x3+1)*sin/2-x2*cos),
+		y: tip.y-(-(2*radius+2*x3+1)*cos/2+x2*sin)
+	};
+	++pp;
+	points[pp] = { /* lower side of shaft */
+		x: tip.x+(-(2*radius+1)*sin/2-x1*cos),
+		y: tip.y+((2*radius+1)*cos/2-x1*sin)
+	};
+}
+
 Memdraw = {
 	/* XXX Implement line endings. */
 	/* XXX rectangular line ending is distorted! */
@@ -48,19 +87,49 @@ Memdraw = {
 		}
 
 		var points = [];
-		points = points.concat({x: q.x-dx, y: q.y+dy});
-		points = points.concat({x: q.x+dx, y: q.y-dy});
+		var pp = 0;
 
+		switch(end0 & 0x1F){
+		case Memdraw.End.disc:
+			/* discend(p0, radius, dst, src, d, op); */
+			/* fall through */
+		case Memdraw.End.square:
+		default:
+			points[pp] = {x: q.x-dx, y: q.y+dy};
+			++pp;
+			points[pp] = {x: q.x+dx, y: q.y-dy};
+			++pp;
+			break;
+		case Memdraw.End.arrow:
+			arrowend(q, points, pp, end0, -angle.sin, -angle.cos, radius);
+			this.fillpoly(dst, points.slice(0, 5), 0, src, sp, op);
+			points[pp+1] = points[pp+4];
+			pp += 2;
+		}
 		q = {
 			x: p1.x + 1/2 + angle.cos/2,
 			y: p1.y + 1/2 + angle.sin/2
 		}
 
-		points = points.concat({x: q.x+dx, y: q.y-dy});
-		points = points.concat({x: q.x-dx, y: q.y+dy});
-
+		switch(end1 & 0x1F){
+		case Memdraw.End.disc:
+			/* discend(p1, radius, dst, src, d, op); */
+			/* fall through */
+		case Memdraw.End.square:
+		default:
+			points[pp] = {x: q.x+dx, y: q.y-dy};
+			++pp;
+			points[pp] = {x: q.x-dx, y: q.y+dy};
+			++pp;
+			break;
+		case Memdraw.End.arrow:
+			arrowend(q, points, pp, end1, angle.sin, angle.cos, radius);
+			this.fillpoly(dst, points.slice(pp, pp+5), 0, src, sp, op);
+			points[pp+1] = points[pp+4];
+			pp += 2;
+		}
 		/* XXX setting w incorrectly! */
-		return this.fillpoly(dst, points, 0, src, sp, op);
+		return this.fillpoly(dst, points.slice(0, pp), 0, src, sp, op);
 	},
 	fillpoly: function(dst, vertices, w, src, sp, op){
 		if(vertices.length < 1){
@@ -116,3 +185,14 @@ Memdraw.Ops = (function(o){
 	}
 	return ops;
 })(Memdraw.Opdefs);
+
+Memdraw.End = {
+	square: 0,
+	disc: 1,
+	arrow: 2,
+	mask: 0x1F
+}
+
+Memdraw.ARROW = function(a, b, c){
+	return Memdraw.End.arrow | (a << 5) | (b << 14) | (c << 23);
+}

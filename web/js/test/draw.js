@@ -16,6 +16,9 @@ Testdraw.line = function(){
 	Memdraw.line(img, {x: 45, y: 15}, {x: 0, y: 100}, 0, 0, 10, src, {x: 0, y: 0}, 0);
 
 	Memdraw.line(root, {x: 15, y: 15}, {x: 100, y: 100}, 0, 0, 10, img, {x: 0, y: 0}, 0);
+
+	var cap = Memdraw.ARROW(25, 25, 10);
+	Memdraw.line(root, {x: 100, y: 15}, {x: 200, y: 200}, cap, cap, 10, src, {x:0,y:0}, 0);
 }
 
 Testdraw.fillpoly = function(){
