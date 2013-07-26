@@ -72,8 +72,11 @@ var arrowend = function(tip, points, pp, end, sin, cos, radius){
 	};
 }
 
+var discend = function(p, radius, dst, src, dsrc, op){
+	Memdraw.fillellipse(dst, p, radius, radius, 0, 2 * Math.PI, src, dsrc, op);
+}
+
 Memdraw = {
-	/* XXX Implement line endings. */
 	/* XXX rectangular line ending is distorted! */
 	line: function(dst, p0, p1, end0, end1, radius, src, sp, op){
 		var angle = icossin2(p1.y - p0.y, p1.x - p0.x);
@@ -91,7 +94,7 @@ Memdraw = {
 
 		switch(end0 & 0x1F){
 		case Memdraw.End.disc:
-			/* discend(p0, radius, dst, src, d, op); */
+			discend(p0, radius, dst, src, sp, op);
 			/* fall through */
 		case Memdraw.End.square:
 		default:
@@ -113,7 +116,7 @@ Memdraw = {
 
 		switch(end1 & 0x1F){
 		case Memdraw.End.disc:
-			/* discend(p1, radius, dst, src, d, op); */
+			discend(p1, radius, dst, src, sp, op);
 			/* fall through */
 		case Memdraw.End.square:
 		default:
