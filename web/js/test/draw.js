@@ -83,3 +83,15 @@ Testdraw.mask = function(){
 	Memdraw.drawmasked(root, mask.clipr, red, {x: 0, y: 0},
 		mask, {x: 0, y: 0}, 0);
 }
+
+Testdraw.ellipse = function(){
+	var root = Draw9p.RootImage();
+
+	var src = new Draw9p.Image(0, "r8g8b8", 1,
+		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+		0x44AA77FF);
+
+	Memdraw.fillellipse(root, {x: 100, y: 100},
+		75, 25, 0, 2*Math.PI, src, {x: 0, y: 0});
+}

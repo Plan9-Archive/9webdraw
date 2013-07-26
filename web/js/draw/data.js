@@ -109,6 +109,13 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[dstid] == undefined){
+			throw("invalid destination image");
+		}
+		if(conn.imgs[srcid] == undefined){
+			throw("invalid source image");
+		}
+		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
 		return offset;
 	},
 	"f": function(conn, offset, data){

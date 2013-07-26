@@ -131,6 +131,17 @@ Memdraw = {
 		/* XXX setting w incorrectly! */
 		return this.fillpoly(dst, points.slice(0, pp), 0, src, sp, op);
 	},
+	/* XXX behaves incorrectly for incomplete (non 2pi) ellipses. */
+	fillellipse: function(dst, c, horiz, vert, alpha, phi, src, sp, op){
+		dst.ctx.save();
+		dst.ctx.beginPath();
+		dst.ctx.translate(c.x, c.y);
+		dst.ctx.scale(horiz, vert);
+		dst.ctx.arc(0, 0, 1, alpha, phi, false);
+		dst.ctx.restore();
+		dst.ctx.clip();
+		draw(dst, dst.clipr, src, sp, op);
+	},
 	fillpoly: function(dst, vertices, w, src, sp, op){
 		if(vertices.length < 1){
 			return;
