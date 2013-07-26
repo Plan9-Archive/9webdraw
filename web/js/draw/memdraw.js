@@ -170,7 +170,9 @@ Memdraw = {
 		for(var i = 1; i < points.length; ++i){
 			/* XXX calculate ends here; see C source. */
 			/* XXX calculate change in sp; requires point operations. */
-			this.line(dst, points[i-1], points[i], 0, 0, radius, src, sp, op);
+			this.line(dst, points[i-1], points[i],
+				Memdraw.End.disc, Memdraw.End.disc,
+				radius, src, sp, op);
 		}
 	},
 	Opdefs: {
