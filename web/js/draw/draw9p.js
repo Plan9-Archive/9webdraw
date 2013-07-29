@@ -81,7 +81,7 @@ Draw9p.Conn = function(connid){
 	this.id = connid;
 	this.imgs = [Draw9p.RootImage()];
 	this.imgid = 0;
-	this.op = Memdraw.Opdefs[SoverD].key;
+	this.op = Memdraw.Opdefs.SoverD.key;
 }
 
 Draw9p.connqids = function(){
