@@ -16,6 +16,7 @@ Draw9p.writedrawdata = function(connid, offset, data){
 with(Draw9p){
 Draw9p.drawdatahandlers = {
 	"A": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var imageid = DBGLONG(data);
@@ -24,9 +25,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"b": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var screenid = DBGLONG(data);
@@ -47,9 +49,10 @@ Draw9p.drawdatahandlers = {
 			throw("screen does not exist");
 		}
 		conn.imgs[id] = new Image(refresh, chan, repl, r, clipr, color);
-		return offset;
+		return datalength;
 	},
 	"c": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var repl = DBGCHAR(data);
@@ -57,9 +60,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"d": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
@@ -70,17 +74,19 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"D": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var debugon = DBGCHAR(data);
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"e": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
@@ -94,9 +100,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"E": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
@@ -117,25 +124,28 @@ Draw9p.drawdatahandlers = {
 			throw("invalid source image");
 		}
 		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
-		return offset;
+		return datalength;
 	},
 	"f": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"F": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"i": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var n = DBGLONG(data);
@@ -143,9 +153,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"l": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var cacheid = DBGLONG(data);
 			var srcid = DBGLONG(data);
@@ -157,9 +168,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"L": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var p0 = DGPOINT(data);
@@ -180,9 +192,10 @@ Draw9p.drawdatahandlers = {
 		}
 		Memdraw.line(conn.imgs[dstid], p0, p1, end0, end1, thick,
 			conn.imgs[srcid], sp, conn.op);
-		return offset;
+		return datalength;
 	},
 	"N": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var inp = DBGCHAR(data);
@@ -191,9 +204,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"n": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var j = DBGCHAR(data);
@@ -201,9 +215,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"o": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var rmin = DGPOINT(data);
@@ -211,18 +226,20 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"O": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var op = DBGCHAR(data);
 		}catch(e){
 			throw("short draw message");
 		}
 		conn.op = op;
-		return offset;
+		return datalength;
 	},
 	"p": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var n = DBGSHORT(data);
@@ -247,9 +264,10 @@ Draw9p.drawdatahandlers = {
 		var dst = conn.imgs[dstid];
 		var src = conn.imgs[srcid];
 		Memdraw.poly(dst, dp, end0, end1, thick, src, sp, conn.op);
-		return offset;
+		return datalength;
 	},
 	"P": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var n = DBGSHORT(data);
@@ -273,18 +291,20 @@ Draw9p.drawdatahandlers = {
 		var dst = conn.imgs[dstid];
 		var src = conn.imgs[srcid];
 		Memdraw.fillpoly(dst, dp, wind, src, sp, conn.op);
-		return offset;
+		return datalength;
 	},
 	"r": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var r = DGRECT(data);
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"s": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
@@ -300,9 +320,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"x": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var dstid = DBGLONG(data);
 			var srcid = DBGLONG(data);
@@ -320,18 +341,20 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"S": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var chan = DBGLONG(data);
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"t": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var top = DBGCHAR(data);
 			var n = DBGSHORT(data);
@@ -342,12 +365,13 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"v": function(conn, offset, data){
-		return offset;
+		return datalength;
 	},
 	"y": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var r = DGRECT(data);
@@ -355,9 +379,10 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 	"Y": function(conn, offset, data){
+		var datalength = data.length;
 		try{
 			var id = DBGLONG(data);
 			var r = DGRECT(data);
@@ -365,7 +390,7 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return offset;
+		return datalength;
 	},
 }
 }
