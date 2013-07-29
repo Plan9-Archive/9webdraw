@@ -21,6 +21,7 @@ Draw9p.pad11 = function(x){
 }
 
 Draw9p.readdrawnew = function(conn){
+	cons.log("readdrawnew");
 	var buf = [];
 
 	buf = buf.concat(this.pad11(conn));

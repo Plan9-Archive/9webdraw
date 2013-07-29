@@ -5,6 +5,7 @@ Draw9p.writedrawdata = function(connid, offset, data){
 	}
 
 	var c = String.fromUTF8Array(data.splice(0, 1));
+	cons.log("writedrawdata: " + c);
 	if(this.drawdatahandlers[c] == undefined){
 		throw("bad draw command");
 	}else{

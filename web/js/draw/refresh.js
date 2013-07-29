@@ -1,4 +1,6 @@
 Draw9p.readdrawrefresh = function(dd, offset, callback){
+	cons.log("readdrawrefresh");
+
 	var conn = this.conns[dd.drawdir];
 	if(conn == undefined){
 		return callback.error("invalid draw connection");

@@ -6,6 +6,7 @@ var mka11 = function(padder){
 }
 
 Draw9p.readdrawctl = function(fid, offset){
+	cons.log("readdrawctl");
 	var dd = this.drawdir(fid.qid.path);
 
 	var conn = this.conns[dd.drawdir];
@@ -37,6 +38,7 @@ Draw9p.readdrawctl = function(fid, offset){
 }
 
 Draw9p.writedrawctl = function(connid, offset, data){
+	cons.log("writedrawctl");
 	var conn = this.conns[connid];
 	if(conn == undefined){
 		throw("invalid draw connection");
