@@ -188,7 +188,7 @@ Draw9p.drawdatahandlers = {
 			var id = DBGLONG(data);
 			var inp = DBGCHAR(data);
 			var j = DBGCHAR(data);
-			var name = String.fromUTF8Array(data.split(0, j));
+			var name = String.fromUTF8Array(data.splice(0, j));
 		}catch(e){
 			throw("short draw message");
 		}
@@ -198,7 +198,7 @@ Draw9p.drawdatahandlers = {
 		try{
 			var id = DBGLONG(data);
 			var j = DBGCHAR(data);
-			var name = String.fromUTF8Array(data.split(0, j));
+			var name = String.fromUTF8Array(data.splice(0, j));
 		}catch(e){
 			throw("short draw message");
 		}
