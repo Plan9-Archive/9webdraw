@@ -76,6 +76,7 @@ Draw9p.drawdir = function(path){
 
 Draw9p.conns = [];
 Draw9p.nextconn = 1;
+Draw9p.imgnames = {};
 
 Draw9p.Conn = function(connid){
 	this.id = connid;

@@ -192,6 +192,16 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(inp){
+			if(conn.imgs[id] == undefined){
+				throw("invalid image id");
+			}
+			/* XXX Silently overwrites conflicting name. */
+			imgnames[name] = conn.imgs[id];
+		}else{
+			/* XXX Should check if this is the right image. */
+			delete imgnames[name];
+		}
 		return length;
 	},
 	"n": function(conn, offset, data, length){
@@ -202,6 +212,13 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[id] != undefined){
+			throw("image id in use");
+		}
+		if(imgnames[name] == undefined){
+			throw("no image by name " + name);
+		}
+		conn.imgs[id] = imgnames[name];
 		return length;
 	},
 	"o": function(conn, offset, data, length){
