@@ -25,6 +25,18 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.screens[id] != undefined){
+			throw("screen id in use");
+		}
+		if(conn.imgs[imageid] == undefined){
+			throw("invalid image id");
+		}
+		if(conn.imgs[fillid] == undefined){
+			throw("invalid image id");
+		}
+		var image = conn.imgs[imageid];
+		var fill = conn.imgs[fillid];
+		conn.screens[id] = new Draw9p.Screen(id, image, fill, public);
 		return length;
 	},
 	"b": function(conn, offset, data, length){
@@ -45,9 +57,14 @@ Draw9p.drawdatahandlers = {
 		}
 		/* XXX Change this once we implement screens. */
 		if(screenid){
-			throw("screen does not exist");
+			if(conn.screens[screenid] == undefined){
+				throw("invalid screen id");
+			}
+			conn.screens[screenid].imgs[id] = conn.imgs[id] =
+				new Image(refresh, chan, repl, r, clipr, color);
+		}else{
+			conn.imgs[id] = new Image(refresh, chan, repl, r, clipr, color);
 		}
-		conn.imgs[id] = new Image(refresh, chan, repl, r, clipr, color);
 		return length;
 	},
 	"c": function(conn, offset, data, length){
