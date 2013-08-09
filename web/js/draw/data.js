@@ -61,7 +61,8 @@ Draw9p.drawdatahandlers = {
 				throw("invalid screen id");
 			}
 			conn.screens[screenid].imgs[id] = conn.imgs[id] =
-				new Image(refresh, chan, repl, r, clipr, color);
+				new ScreenImage(conn.screens[screenid],
+					refresh, chan, repl, r, clipr, color);
 		}else{
 			conn.imgs[id] = new Image(refresh, chan, repl, r, clipr, color);
 		}
