@@ -54,6 +54,7 @@ Draw9p.Qids = {
 	QROOT: 0,
 	QCONS: 1,
 	QMOUSE: 2,
+	QCURSOR: 3,
 	QDRAW: 98,
 	QDRAWNEW: 99,
 	QDRAWBASE: 100,
@@ -106,6 +107,8 @@ Draw9p.walk1 = function(qid, name){
 				return new NineP.Qid(QCONS, 0, 0);
 			}else if(name == "mouse"){
 				return new NineP.Qid(QMOUSE, 0, 0);
+			}else if(name == "cursor"){
+				return new NineP.Qid(QCURSOR, 0, 0);
 			}else if(name == "draw"){
 				return new NineP.Qid(QDRAW, 0, NineP.QTDIR);
 			}else{
@@ -216,7 +219,7 @@ Draw9p.dirent = function(qid, offset){
 	with(this.Qids){
 	try{
 		if(qid.path == QROOT){
-			return this.stat([QCONS, QMOUSE, QDRAW][offset]);
+			return this.stat([QCONS, QMOUSE, QCURSOR, QDRAW][offset]);
 		}else if(qid.path == QDRAW){
 			return this.stat([QDRAWNEW].concat(this.connqids())[offset]);
 		}else if(qid.path >= QDRAWBASE){
@@ -248,7 +251,11 @@ Draw9p.write = function(qid, offset, data){
 				throw("writing impermissible");
 			}
 		}else{
-			throw("cannot write");
+			if(qid.path == QCURSOR){
+				return;
+			}else{
+				throw("cannot write");
+			}
 		}
 	}
 }
@@ -285,6 +292,13 @@ Draw9p.stat = function(qid){
 				mode: NineP.DMAPPEND,
 				length: 49,
 				name: "mouse"
+			});
+		}else if(qid == QCURSOR){
+			return new NineP.Stat({
+				qid: new NineP.Qid(QCURSOR, 0, 0),
+				mode: 0,
+				length: 72,
+				name: "cursor"
 			});
 		}else if(qid == QDRAW){
 			return new NineP.Stat({
