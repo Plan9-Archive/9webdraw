@@ -114,14 +114,18 @@ NineP.prototype.rawpktin = function(pkt){
 	this.buffer.push.apply(this.buffer, pktarr);
 	this.log.buf(this.buffer);
 
-	if(this.buffer.length < 4){
-		return;
-	}
-
-	var size = NineP.getpktsize(this.buffer);
-
-	if(this.buffer.length >= size){
-		this.processpkt(this.buffer.splice(0, size));
+	for(;;){
+		if(this.buffer.length < 4){
+			break;
+		}
+	
+		var size = NineP.getpktsize(this.buffer);
+	
+		if(this.buffer.length >= size){
+			this.processpkt(this.buffer.splice(0, size));
+		}else{
+			break;
+		}
 	}
 }
 
