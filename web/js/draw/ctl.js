@@ -44,5 +44,5 @@ Draw9p.writedrawctl = function(connid, offset, data){
 		throw("invalid draw connection");
 	}
 
-	conn.imgid = Draw9p.DBGLONG(data);
+	conn.imgid = (new ArrayIterator(data)).getLong();
 }
