@@ -18,10 +18,11 @@ with(Draw9p){
 Draw9p.drawdatahandlers = {
 	"A": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var imageid = DBGLONG(data);
-			var fillid = DBGLONG(data);
-			var public = DBGCHAR(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var imageid = ai.getLong();
+			var fillid = ai.getLong();
+			var public = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -41,14 +42,15 @@ Draw9p.drawdatahandlers = {
 	},
 	"b": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var screenid = DBGLONG(data);
-			var refresh = DBGCHAR(data);
-			var chan = DBGLONG(data);
-			var repl = DBGCHAR(data);
-			var r = DGRECT(data);
-			var clipr = DGRECT(data);
-			var color = DBGLONG(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var screenid = ai.getLong();
+			var refresh = ai.getChar();
+			var chan = ai.getLong();
+			var repl = ai.getChar();
+			var r = ai.getRect();
+			var clipr = ai.getRect();
+			var color = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -70,9 +72,10 @@ Draw9p.drawdatahandlers = {
 	},
 	"c": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var repl = DBGCHAR(data);
-			var clipr = DGRECT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var repl = ai.getChar();
+			var clipr = ai.getRect();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -80,12 +83,13 @@ Draw9p.drawdatahandlers = {
 	},
 	"d": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var maskid = DBGLONG(data);
-			var dstr = DGRECT(data);
-			var srcp = DGPOINT(data);
-			var maskp = DGPOINT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var srcid = ai.getLong();
+			var maskid = ai.getLong();
+			var dstr = ai.getRect();
+			var srcp = ai.getPoint();
+			var maskp = ai.getPoint();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -93,7 +97,8 @@ Draw9p.drawdatahandlers = {
 	},
 	"D": function(conn, offset, data, length){
 		try{
-			var debugon = DBGCHAR(data);
+			var ai = new ArrayIterator(data);
+			var debugon = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -101,15 +106,16 @@ Draw9p.drawdatahandlers = {
 	},
 	"e": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var c = DGPOINT(data);
-			var a = DBGLONG(data);
-			var b = DBGLONG(data);
-			var thick = DBGLONG(data);
-			var sp = DGPOINT(data);
-			var alpha = DBGLONG(data);
-			var phi = DBGLONG(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var srcid = ai.getLong();
+			var c = ai.getPoint();
+			var a = ai.getLong();
+			var b = ai.getLong();
+			var thick = ai.getLong();
+			var sp = ai.getPoint();
+			var alpha = ai.getLong();
+			var phi = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -117,15 +123,16 @@ Draw9p.drawdatahandlers = {
 	},
 	"E": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var center = DGPOINT(data);
-			var a = DBGLONG(data);
-			var b = DBGLONG(data);
-			var thick = DBGLONG(data);
-			var sp = DGPOINT(data);
-			var alpha = DBGLONG(data);
-			var phi = DBGLONG(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var srcid = ai.getLong();
+			var center = ai.getPoint();
+			var a = ai.getLong();
+			var b = ai.getLong();
+			var thick = ai.getLong();
+			var sp = ai.getPoint();
+			var alpha = ai.getLong();
+			var phi = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -140,7 +147,8 @@ Draw9p.drawdatahandlers = {
 	},
 	"f": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -148,7 +156,8 @@ Draw9p.drawdatahandlers = {
 	},
 	"F": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -156,9 +165,10 @@ Draw9p.drawdatahandlers = {
 	},
 	"i": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var n = DBGLONG(data);
-			var ascent = DBGCHAR(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var n = ai.getLong();
+			var ascent = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -166,13 +176,14 @@ Draw9p.drawdatahandlers = {
 	},
 	"l": function(conn, offset, data, length){
 		try{
-			var cacheid = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var index = DBGSHORT(data);
-			var r = DGRECT(data);
-			var sp = DGPOINT(data);
-			var left = DBGCHAR(data);
-			var width = DBGCHAR(data);
+			var ai = new ArrayIterator(data);
+			var cacheid = ai.getLong();
+			var srcid = ai.getLong();
+			var index = ai.getShort();
+			var r = ai.getRect();
+			var sp = ai.getPoint();
+			var left = ai.getChar();
+			var width = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -180,14 +191,15 @@ Draw9p.drawdatahandlers = {
 	},
 	"L": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var p0 = DGPOINT(data);
-			var p1 = DGPOINT(data);
-			var end0 = DBGLONG(data);
-			var end1 = DBGLONG(data);
-			var thick = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var sp = DGPOINT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var p0 = ai.getPoint();
+			var p1 = ai.getPoint();
+			var end0 = ai.getLong();
+			var end1 = ai.getLong();
+			var thick = ai.getLong();
+			var srcid = ai.getLong();
+			var sp = ai.getPoint();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -203,10 +215,11 @@ Draw9p.drawdatahandlers = {
 	},
 	"N": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var inp = DBGCHAR(data);
-			var j = DBGCHAR(data);
-			var name = String.fromUTF8Array(data.splice(0, j));
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var inp = ai.getChar();
+			var j = ai.getChar();
+			var name = String.fromUTF8Array(ai.getBytes(j));
 		}catch(e){
 			throw("short draw message");
 		}
@@ -224,9 +237,10 @@ Draw9p.drawdatahandlers = {
 	},
 	"n": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var j = DBGCHAR(data);
-			var name = String.fromUTF8Array(data.splice(0, j));
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var j = ai.getChar();
+			var name = String.fromUTF8Array(ai.getBytes(j));
 		}catch(e){
 			throw("short draw message");
 		}
@@ -241,9 +255,10 @@ Draw9p.drawdatahandlers = {
 	},
 	"o": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var rmin = DGPOINT(data);
-			var scr = DGPOINT(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var rmin = ai.getPoint();
+			var scr = ai.getPoint();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -251,7 +266,8 @@ Draw9p.drawdatahandlers = {
 	},
 	"O": function(conn, offset, data, length){
 		try{
-			var op = DBGCHAR(data);
+			var ai = new ArrayIterator(data);
+			var op = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -260,16 +276,17 @@ Draw9p.drawdatahandlers = {
 	},
 	"p": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var n = DBGSHORT(data);
-			var end0 = DBGLONG(data);
-			var end1 = DBGLONG(data);
-			var thick = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var sp = DGPOINT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var n = ai.getShort();
+			var end0 = ai.getLong();
+			var end1 = ai.getLong();
+			var thick = ai.getLong();
+			var srcid = ai.getLong();
+			var sp = ai.getPoint();
 			var dp = [];
 			for(var i = 0; i < n; ++i){
-				dp[i] = DGPOINT(data);
+				dp[i] = ai.getPoint();
 			}
 		}catch(e){
 			throw("short draw message");
@@ -287,15 +304,16 @@ Draw9p.drawdatahandlers = {
 	},
 	"P": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var n = DBGSHORT(data);
-			var wind = DBGLONG(data);
-			var ignore = DGPOINT(data);
-			var srcid = DBGLONG(data);
-			var sp = DGPOINT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var n = ai.getShort();
+			var wind = ai.getLong();
+			var ignore = ai.getPoint();
+			var srcid = ai.getLong();
+			var sp = ai.getPoint();
 			var dp = [];
 			for(var i = 0; i < n; ++i){
-				dp[i] = DGPOINT(data);
+				dp[i] = ai.getPoint();
 			}
 		}catch(e){
 			throw("short draw message");
@@ -313,8 +331,9 @@ Draw9p.drawdatahandlers = {
 	},
 	"r": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var r = DGRECT(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var r = ai.getRect();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -322,16 +341,17 @@ Draw9p.drawdatahandlers = {
 	},
 	"s": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var fontid = DBGLONG(data);
-			var p = DGPOINT(data);
-			var clipr = DGRECT(data);
-			var sp = DGPOINT(data);
-			var n = DBGSHORT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var srcid = ai.getLong();
+			var fontid = ai.getLong();
+			var p = ai.getPoint();
+			var clipr = ai.getRect();
+			var sp = ai.getPoint();
+			var n = ai.getShort();
 			var index = [];
 			for(var i = 0; i < n; ++i){
-				index[i] = DBGSHORT(data);
+				index[i] = ai.getShort();
 			}
 		}catch(e){
 			throw("short draw message");
@@ -340,18 +360,19 @@ Draw9p.drawdatahandlers = {
 	},
 	"x": function(conn, offset, data, length){
 		try{
-			var dstid = DBGLONG(data);
-			var srcid = DBGLONG(data);
-			var fontid = DBGLONG(data);
-			var dp = DGPOINT(data);
-			var clipr = DGRECT(data);
-			var sp = DGPOINT(data);
-			var n = DBGSHORT(data);
-			var bgid = DBGLONG(data);
-			var bp = DGPOINT(data);
+			var ai = new ArrayIterator(data);
+			var dstid = ai.getLong();
+			var srcid = ai.getLong();
+			var fontid = ai.getLong();
+			var dp = ai.getPoint();
+			var clipr = ai.getRect();
+			var sp = ai.getPoint();
+			var n = ai.getShort();
+			var bgid = ai.getLong();
+			var bp = ai.getPoint();
 			var index = [];
 			for(var i = 0; i < n; ++i){
-				index[i] = DBGSHORT(data);
+				index[i] = ai.getShort();
 			}
 		}catch(e){
 			throw("short draw message");
@@ -360,8 +381,9 @@ Draw9p.drawdatahandlers = {
 	},
 	"S": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var chan = DBGLONG(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var chan = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
@@ -369,11 +391,12 @@ Draw9p.drawdatahandlers = {
 	},
 	"t": function(conn, offset, data, length){
 		try{
-			var top = DBGCHAR(data);
-			var n = DBGSHORT(data);
+			var ai = new ArrayIterator(data);
+			var top = ai.getChar();
+			var n = ai.getShort();
 			var ids = [];
 			for(var i = 0; i < n; ++i){
-				ids[i] = DBGSHORT(data);
+				ids[i] = ai.getShort();
 			}
 		}catch(e){
 			throw("short draw message");
@@ -385,8 +408,9 @@ Draw9p.drawdatahandlers = {
 	},
 	"y": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var r = DGRECT(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var r = ai.getRect();
 			var buf = []; /* XXX what is x? */
 		}catch(e){
 			throw("short draw message");
@@ -395,8 +419,9 @@ Draw9p.drawdatahandlers = {
 	},
 	"Y": function(conn, offset, data, length){
 		try{
-			var id = DBGLONG(data);
-			var r = DGRECT(data);
+			var ai = new ArrayIterator(data);
+			var id = ai.getLong();
+			var r = ai.getRect();
 			var buf = []; /* XXX what is x? */
 		}catch(e){
 			throw("short draw message");

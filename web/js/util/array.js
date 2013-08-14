@@ -32,6 +32,15 @@ ArrayIterator.prototype.getLong = function(){
 	);
 }
 
+ArrayIterator.prototype.getBytes = function(bytes){
+	if(this.array.length < this.index + bytes + 1){
+		throw("array too short");
+	}
+	var begin = this.index;
+	this.index += bytes + 1;
+	return this.array.split(begin, this.index);
+}
+
 ArrayIterator.prototype.getPoint = function(){
 	return {
 		x: this.getLong(),
