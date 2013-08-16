@@ -411,10 +411,14 @@ Draw9p.drawdatahandlers = {
 			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var r = ai.getRect();
-			var buf = []; /* XXX what is x? */
+			var buf = ai.getRemainingBytes();
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[id] == undefined){
+			throw("invalid image id");
+		}
+		Memdraw.load(conn.imgs[id], r, buf, false);
 		return length;
 	},
 	"Y": function(conn, offset, data, length){
@@ -422,10 +426,14 @@ Draw9p.drawdatahandlers = {
 			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var r = ai.getRect();
-			var buf = []; /* XXX what is x? */
+			var buf = ai.getRemainingBytes();
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[id] == undefined){
+			throw("invalid image id");
+		}
+		Memdraw.load(conn.imgs[id], r, buf, true);
 		return length;
 	},
 }

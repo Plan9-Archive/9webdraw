@@ -175,6 +175,9 @@ Memdraw = {
 				radius, src, sp, op);
 		}
 	},
+	load: function(dst, r, data, iscompressed){
+		return;
+	},
 	Opdefs: {
 		Clear: {key: 0, op: undefined},
 		SinD: {key: 8, op: "source-in"},
