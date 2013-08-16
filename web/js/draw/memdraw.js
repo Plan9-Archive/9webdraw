@@ -33,6 +33,14 @@ var drawmasked = function(dst, r, src, sp, mask, mp, op){
 	draw(dst, r, img, sp, op);
 }
 
+var load = function(dst, r, data){
+	var img = new Draw9p.Image(0, dst.chan, 0, r, r, 0);
+	var w = r.max.x - r.min.x;
+	var h = r.max.y - r.min.y;
+	var arr = img.ctx.createImageData(w, h);
+
+}
+
 var arrowend = function(tip, points, pp, end, sin, cos, radius){
 	var x1, x2, x3;
 
@@ -176,7 +184,12 @@ Memdraw = {
 		}
 	},
 	load: function(dst, r, data, iscompressed){
-		return;
+		if(iscompressed){
+			/* return cload(dst, r, data); */
+			throw("compressed format not implemented");
+		}else{
+			return load(dst, r, data);
+		}
 	},
 	Opdefs: {
 		Clear: {key: 0, op: undefined},
