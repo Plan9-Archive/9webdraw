@@ -39,6 +39,15 @@ var load = function(dst, r, data){
 	var h = r.max.y - r.min.y;
 	var arr = img.ctx.createImageData(w, h);
 
+	var depth = Chan.chantodepth(img.chan);
+	var l = Math.ceil((w * depth) / 8);
+	if(data.length < h * l){
+		throw("insufficient data");
+	}
+
+	Memdraw.Load.generic(arr, w, h, img.chan, data);
+	img.ctx.putImageData(arr, 0, 0);
+	draw(dst, r, img, r.min, Memdraw.Ops.SoverD);
 }
 
 var arrowend = function(tip, points, pp, end, sin, cos, radius){
