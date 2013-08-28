@@ -1,14 +1,15 @@
 var getpixel = function(data, depth, w, h, line, col){
-	return;
-	var bytesperline;
 	var bytesperpix = Math.ceil(depth / 8);
 	var pixperbyte = Math.floor(8 / depth);
+	var bytesperline = Math.ceil((w * pixperbyte) / 8);
 	var pixordinbyte = col % pixperbyte;
 
 	if(depth < 8){
 		bytesperline = Math.ceil(w / depth);
+		var offset = (line * bytesperline) + Math.floor((col * pixperbyte) / 8);
 	}else{
 		bytesperline = w * bytesperpixel;
+		var offset = (line * bytesperline) + (col * bytesperpix);
 	}
 
 	if(line > h){
@@ -17,8 +18,6 @@ var getpixel = function(data, depth, w, h, line, col){
 	if(col > w){
 		throw("pixel column index out of bounds");
 	}
-
-	var offset =  (line * bytesperline) + Math.floor((col * pixperbyte) / 8);
 
 	if(depth < 8){
 		/* XXX remember to shift the whole mess back down! */
