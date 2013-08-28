@@ -1,9 +1,42 @@
 var getpixel = function(data, depth, w, h, line, col){
 	return;
+	var bytesperline;
+	var bytesperpix = Math.ceil(depth / 8);
+	var pixperbyte = Math.floor(8 / depth);
+	var pixordinbyte = col % pixperbyte;
+
+	if(depth < 8){
+		bytesperline = Math.ceil(w / depth);
+	}else{
+		bytesperline = w * bytesperpixel;
+	}
+
+	if(line > h){
+		throw("pixel line index out of bounds");
+	}
+	if(col > w){
+		throw("pixel column index out of bounds");
+	}
+
+	var offset =  (line * bytesperline) + Math.floor((col * pixperbyte) / 8);
+
+	if(depth < 8){
+		/* XXX remember to shift the whole mess back down! */
+		var mask = (1 << depth) - 1;
+		return (data[offset] >> (depth * pixordinbyte)) & mask;
+	}else{
+		/* XXX THIS IS WRONG! */
+		/* possibly: for(var i = bpp; i > 0; --i) */
+		var pixel = 0;
+		for(var i = 0; i < bytesperpix; ++i){
+			pixel |= data[offset + i] << (8 * i);
+		}
+		return pixel;
+	}
 }
 
 var canvaspos = function(w, h, line, col){
-	return (line * w) + col;
+	return ((line * w) + col) * 4;
 }
 
 var scalepixel = function(pixel, from, to){
@@ -22,6 +55,7 @@ Memdraw.Load = {
 			for(var col = 0; col < w; ++col){
 				var pixel = getpixel(data, depth, w, h, line, col);
 				var cp = canvaspos(w, h, line, col);
+				arr[cp + 3] = 0xFF; /* Default to 100% alpha. */
 				for(var c = chan; c; c >>= 8){
 					var nbits = Chan.NBITS(c);
 					var px = pixel & ((1<<nbits) - 1);
@@ -50,7 +84,7 @@ Memdraw.Load = {
 					case Chan.chans.CIgnore:
 						break;
 					default:
-						throw("color format not implemented");
+						throw("unknown color format");
 					}
 					pixel >>= nbits;
 				}

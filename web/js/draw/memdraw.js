@@ -44,10 +44,11 @@ var load = function(dst, r, data){
 	if(data.length < h * l){
 		throw("insufficient data");
 	}
-
-	Memdraw.Load.generic(arr, w, h, img.chan, data);
+	Memdraw.Load.generic(arr.data, w, h, img.chan, data);
 	img.ctx.putImageData(arr, 0, 0);
 	draw(dst, r, img, r.min, Memdraw.Ops.SoverD);
+	/* XXX Append canvas for debugging. */
+	document.body.appendChild(img.canvas);
 }
 
 var arrowend = function(tip, points, pp, end, sin, cos, radius){
