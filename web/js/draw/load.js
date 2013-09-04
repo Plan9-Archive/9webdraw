@@ -104,7 +104,7 @@ Memdraw.Load = {
 
 		for(var line = 0; line < h; ++line, dp += bytesperline){
 			for(var b = 0; b < bytesperline; ++b){
-				for(var p = 0; p < pixperbyte; ++p){
+				for(var p = 1; p <= pixperbyte; ++p){
 					var px = (data[dp + b] >> ((pixperbyte - p) * depth)) & ((1<<depth)-1);
 					var spx = scalepixel(px, depth, 8);
 					canvas[cp + 0] = spx;
