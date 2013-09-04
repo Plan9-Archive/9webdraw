@@ -47,7 +47,7 @@ var load = function(dst, r, data){
 	/* XXX TEST ONLY GREY */
 	Memdraw.Load.grey(arr.data, w, h, img.chan, data);
 	img.ctx.putImageData(arr, 0, 0);
-	draw(dst, r, img, r.min, Memdraw.Ops.SoverD);
+	draw(dst, r, img, r.min, Memdraw.Opdefs.SoverD.key);
 	/* XXX Append canvas for debugging. */
 	document.body.appendChild(img.canvas);
 }
