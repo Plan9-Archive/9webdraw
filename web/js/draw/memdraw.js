@@ -44,7 +44,8 @@ var load = function(dst, r, data){
 	if(data.length < h * l){
 		throw("insufficient data");
 	}
-	Memdraw.Load.generic(arr.data, w, h, img.chan, data);
+	/* XXX TEST ONLY GREY */
+	Memdraw.Load.grey(arr.data, w, h, img.chan, data);
 	img.ctx.putImageData(arr, 0, 0);
 	draw(dst, r, img, r.min, Memdraw.Ops.SoverD);
 	/* XXX Append canvas for debugging. */

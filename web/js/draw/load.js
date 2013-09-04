@@ -40,7 +40,7 @@ var canvaspos = function(w, h, line, col){
 
 var scalepixel = function(pixel, from, to){
 	if(from < to){
-		return pixel << (to - from);
+		return Math.floor((pixel * ((1<<to)-1)) / ((1<<from)-1));
 	}else{
 		return pixel >> (from - to);
 	}
@@ -90,5 +90,30 @@ Memdraw.Load = {
 			}
 		}
 	return arr;
+	},
+	grey: function(canvas, w, h, chan, data){
+		if((Chan.TYPE(chan) != Chan.chans.CGrey) || (chan >> 8)){
+			throw("not a grey-only image");
+		}
+		var depth = Chan.NBITS(chan);
+		var pixperbyte = Math.floor(8 / depth);
+		var bytesperline = Math.ceil(w / pixperbyte);
+
+		var cp = 0; /* canvas offset */
+		var dp = 0; /* data offset */
+
+		for(var line = 0; line < h; ++line, dp += bytesperline){
+			for(var b = 0; b < bytesperline; ++b){
+				for(var p = 0; p < pixperbyte; ++p){
+					var px = (data[dp + b] >> ((pixperbyte - p) * depth)) & ((1<<depth)-1);
+					var spx = scalepixel(px, depth, 8);
+					canvas[cp + 0] = spx;
+					canvas[cp + 1] = spx;
+					canvas[cp + 2] = spx;
+					canvas[cp + 3] = 0xFF;
+					cp += 4;
+				}
+			}
+		}
 	}
 }
