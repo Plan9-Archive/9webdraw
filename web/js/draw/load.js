@@ -89,7 +89,7 @@ Memdraw.Load = {
 				}
 			}
 		}
-	return arr;
+		return arr;
 	},
 	grey: function(canvas, w, h, chan, data){
 		if((Chan.TYPE(chan) != Chan.chans.CGrey) || (chan >> 8)){
