@@ -15,9 +15,15 @@ var draw = function(dst, r, src, sp, op){
 	dst.ctx.globalCompositeOperation = Memdraw.Ops[op];
 
 	/* XXX what about clipping on src? */
-	dst.ctx.fillStyle = dst.ctx.createPattern(src.canvas,
-		src.repl? "repeat" : "no-repeat");
-	dst.ctx.fill();
+	if(src.repl){
+		dst.ctx.fillStyle = dst.ctx.createPattern(src.canvas, "repeat");
+		dst.ctx.fill();
+	}else{
+		dst.ctx.beginPath();
+		dst.ctx.rect(r.min.x, r.min.y, r.max.x-r.min.x, r.max.y-r.min.y);
+		dst.ctx.clip();
+		dst.ctx.drawImage(src.canvas, r.min.x-sp.x, r.min.y-sp.y);
+	}
 	dst.ctx.restore();
 	return;
 }
