@@ -117,5 +117,24 @@ Memdraw.Load = {
 				}
 			}
 		}
+	},
+	/* Should this scale other depths to CMAP8, or is that nonsensical? */
+	cmap8: function(canvas, w, h, chan, data){
+		if(chan != Chan.DC(Chan.chans.CMap, 8)){
+			throw("not an 8-bit color-mapped image");
+		}
+		var depth = Chan.chantodepth(chan);
+
+		var cp = 0; /* canvas offset */
+
+		for(var line = 0; line < h; ++line){
+			for(var col = 0; col < w; ++col){
+				var px = Cmap.cmap2rgb(data[line*w + col]);
+				canvas[cp++] = (px >> 16) & 0xFF;
+				canvas[cp++] = (px >> 8) & 0xFF;
+				canvas[cp++] = (px >> 0) & 0xFF;
+				canvas[cp++] = 0xFF;
+			}
+		}
 	}
 }
