@@ -46,7 +46,7 @@ var scalepixel = function(pixel, from, to){
 	}
 }
 
-Memdraw.Load = {
+var loader = {
 	generic: function(arr, w, h, chan, data){
 		var depth = Chan.chantodepth(chan);
 
@@ -137,4 +137,19 @@ Memdraw.Load = {
 			}
 		}
 	}
+}
+
+Memdraw.Load = function(canvas, w, h, chan, data){
+	if(!(chan>>8)){
+		switch(Chan.TYPE(chan)){
+		case Chan.chans.CGrey:
+			return loader.grey(canvas, w, h, chan, data);
+		case Chan.chans.CMap:
+			if(Chan.NBITS(chan) == 8){
+				return loader.cmap8(canvas, w, h, chan, data);
+			}
+		}
+	}
+
+	return loader.generic(canvas, w, h, chan, data);
 }
