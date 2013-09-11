@@ -1,3 +1,33 @@
+var decompress = function(data, w, h, bpl, cdata){
+	var cdoff = 0; /* cdata offset */
+	var doff = 0; /* data offset */
+	var odoff = 0; /* offset data offset */
+	var c, cnt;
+	var offs, offlen;
+
+	for(;;){
+		if(doff >= data.length){
+			return data;
+		}
+		if(cdoff >= cdata.length){
+			throw("buffer too small");
+		}
+
+		c = cdata[cdoff++];
+		if(c >= 128){
+			for(cnt = c-128+1; cnt > 0; --cnt){
+				data[doff++] = cdata[cdoff++];
+			}
+		}else{
+			offs = cdata[cdoff++] + ((c&3)<<8)+1;
+			odoff = doff - offs;
+			for(cnt = (c>>2) + 3; cnt > 0; --cnt){
+				data[doff++] = data[odoff++];
+			}
+		}
+	}
+}
+
 var getpixel = function(data, depth, w, h, line, col){
 	var bytesperpix = Math.ceil(depth / 8);
 	var pixperbyte = Math.floor(8 / depth);
@@ -139,7 +169,16 @@ var loader = {
 	}
 }
 
-Memdraw.Load = function(canvas, w, h, chan, data){
+Memdraw.Load = function(canvas, w, h, chan, data, iscompressed){
+	var depth = Chan.chantodepth(chan);
+	var bpl = Math.ceil((w * depth) / 8);
+
+	if(iscompressed){
+		var cdata = data;
+		data = new Uint8Array(h * bpl);
+		decompress(data, w, h, bpl, cdata);
+	}
+
 	if(!(chan>>8)){
 		switch(Chan.TYPE(chan)){
 		case Chan.chans.CGrey:

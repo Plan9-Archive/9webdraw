@@ -39,19 +39,13 @@ var drawmasked = function(dst, r, src, sp, mask, mp, op){
 	draw(dst, r, img, sp, op);
 }
 
-var load = function(dst, r, data){
+var load = function(dst, r, data, iscompressed){
 	var img = new Draw9p.Image(0, dst.chan, 0, r, r, 0);
 	var w = r.max.x - r.min.x;
 	var h = r.max.y - r.min.y;
 	var arr = img.ctx.createImageData(w, h);
 
-	var depth = Chan.chantodepth(img.chan);
-	var l = Math.ceil((w * depth) / 8);
-	if(data.length < h * l){
-		throw("insufficient data");
-	}
-
-	Memdraw.Load(arr.data, w, h, img.chan, data);
+	Memdraw.Load(arr.data, w, h, img.chan, data, iscompressed);
 	img.ctx.putImageData(arr, 0, 0);
 	draw(dst, r, img, r.min, Memdraw.Opdefs.SoverD.key);
 	/* XXX Append canvas for debugging. */
@@ -201,12 +195,7 @@ Memdraw = {
 		}
 	},
 	load: function(dst, r, data, iscompressed){
-		if(iscompressed){
-			/* return cload(dst, r, data); */
-			throw("compressed format not implemented");
-		}else{
-			return load(dst, r, data);
-		}
+		return load(dst, r, data, iscompressed);
 	},
 	Opdefs: {
 		Clear: {key: 0, op: undefined},
