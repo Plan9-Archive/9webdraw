@@ -38,7 +38,7 @@ var getpixel = function(data, depth, w, h, line, col){
 		bytesperline = Math.ceil(w / pixperbyte);
 		var offset = (line * bytesperline) + Math.floor((col * pixperbyte) / 8);
 	}else{
-		bytesperline = w * bytesperpixel;
+		bytesperline = w * bytesperpix;
 		var offset = (line * bytesperline) + (col * bytesperpix);
 	}
 
