@@ -22,7 +22,7 @@ var draw = function(dst, r, src, sp, op){
 		dst.ctx.beginPath();
 		dst.ctx.rect(r.min.x, r.min.y, r.max.x-r.min.x, r.max.y-r.min.y);
 		dst.ctx.clip();
-		dst.ctx.drawImage(src.canvas, r.min.x-sp.x, r.min.y-sp.y);
+		dst.ctx.drawImage(src.canvas, r.min.x-sp.x+src.r.min.x, r.min.y-sp.y+src.r.min.y);
 	}
 	dst.ctx.restore();
 	return;
@@ -49,7 +49,7 @@ var load = function(dst, r, data, iscompressed){
 	img.ctx.putImageData(arr, 0, 0);
 	draw(dst, r, img, r.min, Memdraw.Opdefs.SoverD.key);
 	/* XXX Append canvas for debugging. */
-	document.body.appendChild(img.canvas);
+	document.body.appendChild(dst.canvas);
 }
 
 var arrowend = function(tip, points, pp, end, sin, cos, radius){
