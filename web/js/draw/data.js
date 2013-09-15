@@ -142,6 +142,8 @@ Draw9p.drawdatahandlers = {
 		if(conn.imgs[srcid] == undefined){
 			throw("invalid source image");
 		}
+		var dst = conn.imgs[dstid];
+		var src = conn.imgs[srcid];
 		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
 		return length;
 	},
