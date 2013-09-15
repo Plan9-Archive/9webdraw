@@ -173,6 +173,14 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		var img = conn.imgs[id];
+		if(img == undefined){
+			throw("invalid image id");
+		}
+		img.nchar = n;
+		img.ascent = ascent;
+		img.fchar = [];
+		/* document.body.appendChild(img.canvas); */
 		return length;
 	},
 	"l": function(conn, offset, data, length){
@@ -188,6 +196,21 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		var cache = conn.imgs[cacheid];
+		if(cache == undefined){
+			throw("invalid image id");
+		}
+		var src = conn.imgs[srcid];
+		if(src == undefined){
+			throw("invalid image id");
+		}
+		cache.fchar[index] = {
+			r: r,
+			left: left,
+			width: width
+		};
+		/* XXX draw() is meant to be private to Memdraw! */
+		draw(cache, r, src, sp, Memdraw.Opdefs.SoverD.key);
 		return length;
 	},
 	"L": function(conn, offset, data, length){
