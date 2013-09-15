@@ -197,6 +197,9 @@ Memdraw = {
 	load: function(dst, r, data, iscompressed){
 		return load(dst, r, data, iscompressed);
 	},
+	string: function(dst, src, font, p, clipr, sp, index){
+		/* XXX */
+	},
 	Opdefs: {
 		Clear: {key: 0, op: undefined},
 		SinD: {key: 8, op: "source-in"},

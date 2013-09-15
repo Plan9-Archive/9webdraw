@@ -382,6 +382,22 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		var dst = conn.imgs[dstid];
+		if(dst == undefined){
+			throw("invalid image id");
+		}
+		var src = conn.imgs[srcid];
+		if(src == undefined){
+			throw("invalid image id");
+		}
+		var font = conn.imgs[fontid];
+		if(font == undefined){
+			throw("invalid image id");
+		}
+		if(font.fchar == undefined){
+			throw("not a font");
+		}
+		Memdraw.string(dst, src, font, p, clipr, sp, index);
 		return length;
 	},
 	"x": function(conn, offset, data, length){
@@ -402,6 +418,21 @@ Draw9p.drawdatahandlers = {
 			}
 		}catch(e){
 			throw("short draw message");
+		}
+		var dst = conn.imgs[dstid];
+		if(dst == undefined){
+			throw("invalid image id");
+		}
+		var src = conn.imgs[srcid];
+		if(src == undefined){
+			throw("invalid image id");
+		}
+		var font = conn.imgs[fontid];
+		if(font == undefined){
+			throw("invalid image id");
+		}
+		if(font.fchar == undefined){
+			throw("not a font");
 		}
 		return length;
 	},
