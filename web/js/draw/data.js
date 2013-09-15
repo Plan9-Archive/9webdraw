@@ -29,14 +29,14 @@ Draw9p.drawdatahandlers = {
 		if(conn.screens[id] != undefined){
 			throw("screen id in use");
 		}
-		if(conn.imgs[imageid] == undefined){
-			throw("invalid image id");
-		}
-		if(conn.imgs[fillid] == undefined){
-			throw("invalid image id");
-		}
 		var image = conn.imgs[imageid];
+		if(image == undefined){
+			throw("invalid image id");
+		}
 		var fill = conn.imgs[fillid];
+		if(fill == undefined){
+			throw("invalid image id");
+		}
 		conn.screens[id] = new Draw9p.Screen(id, image, fill, public);
 		return length;
 	},
@@ -57,7 +57,6 @@ Draw9p.drawdatahandlers = {
 		if(conn.imgs[id] != undefined){
 			throw("image id in use");
 		}
-		/* XXX Change this once we implement screens. */
 		if(screenid){
 			if(conn.screens[screenid] == undefined){
 				throw("invalid screen id");
@@ -136,14 +135,14 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		if(conn.imgs[dstid] == undefined){
+		var dst = conn.imgs[dstid];
+		if(dst == undefined){
 			throw("invalid destination image");
 		}
-		if(conn.imgs[srcid] == undefined){
+		var src = conn.imgs[srcid];
+		if(src == undefined){
 			throw("invalid source image");
 		}
-		var dst = conn.imgs[dstid];
-		var src = conn.imgs[srcid];
 		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
 		return length;
 	},
@@ -205,14 +204,16 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		if(conn.imgs[dstid] == undefined){
+		var dst = conn.imgs[dstid];
+		if(dst == undefined){
 			throw("invalid image id");
 		}
-		if(conn.imgs[srcid] == undefined){
+		var src = conn.imgs[srcid];
+		if(src == undefined){
 			throw("invalid image id");
 		}
-		Memdraw.line(conn.imgs[dstid], p0, p1, end0, end1, thick,
-			conn.imgs[srcid], sp, conn.op);
+		Memdraw.line(dst, p0, p1, end0, end1, thick,
+			src, sp, conn.op);
 		return length;
 	},
 	"N": function(conn, offset, data, length){
@@ -293,14 +294,14 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		if(conn.imgs[dstid] == undefined){
-			throw("invalid image id");
-		}
-		if(conn.imgs[srcid] == undefined){
-			throw("invalid image id");
-		}
 		var dst = conn.imgs[dstid];
+		if(dst == undefined){
+			throw("invalid image id");
+		}
 		var src = conn.imgs[srcid];
+		if(src == undefined){
+			throw("invalid image id");
+		}
 		Memdraw.poly(dst, dp, end0, end1, thick, src, sp, conn.op);
 		return length;
 	},
@@ -320,14 +321,14 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		if(conn.imgs[dstid] == undefined){
-			throw("invalid image id");
-		}
-		if(conn.imgs[srcid] == undefined){
-			throw("invalid image id");
-		}
 		var dst = conn.imgs[dstid];
+		if(dst == undefined){
+			throw("invalid image id");
+		}
 		var src = conn.imgs[srcid];
+		if(src == undefined){
+			throw("invalid image id");
+		}
 		Memdraw.fillpoly(dst, dp, wind, src, sp, conn.op);
 		return length;
 	},
