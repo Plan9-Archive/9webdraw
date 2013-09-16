@@ -7,7 +7,7 @@ var decompress = function(data, w, h, bpl, cdata){
 
 	for(;;){
 		if(doff >= data.length){
-			return data;
+			return cdoff;
 		}
 		if(cdoff >= cdata.length){
 			throw("buffer too small");
@@ -25,6 +25,17 @@ var decompress = function(data, w, h, bpl, cdata){
 				data[doff++] = data[odoff++];
 			}
 		}
+	}
+}
+
+var bytesperline = function(w, depth){
+	var bytesperpix = Math.ceil(depth / 8);
+	var pixperbyte = Math.floor(8 / depth);
+
+	if(depth < 8){
+		return Math.ceil(w / pixperbyte);
+	}else{
+		return w * bytesperpix;
 	}
 }
 
@@ -172,23 +183,29 @@ var loader = {
 Memdraw.Load = function(canvas, w, h, chan, data, iscompressed){
 	var depth = Chan.chantodepth(chan);
 	var bpl = Math.ceil((w * depth) / 8);
+	var len;
 
 	if(iscompressed){
 		var cdata = data;
 		data = new Uint8Array(h * bpl);
-		decompress(data, w, h, bpl, cdata);
+		len = decompress(data, w, h, bpl, cdata);
+	}else{
+		len = bpl * h;
 	}
 
 	if(!(chan>>8)){
 		switch(Chan.TYPE(chan)){
 		case Chan.chans.CGrey:
-			return loader.grey(canvas, w, h, chan, data);
+			loader.grey(canvas, w, h, chan, data);
+			return len;
 		case Chan.chans.CMap:
 			if(Chan.NBITS(chan) == 8){
-				return loader.cmap8(canvas, w, h, chan, data);
+				loader.cmap8(canvas, w, h, chan, data);
+				return len;
 			}
 		}
 	}
 
-	return loader.generic(canvas, w, h, chan, data);
+	loader.generic(canvas, w, h, chan, data);
+	return len;
 }

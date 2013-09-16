@@ -45,11 +45,12 @@ var load = function(dst, r, data, iscompressed){
 	var h = r.max.y - r.min.y;
 	var arr = img.ctx.createImageData(w, h);
 
-	Memdraw.Load(arr.data, w, h, img.chan, data, iscompressed);
+	var offset = Memdraw.Load(arr.data, w, h, img.chan, data, iscompressed);
 	img.ctx.putImageData(arr, 0, 0);
 	draw(dst, r, img, r.min, Memdraw.Opdefs.SoverD.key);
 	/* XXX Append canvas for debugging. */
 	document.body.appendChild(dst.canvas);
+	return offset;
 }
 
 var arrowend = function(tip, points, pp, end, sin, cos, radius){

@@ -5,20 +5,23 @@ Draw9p.writedrawdata = function(connid, offset, data){
 	}
 
 	var length = data.length;
-	var c = String.fromUTF8Array(data.splice(0, 1));
-	cons.log("writedrawdata: " + c);
-	if(this.drawdatahandlers[c] == undefined){
-		throw("bad draw command");
-	}else{
-		return this.drawdatahandlers[c](conn, offset, data, length);
+	var ai = new ArrayIterator(data);
+	while(ai.hasRemainingBytes()){
+		var c = String.fromCharCode(ai.getChar());
+		cons.log("writedrawdata: " + c);
+		if(this.drawdatahandlers[c] == undefined){
+			throw("bad draw command");
+		}else{
+			this.drawdatahandlers[c](conn, offset, ai);
+		}
 	}
+	return length;
 }
 
 with(Draw9p){
 Draw9p.drawdatahandlers = {
-	"A": function(conn, offset, data, length){
+	"A": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var imageid = ai.getLong();
 			var fillid = ai.getLong();
@@ -38,11 +41,9 @@ Draw9p.drawdatahandlers = {
 			throw("invalid image id");
 		}
 		conn.screens[id] = new Draw9p.Screen(id, image, fill, public);
-		return length;
 	},
-	"b": function(conn, offset, data, length){
+	"b": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var screenid = ai.getLong();
 			var refresh = ai.getChar();
@@ -67,22 +68,18 @@ Draw9p.drawdatahandlers = {
 		}else{
 			conn.imgs[id] = new Image(refresh, chan, repl, r, clipr, color);
 		}
-		return length;
 	},
-	"c": function(conn, offset, data, length){
+	"c": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var repl = ai.getChar();
 			var clipr = ai.getRect();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"d": function(conn, offset, data, length){
+	"d": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var srcid = ai.getLong();
 			var maskid = ai.getLong();
@@ -92,20 +89,16 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"D": function(conn, offset, data, length){
+	"D": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var debugon = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"e": function(conn, offset, data, length){
+	"e": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var srcid = ai.getLong();
 			var c = ai.getPoint();
@@ -118,11 +111,9 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"E": function(conn, offset, data, length){
+	"E": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var srcid = ai.getLong();
 			var center = ai.getPoint();
@@ -144,29 +135,23 @@ Draw9p.drawdatahandlers = {
 			throw("invalid source image");
 		}
 		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
-		return length;
 	},
-	"f": function(conn, offset, data, length){
+	"f": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"F": function(conn, offset, data, length){
+	"F": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"i": function(conn, offset, data, length){
+	"i": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var n = ai.getLong();
 			var ascent = ai.getChar();
@@ -181,11 +166,9 @@ Draw9p.drawdatahandlers = {
 		img.ascent = ascent;
 		img.fchar = [];
 		/* document.body.appendChild(img.canvas); */
-		return length;
 	},
-	"l": function(conn, offset, data, length){
+	"l": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var cacheid = ai.getLong();
 			var srcid = ai.getLong();
 			var index = ai.getShort();
@@ -211,11 +194,9 @@ Draw9p.drawdatahandlers = {
 		};
 		/* XXX draw() is meant to be private to Memdraw! */
 		draw(cache, r, src, sp, Memdraw.Opdefs.SoverD.key);
-		return length;
 	},
-	"L": function(conn, offset, data, length){
+	"L": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var p0 = ai.getPoint();
 			var p1 = ai.getPoint();
@@ -237,11 +218,9 @@ Draw9p.drawdatahandlers = {
 		}
 		Memdraw.line(dst, p0, p1, end0, end1, thick,
 			src, sp, conn.op);
-		return length;
 	},
-	"N": function(conn, offset, data, length){
+	"N": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var inp = ai.getChar();
 			var j = ai.getChar();
@@ -259,11 +238,9 @@ Draw9p.drawdatahandlers = {
 			/* XXX Should check if this is the right image. */
 			delete imgnames[name];
 		}
-		return length;
 	},
-	"n": function(conn, offset, data, length){
+	"n": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var j = ai.getChar();
 			var name = String.fromUTF8Array(ai.getBytes(j));
@@ -277,32 +254,26 @@ Draw9p.drawdatahandlers = {
 			throw("no image by name " + name);
 		}
 		conn.imgs[id] = imgnames[name];
-		return length;
 	},
-	"o": function(conn, offset, data, length){
+	"o": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var rmin = ai.getPoint();
 			var scr = ai.getPoint();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"O": function(conn, offset, data, length){
+	"O": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var op = ai.getChar();
 		}catch(e){
 			throw("short draw message");
 		}
 		conn.op = op;
-		return length;
 	},
-	"p": function(conn, offset, data, length){
+	"p": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var n = ai.getShort();
 			var end0 = ai.getLong();
@@ -326,11 +297,9 @@ Draw9p.drawdatahandlers = {
 			throw("invalid image id");
 		}
 		Memdraw.poly(dst, dp, end0, end1, thick, src, sp, conn.op);
-		return length;
 	},
-	"P": function(conn, offset, data, length){
+	"P": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var n = ai.getShort();
 			var wind = ai.getLong();
@@ -353,21 +322,17 @@ Draw9p.drawdatahandlers = {
 			throw("invalid image id");
 		}
 		Memdraw.fillpoly(dst, dp, wind, src, sp, conn.op);
-		return length;
 	},
-	"r": function(conn, offset, data, length){
+	"r": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var r = ai.getRect();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"s": function(conn, offset, data, length){
+	"s": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var srcid = ai.getLong();
 			var fontid = ai.getLong();
@@ -398,11 +363,9 @@ Draw9p.drawdatahandlers = {
 			throw("not a font");
 		}
 		Memdraw.string(dst, src, font, p, clipr, sp, index);
-		return length;
 	},
-	"x": function(conn, offset, data, length){
+	"x": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var dstid = ai.getLong();
 			var srcid = ai.getLong();
 			var fontid = ai.getLong();
@@ -434,21 +397,17 @@ Draw9p.drawdatahandlers = {
 		if(font.fchar == undefined){
 			throw("not a font");
 		}
-		return length;
 	},
-	"S": function(conn, offset, data, length){
+	"S": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var chan = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"t": function(conn, offset, data, length){
+	"t": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var top = ai.getChar();
 			var n = ai.getShort();
 			var ids = [];
@@ -458,40 +417,38 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		return length;
 	},
-	"v": function(conn, offset, data, length){
-		return length;
+	"v": function(conn, offset, ai){
 	},
-	"y": function(conn, offset, data, length){
+	"y": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var r = ai.getRect();
-			var buf = ai.getRemainingBytes();
+			var buf = ai.peekRemainingBytes();
 		}catch(e){
 			throw("short draw message");
 		}
-		if(conn.imgs[id] == undefined){
+		var img = conn.imgs[id];
+		if(img == undefined){
 			throw("invalid image id");
 		}
-		Memdraw.load(conn.imgs[id], r, buf, false);
-		return length;
+		var seek = Memdraw.load(img, r, buf, false);
+		ai.advanceBytes(seek);
 	},
-	"Y": function(conn, offset, data, length){
+	"Y": function(conn, offset, ai){
 		try{
-			var ai = new ArrayIterator(data);
 			var id = ai.getLong();
 			var r = ai.getRect();
-			var buf = ai.getRemainingBytes();
+			var buf = ai.peekRemainingBytes();
 		}catch(e){
 			throw("short draw message");
 		}
-		if(conn.imgs[id] == undefined){
+		var img = conn.imgs[id];
+		if(img == undefined){
 			throw("invalid image id");
 		}
-		Memdraw.load(conn.imgs[id], r, buf, true);
-		return length;
+		var seek = Memdraw.load(img, r, buf, true);
+		ai.advanceBytes(seek);
 	},
 }
 }
