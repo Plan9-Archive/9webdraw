@@ -41,8 +41,32 @@ ArrayIterator.prototype.getBytes = function(bytes){
 	return this.array.slice(begin, this.index);
 }
 
+ArrayIterator.prototype.peekBytes = function(bytes){
+	if(this.array.length < this.index + bytes){
+		throw("array too short");
+	}
+	var begin = this.index;
+	var end = begin + bytes;
+	return this.array.slice(begin, end);
+}
+
+ArrayIterator.prototype.advanceBytes = function(bytes){
+	if(this.array.length < this.index + bytes){
+		throw("array too short");
+	}
+	this.index += bytes;
+}
+
 ArrayIterator.prototype.getRemainingBytes = function(){
 	return this.getBytes(this.array.length - this.index);
+}
+
+ArrayIterator.prototype.peekRemainingBytes = function(){
+	return this.peekBytes(this.array.length - this.index);
+}
+
+ArrayIterator.prototype.hasRemainingBytes = function(){
+	return this.index < this.array.length;
 }
 
 ArrayIterator.prototype.getPoint = function(){
