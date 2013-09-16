@@ -18,6 +18,27 @@ Draw9p.writedrawdata = function(connid, offset, data){
 	return length;
 }
 
+var drawcoord = function(ai, old){
+	var b, x;
+
+	b = ai.getChar();
+	x = b & 0x7F;
+	if(b & 0x80){
+		x |= ai.getChar() << 7;
+		x |= ai.getChar() << 15;
+		if(x & (1<<22)){
+			/* Not sure how ~0 would work in Javascript. */
+			x |= ((1<<31)|((1<<31)-1))<<23;
+		}
+	}else{
+		if(b & 0x40){
+			x |= ((1<<31)|((1<<31)-1))<<7;
+		}
+		x += old;
+	}
+	return x;
+}
+
 with(Draw9p){
 Draw9p.drawdatahandlers = {
 	"A": function(conn, offset, ai){
@@ -275,15 +296,20 @@ Draw9p.drawdatahandlers = {
 	"p": function(conn, offset, ai){
 		try{
 			var dstid = ai.getLong();
-			var n = ai.getShort();
+			var n = ai.getShort() + 1;
 			var end0 = ai.getLong();
 			var end1 = ai.getLong();
 			var thick = ai.getLong();
 			var srcid = ai.getLong();
 			var sp = ai.getPoint();
 			var dp = [];
+			var o = {x: 0, y: 0};
 			for(var i = 0; i < n; ++i){
-				dp[i] = ai.getPoint();
+				dp[i] = {
+					x: drawcoord(ai, o.x),
+					y: drawcoord(ai, o.y)
+				}
+				o = dp[i];
 			}
 		}catch(e){
 			throw("short draw message");
@@ -301,14 +327,19 @@ Draw9p.drawdatahandlers = {
 	"P": function(conn, offset, ai){
 		try{
 			var dstid = ai.getLong();
-			var n = ai.getShort();
+			var n = ai.getShort() + 1;
 			var wind = ai.getLong();
 			var ignore = ai.getPoint();
 			var srcid = ai.getLong();
 			var sp = ai.getPoint();
 			var dp = [];
+			var o = {x: 0, y: 0};
 			for(var i = 0; i < n; ++i){
-				dp[i] = ai.getPoint();
+				var p = {
+					x: drawcoord(ai, o.x),
+					y: drawcoord(ai, o.y)
+				}
+				dp[i] = o = p;
 			}
 		}catch(e){
 			throw("short draw message");
