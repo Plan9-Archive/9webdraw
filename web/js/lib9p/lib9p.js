@@ -413,7 +413,7 @@ NineP.prototype.Twrite = function(pkt, tag){
 		return this.Rerror(tag, "invalid fid");
 	}
 	var mode = this.fids[fid].mode;
-	if(mode != NineP.OWRITE && mode != NineP.ORDWR){
+	if(!(mode & NineP.OWRITE) && mode != NineP.ORDWR){
 		return this.Rerror(tag, "file not opened for writing");
 	}
 
