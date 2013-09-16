@@ -362,7 +362,7 @@ Draw9p.drawdatahandlers = {
 		if(font.fchar == undefined){
 			throw("not a font");
 		}
-		Memdraw.string(dst, src, font, p, clipr, sp, index);
+		Memdraw.string(dst, src, font, p, clipr, sp, index, conn.op);
 	},
 	"x": function(conn, offset, ai){
 		try{

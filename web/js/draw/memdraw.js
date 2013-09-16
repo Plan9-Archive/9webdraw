@@ -96,6 +96,31 @@ var discend = function(p, radius, dst, src, dsrc, op){
 	Memdraw.fillellipse(dst, p, radius, radius, 0, 2 * Math.PI, src, dsrc, op);
 }
 
+var drawchar = function(dst, p, src, sp, font, fc, op){
+	var r = {
+		min: {
+			x: p.x + fc.left,
+			y: p.y - (font.ascent - fc.r.min.y)
+		},
+		max: {
+			x: (p.x + fc.left) + (fc.r.max.x - fc.r.min.x),
+			y: (p.y - (font.ascent - fc.r.min.y)) + (fc.r.max.y - fc.r.min.y)
+		}
+	}
+	var sp1 = {
+		x: sp.x + fc.left,
+		y: sp.y + fc.r.min.y
+	}
+
+	/* XXX We're just drawing the font mask here. */
+	/* It seems drawmasked() is broken. */
+	draw(dst, r, font, fc.r.min, op);
+	//drawmasked(dst, r, src, sp1, font, fc.r.min, op);
+	p.x += fc.width;
+	sp.x += fc.width;
+	return p;
+}
+
 Memdraw = {
 	/* XXX rectangular line ending is distorted! */
 	line: function(dst, p0, p1, end0, end1, radius, src, sp, op){
@@ -198,8 +223,13 @@ Memdraw = {
 	load: function(dst, r, data, iscompressed){
 		return load(dst, r, data, iscompressed);
 	},
-	string: function(dst, src, font, p, clipr, sp, index){
-		/* XXX */
+	string: function(dst, src, font, p, clipr, sp, index, op){
+		for(var i = 0; i < index.length; ++i){
+			if(index[i] == 0 || index[i] >= font.nchar){
+				throw("font cache index out of bounds");
+			}cons.log("char: " + index[i]);
+			drawchar(dst, p, src, sp, font, font.fchar[index[i]], op);
+		}
 	},
 	Opdefs: {
 		Clear: {key: 0, op: undefined},
