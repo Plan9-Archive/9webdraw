@@ -179,7 +179,13 @@ Draw9p.read = function(fid, offset, count, callback){
 				return callback.read([]);
 			}
 		}else{
-			if(fid.qid.path == QWINNAME){
+			if(fid.qid.path == QCONS){
+				/* XXX DISCARD CONS READS */
+				return;
+			}else if(fid.qid.path == QMOUSE){
+				/* XXX DISCARD MOUSE READS */
+				return;
+			}else if(fid.qid.path == QWINNAME){
 				if(offset == 0){
 					return callback.read("webdraw".toUTF8Array());
 				}else{
