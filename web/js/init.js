@@ -27,7 +27,10 @@ window.onload = function(){
 	settings = new Settings();
 	ninep = new NineP(wsurl, Draw9p, cons);
 
+	/* XXX Draw9p should be instantiated and have a constructor. */
 	Draw9p.rootcanvas = elem("webdraw");
+	Draw9p.imgnames["webdraw"] = Draw9p.RootImage();
+	Draw9p.label = "webdraw".toUTF8Array();
 
 	addevent(elem("webdraw"), "click", function(){
 		cons.write("lol clicked whee");

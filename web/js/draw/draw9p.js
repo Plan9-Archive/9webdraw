@@ -18,6 +18,8 @@ Draw9p.Qids = {
 	QCONS: 1,
 	QMOUSE: 2,
 	QCURSOR: 3,
+	QWINNAME: 4,
+	QLABEL: 5,
 	QDRAW: 98,
 	QDRAWNEW: 99,
 	QDRAWBASE: 100,
@@ -72,6 +74,10 @@ Draw9p.walk1 = function(qid, name){
 				return new NineP.Qid(QMOUSE, 0, 0);
 			}else if(name == "cursor"){
 				return new NineP.Qid(QCURSOR, 0, 0);
+			}else if(name == "winname"){
+				return new NineP.Qid(QWINNAME, 0, 0);
+			}else if(name == "label"){
+				return new NineP.Qid(QLABEL, 0, 0);
 			}else if(name == "draw"){
 				return new NineP.Qid(QDRAW, 0, NineP.QTDIR);
 			}else{
@@ -173,7 +179,21 @@ Draw9p.read = function(fid, offset, count, callback){
 				return callback.read([]);
 			}
 		}else{
-			return callback.read([]);
+			if(fid.qid.path == QWINNAME){
+				if(offset == 0){
+					return callback.read("webdraw".toUTF8Array());
+				}else{
+					return callback.read([]);
+				}
+			}else if(fid.qid.path == QLABEL){
+				if(offset == 0){
+					return callback.read(this.label);
+				}else{
+					return callback.read([]);
+				}
+			}else{
+				return callback.read([]);
+			}
 		}
 	}
 }
@@ -182,7 +202,14 @@ Draw9p.dirent = function(qid, offset){
 	with(this.Qids){
 	try{
 		if(qid.path == QROOT){
-			return this.stat([QCONS, QMOUSE, QCURSOR, QDRAW][offset]);
+			return this.stat([
+				QCONS,
+				QMOUSE,
+				QCURSOR,
+				QWINNAME,
+				QLABEL,
+				QDRAW
+			][offset]);
 		}else if(qid.path == QDRAW){
 			return this.stat([QDRAWNEW].concat(this.connqids())[offset]);
 		}else if(qid.path >= QDRAWBASE){
@@ -216,6 +243,9 @@ Draw9p.write = function(qid, offset, data){
 		}else{
 			if(qid.path == QCURSOR){
 				return;
+			}else if(qid.path == QLABEL){
+				this.label = data;
+				return data.length;
 			}else{
 				throw("cannot write");
 			}
@@ -262,6 +292,18 @@ Draw9p.stat = function(qid){
 				mode: 0,
 				length: 72,
 				name: "cursor"
+			});
+		}else if(qid == QWINNAME){
+			return new NineP.Stat({
+				qid: new NineP.Qid(QWINNAME, 0, 0),
+				length: "webdraw".length,
+				name: "winname"
+			});
+		}else if(qid == QLABEL){
+			return new NineP.Stat({
+				qid: new NineP.Qid(QLABEL, 0, 0),
+				length: this.label.length,
+				name: "label"
 			});
 		}else if(qid == QDRAW){
 			return new NineP.Stat({
