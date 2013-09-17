@@ -110,6 +110,21 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		var dst = conn.imgs[dstid];
+		if(dst == undefined){
+			throw("invalid image id");
+		}
+		var src = conn.imgs[srcid];
+		if(src == undefined){
+			throw("invalid image id");
+		}
+		var mask = conn.imgs[maskid];
+		if(mask == undefined){
+			throw("invalid image id");
+		}
+		/* XXX should be drawmasked() */
+		/* XXX calling unintentionally global draw(). */
+		draw(dst, dstr, src, srcp, conn.op);
 	},
 	"D": function(conn, offset, ai){
 		try{
