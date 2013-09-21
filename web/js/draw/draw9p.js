@@ -16,10 +16,11 @@ Draw9p.BPLONG = function(p, v){
 Draw9p.Qids = {
 	QROOT: 0,
 	QCONS: 1,
-	QMOUSE: 2,
-	QCURSOR: 3,
-	QWINNAME: 4,
-	QLABEL: 5,
+	QCONSCTL: 2,
+	QMOUSE: 3,
+	QCURSOR: 4,
+	QWINNAME: 5,
+	QLABEL: 6,
 	QDRAW: 98,
 	QDRAWNEW: 99,
 	QDRAWBASE: 100,
@@ -70,6 +71,8 @@ Draw9p.walk1 = function(qid, name){
 				return new NineP.Qid(path, 0, NineP.QTDIR);
 			}else if(name == "cons"){
 				return new NineP.Qid(QCONS, 0, 0);
+			}else if(name == "consctl"){
+				return new NineP.Qid(QCONSCTL, 0, 0);
 			}else if(name == "mouse"){
 				return new NineP.Qid(QMOUSE, 0, 0);
 			}else if(name == "cursor"){
@@ -210,6 +213,7 @@ Draw9p.dirent = function(qid, offset){
 		if(qid.path == QROOT){
 			return this.stat([
 				QCONS,
+				QCONSCTL,
 				QMOUSE,
 				QCURSOR,
 				QWINNAME,
@@ -247,7 +251,9 @@ Draw9p.write = function(qid, offset, data){
 				throw("writing impermissible");
 			}
 		}else{
-			if(qid.path == QCURSOR){
+			if(qid.path == QCONSCTL){
+				return;
+			}else if(qid.path == QCURSOR){
 				return;
 			}else if(qid.path == QLABEL){
 				this.label = data;
@@ -284,6 +290,12 @@ Draw9p.stat = function(qid){
 				qid: new NineP.Qid(QCONS, 0, 0),
 				mode: 0,
 				name: "cons"
+			});
+		}else if(qid == QCONSCTL){
+			return new NineP.Stat({
+				qid: new NineP.Qid(QCONSCTL, 0, 0),
+				mode: 0,
+				name: "consctl"
 			});
 		}else if(qid == QMOUSE){
 			return new NineP.Stat({
