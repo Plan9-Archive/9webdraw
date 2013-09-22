@@ -7,9 +7,7 @@ var icossin2 = function(dx, dy){
 	}
 }
 
-/* XXX doesn't work! */
-/* XXX ignores op. */
-/* XXX XXX XXX DRAWING IS FUZZY! XXX XXX XXX */
+/* XXX Seems to misbehave on non-(0,0) src.r.min. */
 var draw = function(dst, r, src, sp, op){
 	dst.ctx.save();
 	dst.ctx.globalCompositeOperation = Memdraw.Ops[op];
@@ -20,23 +18,47 @@ var draw = function(dst, r, src, sp, op){
 		dst.ctx.fill();
 	}else{
 		dst.ctx.beginPath();
-		dst.ctx.rect(r.min.x, r.min.y, r.max.x-r.min.x, r.max.y-r.min.y);
+		dst.ctx.rect(r.min.x-dst.r.min.x, r.min.y-dst.r.min.y,
+			r.max.x-r.min.x, r.max.y-r.min.y);
 		dst.ctx.clip();
-		dst.ctx.drawImage(src.canvas, r.min.x-sp.x+src.r.min.x, r.min.y-sp.y+src.r.min.y);
+		dst.ctx.drawImage(src.canvas, r.min.x-sp.x+src.r.min.x-dst.r.min.x,
+			r.min.y-sp.y+src.r.min.y-dst.r.min.y);
 	}
 	dst.ctx.restore();
 	return;
 }
 
+var maskalpha = function(img){
+	var data = img.ctx.getImageData(0, 0, img.canvas.width, img.canvas.height);
+	for(var i = 0; i < data.data.length; i += 4){
+		data.data[i + 3] = (data.data[i + 0] + data.data[i + 1] + data.data[i + 2]) /3;
+	}
+	img.ctx.putImageData(data, 0, 0);
+}
+
 var drawmasked = function(dst, r, src, sp, mask, mp, op){
-	var img = new Draw9p.Image(0, "r8g8b8a8", 0, r, r, 0);
+	if(r.max.x == r.min.x || r.max.y == r.min.y){
+		return;
+	}
+
+	/* XXX Hack: draw() doesn't seem to handle offset images properly. */
+	var rdelta = {
+		min: {x: 0, y: 0},
+		max: {
+			x: r.max.x - r.min.x,
+			y: r.max.y - r.min.y
+		}
+	}
+	var img = new Draw9p.Image(0, Chan.fmts.CMAP8, 0, rdelta, rdelta, 0xFF00FFFF);
+
 	/* XXX Hack; we should have a way to create blank images. */
 	img.ctx.clearRect(0, 0, r.max.x, r.max.y);
 
-	/* XXX We shouldn't be setting the point in both places. */
-	draw(img, r, mask, mp, Memdraw.Opdefs.S.key);
-	draw(img, r, src, sp, Memdraw.Opdefs.SatopD.key);
-	draw(dst, r, img, sp, op);
+	draw(img, rdelta, mask, mp, Memdraw.Opdefs.SoverD.key);
+	maskalpha(img);
+	draw(img, rdelta, src, sp, Memdraw.Opdefs.SinD.key);
+	//document.body.appendChild(img.canvas);
+	draw(dst, r, img, {x: 0, y: 0}, op);
 }
 
 var load = function(dst, r, data, iscompressed){
@@ -112,10 +134,7 @@ var drawchar = function(dst, p, src, sp, font, fc, op){
 		y: sp.y + fc.r.min.y
 	}
 
-	/* XXX We're just drawing the font mask here. */
-	/* It seems drawmasked() is broken. */
-	draw(dst, r, font, fc.r.min, op);
-	//drawmasked(dst, r, src, sp1, font, fc.r.min, op);
+	drawmasked(dst, r, src, sp1, font, fc.r.min, op);
 	p.x += fc.width;
 	sp.x += fc.width;
 	return p;
