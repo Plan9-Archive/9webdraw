@@ -141,7 +141,6 @@ var drawchar = function(dst, p, src, sp, font, fc, op){
 }
 
 Memdraw = {
-	/* XXX rectangular line ending is distorted! */
 	line: function(dst, p0, p1, end0, end1, radius, src, sp, op){
 		var angle = icossin2(p1.y - p0.y, p1.x - p0.x);
 		var dx = (angle.sin * (2 * radius + 1))/2;
@@ -222,7 +221,7 @@ Memdraw = {
 			dst.ctx.lineTo(vertices[i].x, vertices[i].y);
 		}
 		dst.ctx.clip();
-		/* fill background here */
+		/* XXX fill background here */
 		draw(dst, {min: {x: 0, y: 0}, max: {x: 500, y: 500}}, src, sp, op);
 		dst.ctx.restore();
 		return;
