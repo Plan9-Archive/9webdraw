@@ -2,9 +2,6 @@
 #include <libc.h>
 #include <thread.h>
 
-int p[2], in[2], out[2];
-
-
 void relayproc(void *v){
 	int n, *fd;
 	char buf[65536];
@@ -20,6 +17,7 @@ void relayproc(void *v){
 }
 
 void threadmain(int argc, char *argv[]){
+	int p[2], in[2], out[2];
 
 	if(argc < 2){
 		fprint(2, "Usage: %s command [arg1, arg2, ...]\n", argv[0]);
