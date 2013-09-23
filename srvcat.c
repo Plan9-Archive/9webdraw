@@ -33,7 +33,7 @@ void threadmain(int argc, char *argv[]){
 	strncat(path, argv[1], 250);
 
 	pipe(p);
-	fd = create(path, OWRITE|ORCLOSE, 0666);
+	fd = create(path, OWRITE, 0666);
 	fprint(fd, "%d", p[0]);
 	close(fd);
 	close(p[0]);
@@ -49,6 +49,9 @@ void threadmain(int argc, char *argv[]){
 	threadcreate(relaythread, out, 8192);
 
 	recv(chan, nil);
+
+	/* bug: should remove if killed as well. */
+	remove(path);
 
 	exits("");
 }
