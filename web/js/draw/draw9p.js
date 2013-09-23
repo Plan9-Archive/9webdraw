@@ -183,8 +183,7 @@ Draw9p.read = function(fid, offset, count, callback){
 			}
 		}else{
 			if(fid.qid.path == QCONS){
-				/* XXX DISCARD CONS READS */
-				return;
+				return cons.addcallback(callback);
 			}else if(fid.qid.path == QMOUSE){
 				/* XXX DISCARD MOUSE READS */
 				return;

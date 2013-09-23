@@ -33,12 +33,12 @@ window.onload = function(){
 	Draw9p.label = "webdraw".toUTF8Array();
 
 	addevent(elem("webdraw"), "click", function(){
-		cons.write("lol clicked whee");
+		cons.flushcallbacks();
 	});
-	setevent(document, "keydown", function(e){
-		return mouse.handlefkeys(e, mouse.states.down);
+	setevent(window, "keydown", function(e){
+		return cons.handlekeys(e, cons.kbd.down);
 	});
-	setevent(document, "keyup", function(e){
-	return mouse.handlefkeys(e, mouse.states.up);
+	setevent(window, "keyup", function(e){
+		return cons.handlekeys(e, cons.kbd.up);
 	});
 }
