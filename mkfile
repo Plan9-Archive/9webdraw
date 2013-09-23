@@ -3,7 +3,10 @@
 %.$O:	%.c
 	$CC $CFLAGS -c $stem.c
 
-all:V:	srvcat proxy
+all:V:	runweb srvcat proxy
+
+runweb:	runweb.$O
+	$LD -o runweb $prereq
 
 srvcat:	srvcat.$O
 	$LD -o srvcat $prereq
