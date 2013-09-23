@@ -6,13 +6,14 @@ element.
 ## Prerequisites
 * Plan 9, of course!
 * A functioning Go environment
-    + The WebSocket Go package: code.google.com/p/go.net/websocket
+    + The WebSocket Go package: http://code.google.com/p/go.net/websocket
 * A modern web browser capable of
     + Binary-mode WebSockets
     + HTML5 Canvas
 
 ## Building
 Assuming Go and its Websocket package are correctly installed,
+
     % mk
 will produce the proxy, `proxy` and its helper programs.
 
@@ -26,9 +27,11 @@ not work yet.
 In either mode, the proxy will serve HTTP on port 80.
 
 When started with the `-srv` flag like so:
+
     % proxy -srv
 the proxy will post a srv(3) endpoint named `/srv/webdraw`.
 To get useful results, manual namespace tweaking is required:
+
     % unmount /mnt/wsys
     % mount -b /srv/webdraw /dev
     % acme
@@ -40,4 +43,5 @@ connections that are already open.
 When started without the `-srv` flag, the proxy takes the name of and
 arguments to a program to be run for each session.  If no arguments
 are provided, `/games/catclock` will be run by default.
+
     % proxy acme -l acme.dump
