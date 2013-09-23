@@ -72,8 +72,8 @@ var load = function(dst, r, data, iscompressed){
 	var offset = Memdraw.Load(arr.data, w, h, img.chan, data, iscompressed);
 	img.ctx.putImageData(arr, 0, 0);
 	draw(dst, r, img, r.min, Memdraw.Opdefs.SoverD.key);
-	/* XXX Append canvas for debugging. */
-	document.body.appendChild(dst.canvas);
+	/* Append canvas for debugging. */
+	//document.body.appendChild(dst.canvas);
 	return offset;
 }
 
