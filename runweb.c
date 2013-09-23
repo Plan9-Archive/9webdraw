@@ -43,7 +43,7 @@ void threadmain(int argc, char *argv[]){
 	int p[2], in[2], out[2];
 
 	if(argc < 2){
-		fprint(2, "Usage: %s [srvname]\n", argv[0]);
+		fprint(2, "Usage: %s command [arg1, arg2, ...]\n", argv[0]);
 		exits("no srvname");
 	}
 
