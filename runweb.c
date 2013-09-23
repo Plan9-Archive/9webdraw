@@ -30,11 +30,13 @@ void relaythread(void *v){
 
 void mountexec(void *arg){
 	struct misc *misc = arg;
+
 	if(mount(misc->fd, -1, "/dev/", MBEFORE, nil) == -1){
 		fprint(2, "mount: %r\n");
 		exits("mount failed");
 	}
 
+	procexec(nil, misc->argv[1], misc->argv + 1);
 }
 
 void threadmain(int argc, char *argv[]){
@@ -61,7 +63,6 @@ void threadmain(int argc, char *argv[]){
 
 	threadcreate(relaythread, in, 8192);
 	threadcreate(relaythread, out, 8192);
-
 
 	procrfork(mountexec, &misc, 16384, 0);
 
