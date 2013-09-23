@@ -2,41 +2,18 @@
 #include <libc.h>
 #include <thread.h>
 
-Channel *chan;
-
-struct misc {
-	int argc;
-	char **argv;
-	int fd;
-} misc;
-
-void relaythread(void *v){
+void relayproc(void *v){
 	int n, *fd;
-	char buf[1024];
-	Ioproc *io;
+	char buf[65536];
 
 	fd = v;
-	io = ioproc();
 
-	while((n = ioread(io, fd[0], buf, sizeof(buf))) > 0){
-		if(iowrite(io, fd[1], buf, n) != n){
-			sysfatal("iowrite: %r");
+	while((n = read(fd[0], buf, sizeof(buf))) > 0){
+		if(write(fd[1], buf, n) != n){
+			sysfatal("write: %r");
 		}
 	}
-	closeioproc(io);
-	send(chan, nil);
 	threadexitsall("");
-}
-
-void mountexec(void *arg){
-	struct misc *misc = arg;
-
-	if(mount(misc->fd, -1, "/dev/", MBEFORE, nil) == -1){
-		fprint(2, "mount: %r\n");
-		exits("mount failed");
-	}
-
-	procexec(nil, misc->argv[1], misc->argv + 1);
 }
 
 void threadmain(int argc, char *argv[]){
@@ -55,18 +32,15 @@ void threadmain(int argc, char *argv[]){
 	out[0] = p[1];
 	out[1] = 1;
 
-	misc.argc = argc;
-	misc.argv = argv;
-	misc.fd = p[0];
+	proccreate(relayproc, in, 8192);
+	proccreate(relayproc, out, 8192);
 
-	chan = chancreate(1, 1);
+	if(mount(p[0], -1, "/dev/", MBEFORE, nil) == -1){
+		fprint(2, "mount: %r\n");
+		threadexitsall("mount failed");
+	}
 
-	threadcreate(relaythread, in, 8192);
-	threadcreate(relaythread, out, 8192);
-
-	procrfork(mountexec, &misc, 16384, 0);
-
-	recv(chan, nil);
+	procexec(nil, argv[1], argv + 1);
 
 	threadexitsall("");
 }
