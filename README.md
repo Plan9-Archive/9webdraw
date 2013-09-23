@@ -4,8 +4,8 @@
 the HTML5 <canvas> element.
 
 ## Prerequisites
-* Plan 9, of course!
-* A functioning Go environment
+* [Plan 9][plan9], of course!
+* A functioning [Go][golang] environment
     + The WebSocket Go package:
         [code.google.com/p/go.net/websocket][gows]
 * A modern web browser capable of
@@ -49,4 +49,6 @@ are provided, `/games/catclock` will be run by default.
 
 [man3draw]: http://plan9.bell-labs.com/magic/man2html/3/draw
 [man3srv]: http://plan9.bell-labs.com/magic/man2html/3/srv
+[plan9]: http://plan9.bell-labs.com/plan9/
+[golang]: http://golang.org/
 [gows]: http://code.google.com/p/go.net/websocket
