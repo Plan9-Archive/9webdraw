@@ -17,6 +17,10 @@ function Cons(){
 		/* ninep.write(s); */
 	}
 
+	this.showhide = function(b){
+		this.elem.style.display = b? "block": "none";
+	}
+
 	this.handlekeys = function(e, dir){
 		if(!mouse.handlefkeys(e, dir == cons.kbd.down?
 			mouse.states.down : mouse.states.up)){

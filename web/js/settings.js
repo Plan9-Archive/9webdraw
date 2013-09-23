@@ -3,7 +3,7 @@ function Settings(){
     this.settings = ["mousefkeys", "showcons"];
 
     this.addsetting = function(setting){
-	addevent(elem(setting), "click", function(){
+	setevent(elem(setting), "click", function(){
 	    return settings.set(setting, this.checked? true: false);
 	});
     }
@@ -15,6 +15,8 @@ function Settings(){
 	    mouse.usefkeys = value;
 	    return false;
 	case "showcons":
+		cons.showhide(value);
+		return true;
 	default:
 	    return true;
 	}
