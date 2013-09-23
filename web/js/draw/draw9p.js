@@ -13,26 +13,8 @@ Draw9p.BPLONG = function(p, v){
 	return p;
 }
 
-Draw9p.Qids = {
-	QROOT: 0,
-	QCONS: 1,
-	QCONSCTL: 2,
-	QMOUSE: 3,
-	QCURSOR: 4,
-	QWINNAME: 5,
-	QLABEL: 6,
-	QDRAW: 98,
-	QDRAWNEW: 99,
-	QDRAWBASE: 100,
-	QDRAWCTL: 1,
-	QDRAWDATA: 2,
-	QDRAWCOLORMAP: 3,
-	QDRAWREFRESH: 4,
-	QDRAWSTEP: 10
-}
-
 Draw9p.drawdir = function(path){
-	with(this.Qids){
+	with(Srv9p.Qids){
 		return {
 			drawfile: (path - QDRAWBASE) % QDRAWSTEP,
 			drawdir: Math.floor((path - QDRAWBASE) / QDRAWSTEP)
@@ -57,59 +39,14 @@ Draw9p.connqids = function(){
 	var qids = [];
 	for(var i = 0; i < this.conns.length; ++i){
 		if(this.conns[i] != undefined){
-			qids.push(this.Qids.QDRAWBASE + (i * this.Qids.QDRAWSTEP));
+			qids.push(Srv9p.Qids.QDRAWBASE + (i * Srv9p.Qids.QDRAWSTEP));
 		}
 	}
 	return qids;
 }
 
-Draw9p.walk1 = function(qid, name){
-	with(this.Qids){
-		var path = qid.path;
-		if(path == QROOT){
-			if(name == ".."){
-				return new NineP.Qid(path, 0, NineP.QTDIR);
-			}else if(name == "cons"){
-				return new NineP.Qid(QCONS, 0, 0);
-			}else if(name == "consctl"){
-				return new NineP.Qid(QCONSCTL, 0, 0);
-			}else if(name == "mouse"){
-				return new NineP.Qid(QMOUSE, 0, 0);
-			}else if(name == "cursor"){
-				return new NineP.Qid(QCURSOR, 0, 0);
-			}else if(name == "winname"){
-				return new NineP.Qid(QWINNAME, 0, 0);
-			}else if(name == "label"){
-				return new NineP.Qid(QLABEL, 0, 0);
-			}else if(name == "draw"){
-				return new NineP.Qid(QDRAW, 0, NineP.QTDIR);
-			}else{
-				throw("file not found");
-			}
-		}else if(path == QDRAW){
-			if(name == ".."){
-				return new NineP.Qid(QROOT, 0, NineP.QTDIR);
-			}else if(name == "new"){
-				return new NineP.Qid(QDRAWNEW, 0, 0);
-			}else if(!/\D/.test(name)){
-				return new NineP.Qid(
-					QDRAWBASE + (
-						parseInt(name, 10) * QDRAWSTEP),
-					0, NineP.QTDIR
-				);
-			}else{
-				throw("file not found");
-			}
-		}else if(path >= QDRAWBASE){
-			return this.walk1drawdir(path, name);
-		}else{
-			throw("file not found");
-		}
-	}
-}
-
 Draw9p.walk1drawdir = function(path, name){
-	with(this.Qids){
+	with(Srv9p.Qids){
 		var dd = this.drawdir(path);
 
 		if(path < QDRAWBASE){
@@ -142,22 +79,8 @@ Draw9p.walk1drawdir = function(path, name){
 	}
 }
 
-Draw9p.open = function(fid, mode){
-	with(this.Qids){
-		if(fid.qid.path == QDRAWNEW){
-			this.conns[this.nextconn] = new this.Conn(this.nextconn);
-			fid.drawconn = this.nextconn;
-			this.nextconn += 1;
-		}
-	}
-}
-
-Draw9p.create = function(name, perm, mode){
-	throw("creation not implemented");
-}
-
 Draw9p.read = function(fid, offset, count, callback){
-	with(this.Qids){
+	with(Srv9p.Qids){
 		if(fid.qid.path == QDRAWNEW){
 			if(offset == 0){
 				try{
@@ -181,46 +104,38 @@ Draw9p.read = function(fid, offset, count, callback){
 			}else{
 				return callback.read([]);
 			}
-		}else{
-			if(fid.qid.path == QCONS){
-				/* XXX DISCARD CONS READS */
-				return;
-			}else if(fid.qid.path == QMOUSE){
-				/* XXX DISCARD MOUSE READS */
-				return;
-			}else if(fid.qid.path == QWINNAME){
-				if(offset == 0){
-					return callback.read("webdraw".toUTF8Array());
-				}else{
-					return callback.read([]);
-				}
-			}else if(fid.qid.path == QLABEL){
-				if(offset == 0){
-					return callback.read(this.label);
-				}else{
-					return callback.read([]);
-				}
+		}
+	}
+}
+
+Draw9p.write = function(qid, offset, data){
+	with(Srv9p.Qids){
+		if(qid.path >= QDRAWBASE){
+			var dd = this.drawdir(qid.path);
+			if(dd.drawfile == QDRAWDATA){
+				return this.writedrawdata(dd.drawdir, offset, data);
+			}else if(dd.drawfile == QDRAWCTL){
+				return this.writedrawctl(dd.drawdir, offset, data);
 			}else{
-				return callback.read([]);
+				throw("writing impermissible");
 			}
 		}
 	}
 }
 
+Draw9p.open = function(fid, mode){
+	with(Srv9p.Qids){
+		if(fid.qid.path == QDRAWNEW){
+			this.conns[this.nextconn] = new this.Conn(this.nextconn);
+			fid.drawconn = this.nextconn;
+			this.nextconn += 1;
+		}
+	}
+}
+
 Draw9p.dirent = function(qid, offset){
-	with(this.Qids){
-	try{
-		if(qid.path == QROOT){
-			return this.stat([
-				QCONS,
-				QCONSCTL,
-				QMOUSE,
-				QCURSOR,
-				QWINNAME,
-				QLABEL,
-				QDRAW
-			][offset]);
-		}else if(qid.path == QDRAW){
+	with(Srv9p.Qids){
+		if(qid.path == QDRAW){
 			return this.stat([QDRAWNEW].concat(this.connqids())[offset]);
 		}else if(qid.path >= QDRAWBASE){
 			var dd = this.drawdir(qid.path);
@@ -233,97 +148,18 @@ Draw9p.dirent = function(qid, offset){
 			}
 		}
 		return undefined;
-	}catch(e){
-		return undefined;
-	}
-	}
-}
-
-Draw9p.write = function(qid, offset, data){
-	with(this.Qids){
-		if(qid.path >= QDRAWBASE){
-			var dd = this.drawdir(qid.path);
-			if(dd.drawfile == QDRAWDATA){
-				return this.writedrawdata(dd.drawdir, offset, data);
-			}else if(dd.drawfile == QDRAWCTL){
-				return this.writedrawctl(dd.drawdir, offset, data);
-			}else{
-				throw("writing impermissible");
-			}
-		}else{
-			if(qid.path == QCONSCTL){
-				return;
-			}else if(qid.path == QCURSOR){
-				return;
-			}else if(qid.path == QLABEL){
-				this.label = data;
-				return data.length;
-			}else{
-				throw("cannot write");
-			}
-		}
 	}
 }
 
 Draw9p.clunk = function(fid){
-	with(this.Qids){
-		if(fid.qid.path == QDRAWNEW){
-			delete this.conns[fid.drawconn];
-		}
+	if(fid.qid.path == Srv9p.Qids.QDRAWNEW){
+		delete this.conns[fid.drawconn];
 	}
 }
 
-Draw9p.remove = function(qid){
-	throw("cannot remove");
-}
-
 Draw9p.stat = function(qid){
-	with(this.Qids){
-		if(qid == QROOT){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QROOT, 0, NineP.QTDIR),
-				mode: NineP.DMDIR|NineP.DMREAD|NineP.DMEXEC,
-				name: "/"
-			});
-		}else if(qid == QCONS){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QCONS, 0, 0),
-				mode: 0,
-				name: "cons"
-			});
-		}else if(qid == QCONSCTL){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QCONSCTL, 0, 0),
-				mode: 0,
-				name: "consctl"
-			});
-		}else if(qid == QMOUSE){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QMOUSE, 0, 0),
-				mode: NineP.DMAPPEND,
-				length: 49,
-				name: "mouse"
-			});
-		}else if(qid == QCURSOR){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QCURSOR, 0, 0),
-				mode: 0,
-				length: 72,
-				name: "cursor"
-			});
-		}else if(qid == QWINNAME){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QWINNAME, 0, 0),
-				length: "webdraw".length,
-				name: "winname"
-			});
-		}else if(qid == QLABEL){
-			return new NineP.Stat({
-				qid: new NineP.Qid(QLABEL, 0, 0),
-				length: this.label.length,
-				name: "label"
-			});
-		}else if(qid == QDRAW){
+	with(Srv9p.Qids){
+		if(qid == QDRAW){
 			return new NineP.Stat({
 				qid: new NineP.Qid(QDRAW, 0, NineP.QTDIR),
 				mode: NineP.DMDIR,
@@ -338,14 +174,12 @@ Draw9p.stat = function(qid){
 			});
 		}else if(qid >= QDRAWBASE){
 			return this.statdrawdir(qid);
-		}else{
-			throw("invalid qid");
 		}
 	}
 }
 
 Draw9p.statdrawdir = function(qid){
-	with(this.Qids){
+	with(Srv9p.Qids){
 		var dd = this.drawdir(qid);
 	
 		if(qid < QDRAWBASE){

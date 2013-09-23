@@ -18,6 +18,7 @@ var cons;
 var mouse;
 var settings;
 var ninep;
+var srv9p;
 
 window.onload = function(){
 	var wsurl = Socket.wsurl(window.location.toString());
@@ -25,12 +26,12 @@ window.onload = function(){
 	cons = new Cons();
 	mouse = new Mouse();
 	settings = new Settings();
-	ninep = new NineP(wsurl, Draw9p, cons);
+	srv9p = new Srv9p(Draw9p);
+	ninep = new NineP(wsurl, srv9p, cons);
 
 	/* XXX Draw9p should be instantiated and have a constructor. */
 	Draw9p.rootcanvas = elem("webdraw");
 	Draw9p.imgnames["webdraw"] = Draw9p.RootImage();
-	Draw9p.label = "webdraw".toUTF8Array();
 
 	addevent(elem("webdraw"), "click", function(){
 		cons.write("lol clicked whee");
