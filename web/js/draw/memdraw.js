@@ -120,7 +120,7 @@ var discend = function(p, radius, dst, src, dsrc, op){
 	Memdraw.fillellipse(dst, p, radius, radius, 0, 2 * Math.PI, src, dsrc, op);
 }
 
-var drawchar = function(dst, p, src, sp, font, fc, op){
+var drawchar = function(dst, p, src, sp, bg, bp, font, fc, op){
 	var r = {
 		min: {
 			x: p.x + fc.left,
@@ -136,6 +136,9 @@ var drawchar = function(dst, p, src, sp, font, fc, op){
 		y: sp.y + fc.r.min.y
 	}
 
+	if(bg){
+		draw(dst, r, bg, bp, op);
+	}
 	drawmasked(dst, r, src, sp1, font, fc.r.min, op);
 	p.x += fc.width;
 	sp.x += fc.width;
@@ -243,12 +246,12 @@ Memdraw = {
 	load: function(dst, r, data, iscompressed){
 		return load(dst, r, data, iscompressed);
 	},
-	string: function(dst, src, font, p, clipr, sp, index, op){
+	string: function(dst, src, font, p, clipr, sp, bg, bp, index, op){
 		for(var i = 0; i < index.length; ++i){
 			if(index[i] == 0 || index[i] >= font.nchar){
 				throw("font cache index out of bounds");
 			}cons.log("char: " + index[i]);
-			drawchar(dst, p, src, sp, font, font.fchar[index[i]], op);
+			drawchar(dst, p, src, sp, bg, bp, font, font.fchar[index[i]], op);
 		}
 	},
 	Opdefs: {

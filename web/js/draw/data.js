@@ -408,7 +408,7 @@ Draw9p.drawdatahandlers = {
 		if(font.fchar == undefined){
 			throw("not a font");
 		}
-		Memdraw.string(dst, src, font, p, clipr, sp, index, conn.op);
+		Memdraw.string(dst, src, font, p, clipr, sp, null, null, index, conn.op);
 	},
 	"x": function(conn, offset, ai){
 		try{
@@ -443,6 +443,11 @@ Draw9p.drawdatahandlers = {
 		if(font.fchar == undefined){
 			throw("not a font");
 		}
+		var bg = conn.imgs[bgid];
+		if(bg == undefined){
+			throw("invalid image id");
+		}
+		Memdraw.string(dst, src, font, dp, clipr, sp, bg, bp, index, conn.op);
 	},
 	"S": function(conn, offset, ai){
 		try{
