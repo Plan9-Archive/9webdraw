@@ -22,8 +22,7 @@ will produce the proxy, `proxy` and its helper programs.
 The proxy has two modes of operation: it can either post a file
 descriptor to `/srv` to be mounted by hand, or it can set up the
 namespace for a graphical program automatically on each
-connection.  Unfortunately, the second mode of operation does
-not work yet.
+connection.
 
 In either mode, the proxy will serve HTTP on port 80.
 
@@ -43,9 +42,10 @@ that are already open.
 
 When started without the `-srv` flag, the proxy takes the name of and
 arguments to a program to be run for each session.  If no arguments
-are provided, `/games/catclock` will be run by default.
+are provided, `/games/catclock` will be run by default.  Unfortunately,
+for unknown reasons an absolute path must be specified.
 
-    % proxy acme -l acme.dump
+    % proxy /bin/acme -l acme.dump
 
 [man3draw]: http://plan9.bell-labs.com/magic/man2html/3/draw
 [man3srv]: http://plan9.bell-labs.com/magic/man2html/3/srv
