@@ -1,0 +1,6 @@
+syntax: regexp
+^proxy$
+^runweb(\.[^c])*$
+^srvcat(\.[^c])*$
+^test/convert(\.[^c])*$
+^test/draw[^\.]*(\.[^c])$
