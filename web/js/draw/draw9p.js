@@ -185,8 +185,7 @@ Draw9p.read = function(fid, offset, count, callback){
 			if(fid.qid.path == QCONS){
 				return cons.addcallback(callback);
 			}else if(fid.qid.path == QMOUSE){
-				/* XXX DISCARD MOUSE READS */
-				return;
+				return mouse.addcallback(callback);
 			}else if(fid.qid.path == QWINNAME){
 				if(offset == 0){
 					return callback.read("webdraw".toUTF8Array());

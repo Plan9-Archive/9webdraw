@@ -3,7 +3,7 @@ function elem(name){
 }
 
 function addevent(elem, evt, handler){
-	elem.addEventListener(evt, handler, false);
+	elem.addEventListener(evt, handler, true);
 }
 
 /* this should not be necessary, but */
@@ -14,6 +14,7 @@ function setevent(elem, evt, handler){
 	elem["on" + evt] = handler;
 }
 
+var basetime;
 var cons;
 var mouse;
 var settings;
@@ -22,6 +23,7 @@ var ninep;
 window.onload = function(){
 	var wsurl = Socket.wsurl(window.location.toString());
 
+	basetime = Date.now();
 	cons = new Cons();
 	mouse = new Mouse();
 	settings = new Settings();
@@ -32,8 +34,11 @@ window.onload = function(){
 	Draw9p.imgnames["webdraw"] = Draw9p.RootImage();
 	Draw9p.label = "webdraw".toUTF8Array();
 
-	addevent(elem("webdraw"), "click", function(){
-		cons.flushcallbacks();
+	addevent(elem("webdraw"), "mousedown", function(e){
+		return mouse.handlebutton(e);
+	});
+	addevent(elem("webdraw"), "mouseup", function(e){
+		return mouse.handlebutton(e);
 	});
 	setevent(window, "keydown", function(e){
 		return cons.handlekeys(e, cons.kbd.down);
