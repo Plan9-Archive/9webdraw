@@ -19,7 +19,7 @@ Draw9p.readdrawctl = function(fid, offset){
 	}
 
 	if(offset == 0){
-		var a11 = mka11(this.pad11);
+		var a11 = mka11(pad11);
 		a11(conn.id);
 		a11(conn.imgid);
 		a11(img.chan);
