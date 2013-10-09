@@ -5,13 +5,13 @@ the HTML5 <canvas> element.
 
 ## Prerequisites
 * [Plan 9][plan9], of course!
-* A functioning [Go][golang] environment
+* A functioning [Go 1.1][golang] environment
     + The WebSocket Go package:
         [code.google.com/p/go.net/websocket][gows]
 * A modern web browser capable of
     + Binary-mode WebSockets
     + HTML5 Canvas
-
+I have prepared some notes on [setting up the Go environment][gopkg].
 ## Building
 Assuming Go and its Websocket package are correctly installed,
 
@@ -52,3 +52,4 @@ for unknown reasons an absolute path must be specified.
 [plan9]: http://plan9.bell-labs.com/plan9/
 [golang]: http://golang.org/
 [gows]: http://code.google.com/p/go.net/websocket
+[gopkg]: PREREQ-gopkg.md
