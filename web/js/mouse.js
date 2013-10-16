@@ -13,21 +13,13 @@ function Mouse(){
 		var buf = "m".toUTF8Array();
 		buf = buf.concat(pad11(this.position.x));
 		buf = buf.concat(pad11(this.position.y));
-		buf = buf.concat(pad11(this.buttons.toBits()));
+		buf = buf.concat(pad11(this.buttons));
 		buf = buf.concat(pad11(this.timestamp));
 		return buf;
 	}
 
-	this.states = {down: "down", up: "up"};
-	this.state = new State({x: 0, y: 0},(function(up){
-		var arr = [up, up, up];
-		arr.toBits = function(){
-			return (this[0] == up? 0: 1) |
-				(this[1] == up? 0: 2) |
-				(this[2] == up? 0: 4);
-		}
-		return arr;
-	})(this.states.up));
+	this.states = {down: 1, up: 0};
+	this.state = new State({x: 0, y: 0}, 0);
 
 	this.usefkeys = false;
 	this.callbacks = [];
@@ -39,13 +31,13 @@ function Mouse(){
 		}
 		switch(e.keyCode){
 		case 112:
-		    this.state.buttons[0] = state;
+		    this.state.buttons = (this.state.buttons&~1) | state;
 		    break;
 		case 113:
-		    this.state.buttons[1] = state;
+		    this.state.buttons = (this.state.buttons&~2) | state;
 		    break;
 		case 114:
-		    this.state.buttons[2] = state;
+		    this.state.buttons = (this.state.buttons&~4) | state;
 		    break;
 		default:
 		    return true;
@@ -55,18 +47,35 @@ function Mouse(){
 	}
 
 	this.handlebutton = function(e){
-		var button = (function(states){
-			return function(b){
-				return b? states.down: states.up;
-			}
-		})(this.states);
-		this.state.buttons[0] = button(e.buttons & 1);
-		this.state.buttons[1] = button(e.buttons & 2);
-		this.state.buttons[2] = button(e.buttons & 4);
+		this.state.buttons = e.buttons;
 		this.state.position = {x: e.clientX, y: e.clientY};
 		this.generatemovement(this.state);
-		return 0;
+		return false;
 	}
+
+	this.handlemove = function(e){
+		this.state.position.x +=
+			e.movementX ||
+			e.mozMovementX ||
+			e.webkitMovementX ||
+			0;
+		this.state.position.x %= Draw9p.rootcanvas.width;
+		if(this.state.position.x < 0){
+			this.state.position.x = 0;
+		}
+		this.state.position.y +=
+			e.movementY ||
+			e.mozMovementY ||
+			e.webkitMovementY ||
+			0;
+		this.state.position.y %= Draw9p.rootcanvas.height;
+		if(this.state.position.y < 0){
+			this.state.position.y = 0;
+		}
+
+		this.generatemovement(this.state);
+		return false;
+}
 
 	this.generatemovement = function(state){
 		cons.write("m " + state.position.x + ", " + state.position.y +
