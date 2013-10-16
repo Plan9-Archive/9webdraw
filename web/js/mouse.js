@@ -59,7 +59,9 @@ function Mouse(){
 			e.mozMovementX ||
 			e.webkitMovementX ||
 			0;
-		this.state.position.x %= Draw9p.rootcanvas.width;
+		if(this.state.position.x > Draw9p.rootcanvas.width){
+			this.state.position.x = Draw9p.rootcanvas.width;
+		}
 		if(this.state.position.x < 0){
 			this.state.position.x = 0;
 		}
@@ -68,7 +70,9 @@ function Mouse(){
 			e.mozMovementY ||
 			e.webkitMovementY ||
 			0;
-		this.state.position.y %= Draw9p.rootcanvas.height;
+		if(this.state.position.y > Draw9p.rootcanvas.height){
+			this.state.position.y = Draw9p.rootcanvas.height;
+		}
 		if(this.state.position.y < 0){
 			this.state.position.y = 0;
 		}
