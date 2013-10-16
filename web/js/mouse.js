@@ -73,6 +73,11 @@ function Mouse(){
 			this.state.position.y = 0;
 		}
 
+		/* XXX debug cursor */
+		Draw9p.rootcanvas.getContext("2d").fillRect(
+			this.state.position.x,
+			this.state.position.y,
+			5, 5);
 		this.generatemovement(this.state);
 		return false;
 }
