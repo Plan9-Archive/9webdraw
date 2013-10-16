@@ -8,9 +8,10 @@ the HTML5 <canvas> element.
 * A functioning [Go 1.1][golang] environment
     + The WebSocket Go package:
         [code.google.com/p/go.net/websocket][gows]
-* A modern web browser capable of
+* A modern web browser supporting:
     + Binary-mode WebSockets
     + HTML5 Canvas
+    + Pointer Lock
 
 I have prepared some notes on [setting up the Go environment][gopkg].
 ## Building
