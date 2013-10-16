@@ -52,11 +52,19 @@ window.onload = function(){
 	});
 
 	setevent(webdraw, "click", function(e){
-		webdraw.requestPointerLock =
-			webdraw.requestPointerLock ||
-			webdraw.mozRequestPointerLock ||
-			webdraw.webkitRequestPointerLock;
-	
-		webdraw.requestPointerLock();
+		if(
+			document.pointerLockElement !== webdraw &&
+			document.mozPointerLockElement !== webdraw &&
+			document.webkitPointerLockElement !== webdraw
+		){
+			webdraw.requestPointerLock =
+				webdraw.requestPointerLock ||
+				webdraw.mozRequestPointerLock ||
+				webdraw.webkitRequestPointerLock;
+			webdraw.requestPointerLock();
+			return false;
+		}else{
+			return true;
+		}
 	});
 }

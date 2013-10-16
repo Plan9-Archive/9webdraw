@@ -48,7 +48,6 @@ function Mouse(){
 
 	this.handlebutton = function(e){
 		this.state.buttons = e.buttons;
-		this.state.position = {x: e.clientX, y: e.clientY};
 		this.generatemovement(this.state);
 		return false;
 	}
