@@ -31,13 +31,13 @@ function Mouse(){
 		}
 		switch(e.keyCode){
 		case 112:
-		    this.state.buttons = (this.state.buttons&~1) | state;
+		    this.state.buttons = (this.state.buttons& ~1) | state<<0;
 		    break;
 		case 113:
-		    this.state.buttons = (this.state.buttons&~2) | state;
+		    this.state.buttons = (this.state.buttons& ~2) | state<<1;
 		    break;
 		case 114:
-		    this.state.buttons = (this.state.buttons&~4) | state;
+		    this.state.buttons = (this.state.buttons& ~4) | state<<2;
 		    break;
 		default:
 		    return true;
@@ -46,8 +46,9 @@ function Mouse(){
 		return false;
 	}
 
-	this.handlebutton = function(e){
-		this.state.buttons = e.buttons;
+	this.handlebutton = function(e, state){
+		this.state.buttons = (this.state.buttons& ~(1<<e.button)) |
+			state<<e.button;
 		this.generatemovement(this.state);
 		return false;
 	}

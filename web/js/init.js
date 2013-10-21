@@ -36,10 +36,10 @@ window.onload = function(){
 	Draw9p.label = "webdraw".toUTF8Array();
 
 	addevent(webdraw, "mousedown", function(e){
-		return mouse.handlebutton(e);
+		return mouse.handlebutton(e, 1);
 	});
 	addevent(webdraw, "mouseup", function(e){
-		return mouse.handlebutton(e);
+		return mouse.handlebutton(e, 0);
 	});
 	addevent(webdraw, "mousemove", function(e){
 		return mouse.handlemove(e);
