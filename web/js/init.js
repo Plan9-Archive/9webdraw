@@ -26,7 +26,7 @@ window.onload = function(){
 
 	basetime = Date.now();
 	cons = new Cons();
-	mouse = new Mouse();
+	mouse = new Mouse(elem("cursor"));
 	settings = new Settings();
 	ninep = new NineP(wsurl, Draw9p, cons);
 

@@ -3,12 +3,22 @@
   riofg: #52aaad
 */
 
+#container {
+	position: relative;
+}
+
 #webdraw {
     border-width: medium;
     border-style: solid;
     border-color: #9cefef;
     width: 800px;
     height: 600px;
+}
+
+#cursor {
+	position: absolute;
+	top: 0em;
+	left: 0em;
 }
 
 #cons {

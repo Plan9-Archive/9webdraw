@@ -1,6 +1,6 @@
 var mouse;
 
-function Mouse(){
+function Mouse(cursorelem){
 	var State = function(position, buttons){
 		this.position = position;
 		this.buttons = buttons;
@@ -77,11 +77,7 @@ function Mouse(){
 			this.state.position.y = 0;
 		}
 
-		/* XXX debug cursor */
-		Draw9p.rootcanvas.getContext("2d").fillRect(
-			this.state.position.x,
-			this.state.position.y,
-			5, 5);
+		this.cursor.goto(this.state.position);
 		this.generatemovement(this.state);
 		return false;
 }
@@ -118,8 +114,8 @@ function Mouse(){
 			0x7F, 0xFC, 0x7F, 0xFE, 0x7F, 0xFC, 0x73, 0xF8, 
 			0x61, 0xF0, 0x60, 0xE0, 0x40, 0x40, 0x00, 0x00, 
 		],
-		img: (function(){
-			var c = document.createElement("canvas");
+		img: (function(elem){
+			var c = elem;
 			c.width = c.height = 16;
 			return {
 				canvas: c,
@@ -146,7 +142,7 @@ function Mouse(){
 					this.ctx.putImageData(id, 0, 0);
 				}
 			};
-		})(),
+		})(cursorelem),
 		offset: {x: 0, y: 0},
 		write: function(data){
 			if(data.length != 72){
@@ -157,9 +153,13 @@ function Mouse(){
 			this.offset = ai.getPoint();
 			this.img.fill(ai.getBytes(32), 0xFF);
 			this.img.fill(ai.getBytes(32), 0x00);
-			cons.log("set cursor!");
-			document.body.appendChild(this.img.canvas);
 			return data.length;
+		},
+		goto: function(pos){
+			var x = pos.x - this.offset.x;
+			var y = pos.y - this.offset.y;
+			this.img.canvas.style.left = x + "px";
+			this.img.canvas.style.top = y + "px";
 		}
 	}
 
