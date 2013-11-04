@@ -252,7 +252,7 @@ Draw9p.write = function(qid, offset, data){
 			if(qid.path == QCONSCTL){
 				return;
 			}else if(qid.path == QCURSOR){
-				return;
+				return mouse.cursor.write(data);
 			}else if(qid.path == QLABEL){
 				this.label = data;
 				return data.length;

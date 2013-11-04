@@ -103,4 +103,64 @@ function Mouse(){
 			this.callbacks.shift().read(this.buf.shift().toWireFormat());
 		}
 	}
+
+	this.cursor = {
+		arrow: [
+			0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+
+			0xFF, 0xFF, 0x80, 0x01, 0x80, 0x02, 0x80, 0x0C, 
+			0x80, 0x10, 0x80, 0x10, 0x80, 0x08, 0x80, 0x04, 
+			0x80, 0x02, 0x80, 0x01, 0x80, 0x02, 0x8C, 0x04, 
+			0x92, 0x08, 0x91, 0x10, 0xA0, 0xA0, 0xC0, 0x40, 
+
+			0x00, 0x00, 0x7F, 0xFE, 0x7F, 0xFC, 0x7F, 0xF0, 
+			0x7F, 0xE0, 0x7F, 0xE0, 0x7F, 0xF0, 0x7F, 0xF8, 
+			0x7F, 0xFC, 0x7F, 0xFE, 0x7F, 0xFC, 0x73, 0xF8, 
+			0x61, 0xF0, 0x60, 0xE0, 0x40, 0x40, 0x00, 0x00, 
+		],
+		img: (function(){
+			var c = document.createElement("canvas");
+			c.width = c.height = 16;
+			return {
+				canvas: c,
+				ctx: c.getContext("2d"),
+				clear: function(){
+					this.ctx.clearRect(0, 0, 16, 16);
+				},
+				fill: function(data, px){
+					var id = this.ctx.getImageData(0, 0, 16, 16);
+					var cp = 0; /* canvas pointer */
+					for(var i=0; i<32; ++i){
+						for(var b=7; b>=0; --b){
+							var p = (data[i]>>b) & 1;
+							if(p){
+								id.data[cp++] = px;
+								id.data[cp++] = px;
+								id.data[cp++] = px;
+								id.data[cp++] = 0xFF;
+							}else{
+								cp += 4;
+							}
+						}
+					}
+					this.ctx.putImageData(id, 0, 0);
+				}
+			};
+		})(),
+		offset: {x: 0, y: 0},
+		write: function(data){
+			if(data.length != 72){
+				data = this.arrow;
+			}
+			this.img.clear();
+			var ai = new ArrayIterator(data);
+			this.offset = ai.getPoint();
+			this.img.fill(ai.getBytes(32), 0xFF);
+			this.img.fill(ai.getBytes(32), 0x00);
+			cons.log("set cursor!");
+			document.body.appendChild(this.img.canvas);
+			return data.length;
+		}
+	}
+
 }
