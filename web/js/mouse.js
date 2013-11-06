@@ -162,5 +162,6 @@ function Mouse(cursorelem){
 			this.img.canvas.style.top = y + "px";
 		}
 	}
+	this.cursor.write([]);
 
 }
