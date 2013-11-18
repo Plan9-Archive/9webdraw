@@ -28,10 +28,17 @@ function Cons(){
 		}
 
 		if(dir == cons.kbd.down){
-			this.buf += String.fromCharCode(e.keyCode);
+			this.buf += this.key2str(e);
 			this.flushcallbacks();
 		}
 		return 1;
+	}
+
+	this.key2str = function(e){
+		if(e.keyCode >= 0x41 && e.keyCode <= 0x5a){
+			return String.fromCharCode(e.keyCode | (e.shiftKey? 0: 0x20));
+		}
+		return String.fromCharCode(e.keyCode);
 	}
 
 	this.addcallback = function(callback){
