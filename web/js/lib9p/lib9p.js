@@ -90,7 +90,7 @@ NineP.PBIT64 = function(p,v){
 
 NineP.getpktsize = function(buf){ return NineP.GBIT32(buf.slice(0,4)); };
 NineP.getpkttype = function(buf){ return buf[4]; };
-NineP.getpkttag = function(buf){ return NineP.GBIT16(buf.slice(5, 7)); };
+NineP.getpkttag = function(buf){ return buf.slice(5, 7); };
 
 NineP.mkwirebuf = function(buf){
 	return NineP.PBIT16([], buf.length).concat(buf);
@@ -130,7 +130,7 @@ NineP.prototype.rawpktin = function(pkt){
 }
 
 NineP.prototype.processpkt = function(pkt){
-	var tag = NineP.PBIT16([], NineP.getpkttag(pkt));
+	var tag = NineP.getpkttag(pkt);
 	switch(NineP.getpkttype(pkt)){
 		case NineP.packets.Tversion:
 			return this.Rversion(pkt, tag);
