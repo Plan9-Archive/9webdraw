@@ -4,7 +4,9 @@ function Cons(){
 	this.elem = elem("cons");
 	this.buf = "";
 	this.callbacks = [];
-	this.kbd = {down: "down", up: "up"};
+	this.kbd = {down: "down", up: "up", press: "press"};
+	this.compose = false;
+	this.composebuf = [];
 
 	this.log = function(s){
 		var span = document.createElement("span");
@@ -27,18 +29,77 @@ function Cons(){
 			return 0;
 		}
 
-		if(dir == cons.kbd.down){
-			this.buf += this.key2str(e);
-			this.flushcallbacks();
+		if(dir == cons.kbd.press){
+			if(this.compose){
+				this.composebuf.push(String.fromCharCode(e.which));
+				this.composehandle();
+			}else{
+				this.buf += String.fromCharCode(e.which);
+				this.flushcallbacks();
+			}
+			e.preventDefault();
+			e.stopPropagation();
+			return 0;
 		}
-		return 1;
+
+		if(dir == cons.kbd.down){
+			/* XXX control characters should break compose mode! */
+			if(this.compose == true) return 0;
+
+			var s =  this.key2str(e);
+			if(s == "") return 1;
+			this.buf += s;
+			this.flushcallbacks();
+			e.preventDefault();
+			e.stopPropagation();
+			return 0;
+		}
+		return 0;
 	}
 
 	this.key2str = function(e){
-		if(e.keyCode >= 0x41 && e.keyCode <= 0x5a){
-			return String.fromCharCode(e.keyCode | (e.shiftKey? 0: 0x20));
+
+		switch(e.which){
+		case 0:
+			break;
+		case 13:
+			return "\n";
+		case 18:
+			this.compose = true;
+			/* fall through */
+		default:
+			return "";
 		}
-		return String.fromCharCode(e.keyCode);
+
+		return "[control character]";
+	}
+
+	this.composereset = function(){
+		this.composebuf = [];
+		this.compose = false;
+	}
+
+	this.composehandle = function(){
+		alert(this.composebuf);
+		if(this.composebuf.length < 2) return;
+		if(this.composebuf[0] == "X"){
+			if(this.composebuf.length < 5) return;
+			if(this.composebuf.length > 5){
+				this.composereset();
+			}
+			var xdigits = "0123456789ABCDEF";
+			var c = 0;
+			for(var i = 1; i < 5; ++i){
+				var x = xdigits.indexOf(this.composebuf[i].toUpperCase());
+				if(x < 0) return this.composereset();
+				c |= x << ((4 - i) * 4);
+			}
+			this.buf += String.fromCharCode(c);
+			this.flushcallbacks();
+			this.composereset();
+		}else{
+			this.composereset();
+		}
 	}
 
 	this.addcallback = function(callback){

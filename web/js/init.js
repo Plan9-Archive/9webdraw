@@ -47,6 +47,9 @@ window.onload = function(){
 	setevent(window, "keydown", function(e){
 		return cons.handlekeys(e, cons.kbd.down);
 	});
+	setevent(window, "keypress", function(e){
+		return cons.handlekeys(e, cons.kbd.press);
+	});
 	setevent(window, "keyup", function(e){
 		return cons.handlekeys(e, cons.kbd.up);
 	});
