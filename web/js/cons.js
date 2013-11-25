@@ -5,8 +5,8 @@ function Cons(){
 	this.buf = "";
 	this.callbacks = [];
 	this.kbd = {down: "down", up: "up", press: "press"};
-	this.compose = false;
-	this.composebuf = [];
+
+	var compose = new Compose(this);
 
 	this.log = function(s){
 		var span = document.createElement("span");
@@ -30,9 +30,8 @@ function Cons(){
 		}
 
 		if(dir == cons.kbd.press){
-			if(this.compose){
-				this.composebuf.push(String.fromCharCode(e.which));
-				this.composehandle();
+			if(compose.getmode()){
+				compose.push(String.fromCharCode(e.which));
 			}else{
 				this.buf += String.fromCharCode(e.which);
 				this.flushcallbacks();
@@ -44,7 +43,7 @@ function Cons(){
 
 		if(dir == cons.kbd.down){
 			/* XXX control characters should break compose mode! */
-			if(this.compose == true) return 0;
+			if(compose.getmode()) return 0;
 
 			var s =  this.key2str(e);
 			if(s == "") return 1;
@@ -65,7 +64,7 @@ function Cons(){
 		case 13:
 			return "\n";
 		case 18:
-			this.compose = true;
+			compose.set();
 			/* fall through */
 		default:
 			return "";
@@ -74,32 +73,9 @@ function Cons(){
 		return "[control character]";
 	}
 
-	this.composereset = function(){
-		this.composebuf = [];
-		this.compose = false;
-	}
-
-	this.composehandle = function(){
-		alert(this.composebuf);
-		if(this.composebuf.length < 2) return;
-		if(this.composebuf[0] == "X"){
-			if(this.composebuf.length < 5) return;
-			if(this.composebuf.length > 5){
-				this.composereset();
-			}
-			var xdigits = "0123456789ABCDEF";
-			var c = 0;
-			for(var i = 1; i < 5; ++i){
-				var x = xdigits.indexOf(this.composebuf[i].toUpperCase());
-				if(x < 0) return this.composereset();
-				c |= x << ((4 - i) * 4);
-			}
-			this.buf += String.fromCharCode(c);
-			this.flushcallbacks();
-			this.composereset();
-		}else{
-			this.composereset();
-		}
+	this.take = function(s){
+		this.buf += s;
+		this.flushcallbacks();
 	}
 
 	this.addcallback = function(callback){
