@@ -1,3 +1,5 @@
+/* See /sys/src/9/port/latin1.c */
+
 function Compose(parent){
 	var mode = false;
 	var buf = [];
@@ -8,7 +10,27 @@ function Compose(parent){
 			if(buf.length < 5) return;
 			handleX();
 		}else{
-			reset();
+			for(var k in Composetab){
+				if(buf[0] == k.charAt(0)){
+					if(k.length == 1)
+						var c = buf[1];
+					else if(k.charAt(1) != buf[1])
+						continue;
+					else if(buf.length < 3)
+						return;
+					else
+						var c = buf[2];
+					/* parent.take so[si.find(c)] */
+					var i = Composetab[k].from.indexOf(c);
+					if(i < 0)
+						return reset();
+					else{
+						parent.take(Composetab[k].to[i]);
+						return reset();
+					}
+				}
+			}
+			return reset();
 		}
 	}
 
