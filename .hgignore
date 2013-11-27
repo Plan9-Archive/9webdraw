@@ -2,5 +2,6 @@ syntax: regexp
 ^proxy$
 ^runweb(\.[^c])*$
 ^srvcat(\.[^c])*$
+^latin2js(\.[^c])*$
 ^test/convert(\.[^c])*$
 ^test/draw[^\.]*(\.[^c])$
