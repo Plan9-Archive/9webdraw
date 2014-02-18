@@ -13,5 +13,6 @@ function Socket(path, read){
 }
 /* I couldn't find a better way to get a Websocket to the same server. */
 Socket.wsurl = function(url){
-	return url.replace(/^http/, "ws").concat("9p");
+	var host = url.replace(/^.*\/\//, "").split("/", 1)[0];
+	return "ws://".concat(host).concat("/magic/websocket");
 }
