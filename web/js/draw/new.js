@@ -1,5 +1,6 @@
 Draw9p.readdrawnew = function(conn){
 	cons.log("readdrawnew");
+	var sz = Draw9p.rootsz;
 	var buf = [];
 
 	buf = buf.concat(pad11(conn));
@@ -8,12 +9,12 @@ Draw9p.readdrawnew = function(conn){
 	buf = buf.concat(pad11(0));
 	buf = buf.concat(pad11(0));
 	buf = buf.concat(pad11(0));
-	buf = buf.concat(pad11(640));
-	buf = buf.concat(pad11(480));
+	buf = buf.concat(pad11(sz.w));
+	buf = buf.concat(pad11(sz.h));
 	buf = buf.concat(pad11(0));
 	buf = buf.concat(pad11(0));
-	buf = buf.concat(pad11(640));
-	buf = buf.concat(pad11(480));
+	buf = buf.concat(pad11(sz.w));
+	buf = buf.concat(pad11(sz.h));
 
 	return buf;
 }

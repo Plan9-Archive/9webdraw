@@ -59,11 +59,11 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 
 /* XXX Creating a new rootwindow object for each connection will probably */
 /* break once we start doing more advanced things. */
-/* XXX These parameters should not be hardcoded. */
 Draw9p.RootImage = function(){
+	var sz = Draw9p.rootsz;
 	var image =  new this.Image(0, "r8g8b8", 0,
-		{min: {x: 0, y: 0}, max: {x: 640, y: 480}},
-		{min: {x: 0, y: 0}, max: {x: 640, y: 480}},
+		{min: {x: 0, y: 0}, max: {x: sz.w, y: sz.h}},
+		{min: {x: 0, y: 0}, max: {x: sz.w, y: sz.h}},
 		0xFFFFFFFF);
 
 	image.canvas = Draw9p.rootcanvas;

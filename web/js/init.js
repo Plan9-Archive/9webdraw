@@ -32,6 +32,10 @@ window.onload = function(){
 
 	/* XXX Draw9p should be instantiated and have a constructor. */
 	Draw9p.rootcanvas = webdraw;
+	Draw9p.rootsz = {
+		w: webdraw.width,
+		h: webdraw.height
+	};
 	Draw9p.imgnames["webdraw"] = Draw9p.RootImage();
 	Draw9p.label = "webdraw".toUTF8Array();
 
