@@ -2,6 +2,7 @@ var cons;
 
 function Cons(){
 	this.elem = elem("cons");
+	this.debug = false;
 	this.buf = "";
 	this.callbacks = [];
 	this.kbd = {down: "down", up: "up", press: "press"};
@@ -9,9 +10,11 @@ function Cons(){
 	var compose = new Compose(this);
 
 	this.log = function(s){
-		var span = document.createElement("span");
-		span.textContent = s;
-		this.elem.appendChild(span);
+		if(this.debug){
+			var span = document.createElement("span");
+			span.textContent = s;
+			this.elem.appendChild(span);
+		}
 	}
 
 	this.write = function(s){
@@ -20,6 +23,7 @@ function Cons(){
 	}
 
 	this.showhide = function(b){
+		this.debug = b? true: false;
 		this.elem.style.display = b? "block": "none";
 	}
 
