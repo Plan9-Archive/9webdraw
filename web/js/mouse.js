@@ -89,32 +89,13 @@ function Mouse(cursorelem){
 }
 
 	this.handlewarp = function(data){
-		var base = 1;
-		var strtoul = function(data){
-			var x = 0;
-			var c;
-			var spc = " ".charCodeAt(0);
-			var oh = "0".charCodeAt(0);
-			var nine = "9".charCodeAt(0);
+		var ai = new ArrayIterator(data);
 
-			for(; base < data.length; ++base){
-				if(data[base] != spc)
-					break;
-			}
-			for(; base < data.length; ++base){
-				if(data[base] >= oh && data[base] <= nine){
-					x = (x * 10) + (data[base] - oh);
-				}else{
-					break;
-				}
-			}
-			return x;
-		}
-		if(data[0] != "m".charCodeAt(0)){
+		if(ai.getChar() != "m".charCodeAt(0)){
 			throw("bad mouse write");
 		}
-		var x = strtoul(data);
-		var y = strtoul(data);
+		var x = ai.strtoul();
+		var y = ai.strtoul();
 
 		this.state.position.x = x;
 		this.state.position.y = y;

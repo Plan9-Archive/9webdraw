@@ -82,3 +82,22 @@ ArrayIterator.prototype.getRect = function(){
 		max: this.getPoint()
 	}
 }
+
+ArrayIterator.prototype.strtoul = function(){
+	var spc = " ".charCodeAt(0);
+	var oh = "0".charCodeAt(0);
+	var nine = "9".charCodeAt(0);
+	var x = 0;
+
+	for(; this.index < this.array.length; ++this.index){
+		if(this.array[this.index] != spc)
+			break;
+	}
+	for(; this.index < this.array.length; ++this.index){
+		if(this.array[this.index] >= oh && this.array[this.index] <= nine)
+			x = (x * 10) + (this.array[this.index] - oh);
+		else
+			break;
+	}
+	return x;
+}
