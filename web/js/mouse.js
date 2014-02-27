@@ -17,6 +17,20 @@ function Mouse(cursorelem){
 		buf = buf.concat(pad11(this.timestamp));
 		return buf;
 	}
+	State.prototype.bound = function(){
+		if(this.position.x > Draw9p.rootcanvas.width){
+			this.position.x = Draw9p.rootcanvas.width;
+		}
+		if(this.position.x < 0){
+			this.position.x = 0;
+		}
+		if(this.position.y > Draw9p.rootcanvas.height){
+			this.position.y = Draw9p.rootcanvas.height;
+		}
+		if(this.position.y < 0){
+			this.position.y = 0;
+		}
+	}
 
 	this.states = {down: 1, up: 0};
 	this.state = new State({x: 0, y: 0}, 0);
@@ -62,32 +76,58 @@ function Mouse(cursorelem){
 			e.mozMovementX ||
 			e.webkitMovementX ||
 			0;
-		if(this.state.position.x > Draw9p.rootcanvas.width){
-			this.state.position.x = Draw9p.rootcanvas.width;
-		}
-		if(this.state.position.x < 0){
-			this.state.position.x = 0;
-		}
+
 		this.state.position.y +=
 			e.movementY ||
 			e.mozMovementY ||
 			e.webkitMovementY ||
 			0;
-		if(this.state.position.y > Draw9p.rootcanvas.height){
-			this.state.position.y = Draw9p.rootcanvas.height;
-		}
-		if(this.state.position.y < 0){
-			this.state.position.y = 0;
-		}
 
-		this.cursor.goto(this.state.position);
+		this.state.bound();
 		this.generatemovement(this.state);
 		return false;
 }
 
+	this.handlewarp = function(data){
+		var base = 1;
+		var strtoul = function(data){
+			var x = 0;
+			var c;
+			var spc = " ".charCodeAt(0);
+			var oh = "0".charCodeAt(0);
+			var nine = "9".charCodeAt(0);
+
+			for(; base < data.length; ++base){
+				if(data[base] != spc)
+					break;
+			}
+			for(; base < data.length; ++base){
+				if(data[base] >= oh && data[base] <= nine){
+					x = (x * 10) + (data[base] - oh);
+				}else{
+					break;
+				}
+			}
+			return x;
+		}
+		if(data[0] != "m".charCodeAt(0)){
+			throw("bad mouse write");
+		}
+		var x = strtoul(data);
+		var y = strtoul(data);
+
+		this.state.position.x = x;
+		this.state.position.y = y;
+		this.state.bound();
+
+		this.generatemovement(this.state);
+		return data.length;
+	}
+
 	this.generatemovement = function(state){
 		//cons.write("m " + state.position.x + ", " + state.position.y +
 		//	" : " + state.buttons);
+		this.cursor.goto(this.state.position);
 		this.buf.push(this.state.copy());
 		this.flushcallbacks();
 	}
