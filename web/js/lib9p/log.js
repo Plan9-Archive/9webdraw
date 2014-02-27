@@ -7,5 +7,5 @@ NineP.Log.prototype.txt = function(s){
 }
 
 NineP.Log.prototype.buf = function(s){
-	this.cons.log(s);
+	//this.cons.log(s);
 }

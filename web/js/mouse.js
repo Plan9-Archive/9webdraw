@@ -86,8 +86,8 @@ function Mouse(cursorelem){
 }
 
 	this.generatemovement = function(state){
-		cons.write("m " + state.position.x + ", " + state.position.y +
-			" : " + state.buttons);
+		//cons.write("m " + state.position.x + ", " + state.position.y +
+		//	" : " + state.buttons);
 		this.buf.push(this.state.copy());
 		this.flushcallbacks();
 	}
