@@ -3,7 +3,7 @@ function elem(name){
 }
 
 function addevent(elem, evt, handler){
-	elem.addEventListener(evt, handler, true);
+	elem.addEventListener(evt, handler, false);
 }
 
 /* this should not be necessary, but */
@@ -39,13 +39,13 @@ window.onload = function(){
 	Draw9p.imgnames["webdraw"] = Draw9p.RootImage();
 	Draw9p.label = "webdraw".toUTF8Array();
 
-	addevent(webdraw, "mousedown", function(e){
+	setevent(webdraw, "mousedown", function(e){
 		return mouse.handlebutton(e, 1);
 	});
-	addevent(webdraw, "mouseup", function(e){
+	setevent(webdraw, "mouseup", function(e){
 		return mouse.handlebutton(e, 0);
 	});
-	addevent(webdraw, "mousemove", function(e){
+	setevent(webdraw, "mousemove", function(e){
 		return mouse.handlemove(e);
 	});
 	setevent(window, "keydown", function(e){

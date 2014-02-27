@@ -50,6 +50,9 @@ function Mouse(cursorelem){
 		this.state.buttons = (this.state.buttons& ~(1<<e.button)) |
 			state<<e.button;
 		this.generatemovement(this.state);
+
+		e.preventDefault();
+		e.stopPropagation();
 		return false;
 	}
 
