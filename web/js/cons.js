@@ -10,11 +10,11 @@ function Cons(){
 	var compose = new Compose(this);
 
 	this.log = function(s){
-		if(this.debug){
+		//if(this.debug){
 			var span = document.createElement("span");
 			span.textContent = s;
 			this.elem.appendChild(span);
-		}
+		//}
 	}
 
 	this.write = function(s){

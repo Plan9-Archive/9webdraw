@@ -8,7 +8,7 @@ Draw9p.writedrawdata = function(connid, offset, data){
 	var ai = new ArrayIterator(data);
 	while(ai.hasRemainingBytes()){
 		var c = String.fromCharCode(ai.getChar());
-		cons.log("writedrawdata: " + c);
+		//cons.log("writedrawdata: " + c);
 		if(this.drawdatahandlers[c] == undefined){
 			throw("bad draw command");
 		}else{
@@ -91,6 +91,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"c": function(conn, offset, ai){
+		cons.log("writedrawdata: 'c' (change repl, rect) unimplemented!");
 		try{
 			var dstid = ai.getLong();
 			var repl = ai.getChar();
@@ -134,6 +135,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"e": function(conn, offset, ai){
+		cons.log("writedrawdata: 'e' (ellipse outline) unimplemented!");
 		try{
 			var dstid = ai.getLong();
 			var srcid = ai.getLong();
@@ -173,6 +175,7 @@ Draw9p.drawdatahandlers = {
 		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
 	},
 	"f": function(conn, offset, ai){
+		cons.log("writedrawdata: 'f' (free image) unimplemented!");
 		try{
 			var id = ai.getLong();
 		}catch(e){
@@ -180,6 +183,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"F": function(conn, offset, ai){
+		cons.log("writedrawdata: 'F' (free screen) unimplemented!");
 		try{
 			var id = ai.getLong();
 		}catch(e){
@@ -292,6 +296,7 @@ Draw9p.drawdatahandlers = {
 		conn.imgs[id] = imgnames[name];
 	},
 	"o": function(conn, offset, ai){
+		cons.log("writedrawdata: 'o' (translate window) unimplemented!");
 		try{
 			var id = ai.getLong();
 			var rmin = ai.getPoint();
@@ -370,6 +375,7 @@ Draw9p.drawdatahandlers = {
 		Memdraw.fillpoly(dst, dp, wind, src, sp, conn.op);
 	},
 	"r": function(conn, offset, ai){
+		cons.log("writedrawdata: 'r' (read back rectangle) unimplemented!");
 		try{
 			var id = ai.getLong();
 			var r = ai.getRect();
@@ -450,6 +456,7 @@ Draw9p.drawdatahandlers = {
 		Memdraw.string(dst, src, font, dp, clipr, sp, bg, bp, index, conn.op);
 	},
 	"S": function(conn, offset, ai){
+		cons.log("writedrawdata: 'S' (screen attach public) unimplemented!");
 		try{
 			var id = ai.getLong();
 			var chan = ai.getLong();
@@ -458,6 +465,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"t": function(conn, offset, ai){
+		cons.log("writedrawdata: 't' (top of window stack) unimplemented!");
 		try{
 			var top = ai.getChar();
 			var n = ai.getShort();
@@ -470,6 +478,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"v": function(conn, offset, ai){
+		//cons.log("writedrawdata: 'v' (flush) unimplemented!");
 	},
 	"y": function(conn, offset, ai){
 		try{
