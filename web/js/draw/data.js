@@ -91,7 +91,6 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"c": function(conn, offset, ai){
-		cons.log("writedrawdata: 'c' (change repl, rect) unimplemented!");
 		try{
 			var dstid = ai.getLong();
 			var repl = ai.getChar();
@@ -99,6 +98,12 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		var dst = conn.imgs[dstid];
+		if(dst == undefined){
+			throw("invalid image id");
+		}
+		dst.repl = repl;
+		dst.clipr = clipr;
 	},
 	"d": function(conn, offset, ai){
 		try{
@@ -175,12 +180,20 @@ Draw9p.drawdatahandlers = {
 		Memdraw.fillellipse(dst, center, a, b, alpha, phi, src,sp, conn.op);
 	},
 	"f": function(conn, offset, ai){
-		cons.log("writedrawdata: 'f' (free image) unimplemented!");
 		try{
 			var id = ai.getLong();
 		}catch(e){
 			throw("short draw message");
 		}
+		var img = conn.imgs[id];
+		if(img == undefined){
+			throw("invalid image id");
+		}
+		var screen = img.screen;
+		if(screen){
+			delete screen.imgs[id];
+		}
+		delete conn.imgs[id];
 	},
 	"F": function(conn, offset, ai){
 		cons.log("writedrawdata: 'F' (free screen) unimplemented!");
