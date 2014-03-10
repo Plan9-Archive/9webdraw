@@ -227,7 +227,7 @@ Draw9p.drawdatahandlers = {
 			var index = ai.getShort();
 			var r = ai.getRect();
 			var sp = ai.getPoint();
-			var left = ai.getChar();
+			var left = signed8dec(ai.getChar());
 			var width = ai.getChar();
 		}catch(e){
 			throw("short draw message");

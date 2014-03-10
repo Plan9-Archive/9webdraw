@@ -250,7 +250,7 @@ Memdraw = {
 		for(var i = 0; i < index.length; ++i){
 			if(index[i] == 0 || index[i] >= font.nchar){
 				throw("font cache index out of bounds");
-			}cons.log("char: " + index[i]);
+			}
 			drawchar(dst, p, src, sp, bg, bp, font, font.fchar[index[i]], op);
 		}
 	},
