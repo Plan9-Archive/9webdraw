@@ -1,0 +1,15 @@
+#!/bin/mk -f
+
+ALLJS = `{du -a js | awk '/\.js$/{print $2}'}
+
+attr = 'type="text/javascript" charset="utf-8"'
+tabs = '			'
+
+%.js:QV:
+	echo $tabs '<script' $attr 'src="' ^ $stem.js ^ '"/>'
+
+all:V: $ALLJS
+
+js/compose.js: js/composetab.js
+
+js/cons.js: js/compose.js

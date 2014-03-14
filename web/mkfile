@@ -1,0 +1,14 @@
+#!/bin/mk -f
+
+ALLJS = `{du -a js | awk '/\.js$/{print $2}'}
+
+all:V: js/composetab.js 9wd.html
+
+js/composetab.js: /bin/aux/latin2js /sys/src/9/port/latin1.h
+	aux/latin2js > web/js/composetab.js
+
+9wd.html: head.html incl.html tail.html
+	cat head.html incl.html tail.html > 9wd.html
+
+incl.html: mkhtml $ALLJS
+	mk -f mkhtml > incl.html
