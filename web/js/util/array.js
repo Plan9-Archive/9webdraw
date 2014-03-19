@@ -70,17 +70,19 @@ ArrayIterator.prototype.hasRemainingBytes = function(){
 }
 
 ArrayIterator.prototype.getPoint = function(){
-	return {
-		x: this.getLong(),
-		y: this.getLong()
-	}
+	var that = this;
+	return new Point(
+		that.getLong(),
+		that.getLong()
+	);
 }
 
 ArrayIterator.prototype.getRect = function(){
-	return {
-		min: this.getPoint(),
-		max: this.getPoint()
-	}
+	var that = this;
+	return new Rect(
+		that.getPoint(),
+		that.getPoint()
+	);
 }
 
 ArrayIterator.prototype.strtoul = function(){
