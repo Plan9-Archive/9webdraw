@@ -29,6 +29,7 @@ Point.prototype.dif = function(n){
 	this.x /= n;
 	this.y /= n;
 	return this;
+}
 
 Point.prototype.mul = function(n){
 	this.x *= n;
@@ -84,35 +85,39 @@ var eqpt = function(p, q){
 }
 
 var eqrect = function(r, s){
-	return \
+	return (
 		r.min.x == s.min.x &&
 		r.max.x == s.max.x &&
 		r.min.y == s.min.y &&
-		r.max.y == s.max.y;
+		r.max.y == s.max.y
+	);
 }
 
 var rectXrect = function(r, s){
-	return \
+	return (
 		r.min.x < s.max.x &&
 		s.min.x < r.max.x &&
 		r.min.y < s.max.y &&
-		s.min.y < r.max.y;
+		s.min.y < r.max.y
+	);
 }
 
 var rectinrect = function(r, s){
-	return \
+	return (
 		s.min.x <= r.min.x &&
 		r.max.x <= s.max.x &&
 		s.min.y <= r.min.y &&
-		r.max.y <= s.max.y;
+		r.max.y <= s.max.y
+	);
 }
 
 var ptinrect = function(p, r){
-	return \
+	return (
 		p.x >= r.min.x &&
 		p.x < r.max.x &&
 		p.y >= r.min.y &&
-		p.y < r.max.y;
+		p.y < r.max.y
+	);
 }
 
 var canonrect = function(r){
@@ -133,7 +138,7 @@ var canonrect = function(r){
 var combinerect = function(r1, r2){
 	if(r1.min.x > r2.min.x)
 		r1.min.x = r2.min.x;
-	if(r1.min.1 > r2.min.y)
+	if(r1.min.y > r2.min.y)
 		r1.min.y = r2.min.y;
 	if(r1.max.x < r2.max.x)
 		r1.max.x = r2.max.x;
