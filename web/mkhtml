@@ -1,6 +1,10 @@
 #!/bin/mk -f
 
-ALLJS = `{du -a js | awk '/\.js$/{print $2}'}
+BASE = `{echo js/*.js}
+DRAW = `{echo js/draw/*.js}
+LIB9P = `{echo js/lib9p/*.js}
+UTIL = `{echo js/util/*.js}
+ALLJS = $BASE $DRAW $LIB9P $UTIL
 
 attr = 'type="text/javascript" charset="utf-8"'
 tabs = '			'
@@ -13,3 +17,11 @@ all:V: $ALLJS
 js/compose.js: js/composetab.js
 
 js/cons.js: js/compose.js
+
+js/init.js: $DRAW $LIB9P js/cons.js js/mouse.js js/settings.js
+
+$BASE $DRAW $LIB9P: $UTIL
+
+js/lib9p/%.js: js/lib9p/lib9p.js js/lib9p/utf8.js
+
+js/lib9p/lib9p.js: js/lib9p/socket.js
