@@ -336,12 +336,12 @@ Draw9p.drawdatahandlers = {
 			var srcid = ai.getLong();
 			var sp = ai.getPoint();
 			var dp = [];
-			var o = {x: 0, y: 0};
+			var o = new Point(0, 0);
 			for(var i = 0; i < n; ++i){
-				dp[i] = {
-					x: drawcoord(ai, o.x),
-					y: drawcoord(ai, o.y)
-				}
+				dp[i] = new Point(
+					drawcoord(ai, o.x),
+					drawcoord(ai, o.y)
+				);
 				o = dp[i];
 			}
 		}catch(e){
@@ -366,12 +366,12 @@ Draw9p.drawdatahandlers = {
 			var srcid = ai.getLong();
 			var sp = ai.getPoint();
 			var dp = [];
-			var o = {x: 0, y: 0};
+			var o = new Point(0, 0);
 			for(var i = 0; i < n; ++i){
-				var p = {
-					x: drawcoord(ai, o.x),
-					y: drawcoord(ai, o.y)
-				}
+				var p = new Point(
+					drawcoord(ai, o.x),
+					drawcoord(ai, o.y)
+				);
 				dp[i] = o = p;
 			}
 		}catch(e){
