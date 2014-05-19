@@ -30,6 +30,8 @@ function Cons(){
 	this.handlekeys = function(e, dir){
 		if(!mouse.handlefkeys(e, dir == cons.kbd.down?
 			mouse.states.down : mouse.states.up)){
+			e.preventDefault();
+			e.stopPropagation();
 			return 0;
 		}
 
@@ -57,6 +59,12 @@ function Cons(){
 			e.stopPropagation();
 			return 0;
 		}
+
+		if(dir == cons.kbd.up){
+			e.preventDefault();
+			e.stopPropagation();
+			return 0;
+		}
 		return 0;
 	}
 
@@ -65,6 +73,10 @@ function Cons(){
 		switch(e.which){
 		case 0:
 			break;
+		case 8:
+			return "\b";
+		case 9:
+			return "\t";
 		case 13:
 			return "\n";
 		case 18:
