@@ -49,7 +49,9 @@ function Cons(){
 
 		if(dir == cons.kbd.down){
 			/* XXX control characters should break compose mode! */
-			if(compose.getmode()) return 0;
+			if(compose.getmode())
+				if(this.key2str(e) == "")
+					return 0;
 
 			var s =  this.key2str(e);
 			if(s == "") return 1;

@@ -58,8 +58,14 @@ window.onload = function(){
 	setevent(window, "keyup", function(e){
 		return cons.handlekeys(e, cons.kbd.up);
 	});
-
+	setevent(webdraw, "contextmenu", function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	});
 	setevent(webdraw, "click", function(e){
+		e.preventDefault();
+		e.stopPropagation();
 		if(
 			document.pointerLockElement !== webdraw &&
 			document.mozPointerLockElement !== webdraw &&
@@ -72,7 +78,7 @@ window.onload = function(){
 			webdraw.requestPointerLock();
 			return false;
 		}else{
-			return true;
+			return false;
 		}
 	});
 }
