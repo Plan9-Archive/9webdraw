@@ -25,7 +25,7 @@ Point.prototype.sub = function(p){
 	return this;
 }
 
-Point.prototype.dif = function(n){
+Point.prototype.div = function(n){
 	this.x /= n;
 	this.y /= n;
 	return this;
@@ -73,11 +73,31 @@ Rect.prototype.addpt = function(p){
 }
 
 var addpt = function(a, b){
-	return a.add(b);
+	return a.copy().add(b);
 }
 
 var subpt = function(a, b){
-	return a.sub(b);
+	return a.copy().sub(b);
+}
+
+var insetrect = function(r, n){
+	return r.copy().inset(n);
+}
+
+var divpt = function(a, b){
+	return a.copy().div(b);
+}
+
+var mulpt = function(a, b){
+	return a.copy().mul(b);
+}
+
+var rectsubpt = function(r, p){
+	return r.copy().subpt(p);
+}
+
+var rectaddpt = function(r, p){
+	return r.copy().addpt(p);
 }
 
 var eqpt = function(p, q){
@@ -122,6 +142,7 @@ var ptinrect = function(p, r){
 
 var canonrect = function(r){
 	var t;
+	r = r.copy();
 	if(r.max.x < r.min.x){
 		t = r.min.x;
 		r.min.x = r.max.x;
