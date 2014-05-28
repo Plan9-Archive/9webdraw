@@ -15,16 +15,14 @@ var draw = function(dst, r, src, sp, op){
 	/* XXX what about clipping on src? */
 
 	dst.ctx.beginPath();
-	dst.ctx.rect(r.min.x-dst.r.min.x, r.min.y-dst.r.min.y,
-		r.max.x-r.min.x, r.max.y-r.min.y);
+	dst.ctx.rrect(new Rect(subpt(r.min, dst.r.min), subpt(r.max, r.min)));
 	dst.ctx.clip();
 
 	if(src.repl){
 		dst.ctx.fillStyle = dst.ctx.createPattern(src.canvas, "repeat");
 		dst.ctx.fill();
 	}else{
-		dst.ctx.drawImage(src.canvas, r.min.x-sp.x+src.r.min.x-dst.r.min.x,
-			r.min.y-sp.y+src.r.min.y-dst.r.min.y);
+		dst.ctx.pdrawImage(src.canvas, addpt(subpt(r.min, dst.r.min), subpt(src.r.min, sp)));
 	}
 	dst.ctx.restore();
 	return;
@@ -43,24 +41,15 @@ var drawmasked = function(dst, r, src, sp, mask, mp, op){
 		return;
 	}
 
-	/* XXX Hack: draw() doesn't seem to handle offset images properly. */
-	var rdelta = {
-		min: {x: 0, y: 0},
-		max: {
-			x: r.max.x - r.min.x,
-			y: r.max.y - r.min.y
-		}
-	}
-	var img = new Draw9p.Image(0, Chan.fmts.CMAP8, 0, rdelta, rdelta, 0xFF00FFFF);
+	var img = new Draw9p.Image(0, Chan.fmts.CMAP8, 0, r, r, 0xFF00FFFF);
 
 	/* XXX Hack; we should have a way to create blank images. */
-	img.ctx.clearRect(0, 0, r.max.x, r.max.y);
+	img.ctx.rclearRect(r);
 
-	draw(img, rdelta, mask, mp, Memdraw.Opdefs.SoverD.key);
+	draw(img, r, mask, mp, Memdraw.Opdefs.SoverD.key);
 	maskalpha(img);
-	draw(img, rdelta, src, sp, Memdraw.Opdefs.SinD.key);
-	//document.body.appendChild(img.canvas);
-	draw(dst, r, img, {x: 0, y: 0}, op);
+	draw(img, r, src, sp, Memdraw.Opdefs.SinD.key);
+	draw(dst, r, img, r.min, op);
 }
 
 var load = function(dst, r, data, iscompressed){
@@ -215,15 +204,16 @@ Memdraw = {
 		draw(dst, dst.clipr, src, sp, op);
 		dst.ctx.restore();
 	},
+	/* XXX fillpoly seems to be broken on non-(0,0) imgs! */
 	fillpoly: function(dst, vertices, w, src, sp, op){
 		if(vertices.length < 1){
 			return;
 		}
 		dst.ctx.save();
 		dst.ctx.beginPath();
-		dst.ctx.moveTo(vertices[0].x, vertices[0].y);
+		dst.ctx.pmoveTo(vertices[0]);
 		for(var i = 1; i < vertices.length; ++i){
-			dst.ctx.lineTo(vertices[i].x, vertices[i].y);
+			dst.ctx.plineTo(vertices[i]);
 		}
 		dst.ctx.clip();
 		/* XXX fill background here */
