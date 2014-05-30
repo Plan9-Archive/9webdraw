@@ -43,6 +43,10 @@ var Rect = function(min, max){
 	this.max = max;
 }
 
+Rect.prototype.toString = function(){
+	return "{(" + this.min.x + "," + this.min.y + "),(" + this.max.x + "," + this.max.y + ")}";
+}
+
 Rect.copy = function(r){
 	var min = Point.copy(r.min);
 	var max = Point.copy(r.max);

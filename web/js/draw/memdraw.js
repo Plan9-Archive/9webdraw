@@ -113,12 +113,10 @@ var drawclip = function(dst, ior, src, iop0, mask, iop1, iosr, iomr){
 	return true;
 }
 
-/* XXX Seems to misbehave on non-(0,0) src.r.min. */
+/* XXX repl=1 images will not be aligned.  Works fine for simple colour fill though. */
 var draw = function(dst, r, src, sp, op){
 	dst.ctx.save();
 	dst.ctx.globalCompositeOperation = Memdraw.Ops[op];
-
-	/* XXX what about clipping on src? */
 
 	dst.ctx.beginPath();
 	dst.ctx.rrect(new Rect(subpt(r.min, dst.r.min), subpt(r.max, r.min)));
@@ -142,20 +140,37 @@ var maskalpha = function(img){
 	img.ctx.putImageData(data, 0, 0);
 }
 
-var drawmasked = function(dst, r, src, sp, mask, mp, op){
-	if(r.max.x == r.min.x || r.max.y == r.min.y){
-		return;
-	}
+memopaque = new Draw9p.Image(
+	0, Chan.fmts.GREY1, 1,
+	new Rect(new Point(0, 0), new Point(1, 1)),
+	new Rect(new Point(0, 0), new Point(1, 1)),
+	0xFFFFFFFF
+);
 
-	var img = new Draw9p.Image(0, Chan.fmts.CMAP8, 0, r, r, 0xFF00FFFF);
+var drawmasked = function(dst, ior, src, iosp, mask, iomp, op){
+	var r, sr, mr, sp, mp;
+	var img;
 
-	/* XXX Hack; we should have a way to create blank images. */
-	img.ctx.rclearRect(r);
+	r = Rect.copy(ior);
+	sr = new Rect(new Point(0, 0), new Point(0, 0));
+	mr = new Rect(new Point(0, 0), new Point(0, 0));
+	sp = Point.copy(iosp);
+	mp = Point.copy(iomp);
 
-	draw(img, r, mask, mp, Memdraw.Opdefs.SoverD.key);
+	if(mask == undefined)
+		mask = memopaque;
+
+	/* XXX modifies r, sp, mp, sr, mr */
+	if(!drawclip(dst, r, src, sp, mask, mp, sr, mr))
+		return false;
+
+	img = new Draw9p.Image(0, Chan.fmts.RGBA32, 0, r, r, 0x00000000);
+	draw(img, r, mask, mp, Memdraw.Opdefs.SoverD.key);	
 	maskalpha(img);
+
 	draw(img, r, src, sp, Memdraw.Opdefs.SinD.key);
 	draw(dst, r, img, r.min, op);
+	return true;
 }
 
 var load = function(dst, r, data, iscompressed){
