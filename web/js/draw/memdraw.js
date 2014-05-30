@@ -7,6 +7,112 @@ var icossin2 = function(dx, dy){
 	}
 }
 
+/* See: /sys/src/libdraw/drawrepl.c */
+var drawreplxy = function(min, max, x){
+	var sx;
+
+	sx = (x - min) % (max - min);
+	if(sx < 0)
+		sx += max - min;
+
+	return sx + min;
+}
+
+var drawrepl = function(r, p){
+	return new Point(
+		drawreplxy(r.min.x, r.max.x, p.x),
+		drawreplxy(r.min.y, r.max.y, p.y)
+	);
+}
+
+/* See: /sys/src/libmemdraw/draw.c:/^drawclip */
+var drawclip = function(dst, ior, src, iop0, mask, iop1, iosr, iomr){
+	var r, p0, p1, sr, mr;
+	var rmin, delta;
+	var splitcoords;
+	var omr;
+
+	r = ior;
+	p0 = iop0;
+	p1 = iop1;
+	sr = iosr;
+	mr = iomr;
+
+	if(r.min.x >= r.max.x || r.min.y >= r.max.y)
+		return false;
+	splitcoords = !eqpt(p0, p1);
+
+	/* clip to destination */
+	rmin = Point.copy(r.min);
+	if(!rectclip(r, dst.r) || !rectclip(r, dst.clipr))
+		return false;
+
+	/* move mask point */
+	p1 = addpt(p1, subpt(r.min, rmin));
+
+	/* move source point */
+	p0 = addpt(p0, subpt(r.min, rmin));
+
+	/* map destination rectangle into source */
+	sr.min = Point.copy(p0);
+	sr.max = addpt(p0, Dxy(r));
+
+	/* sr is r in source coordinates; clip to source */
+	if(!src.repl && !rectclip(sr, src.r))
+		return false;
+	if(!rectclip(sr, src.clipr))
+		return false;
+
+	/* compute and clip rectangle in mask */
+	if(splitcoords){
+		/* move mask point with source */
+		p1 = addpt(p1, subpt(sr.min, p0));
+		mr.min = Point.copy(p1);
+		mr.max = addpt(p1, Dxy(sr));
+		omr = Rect.copy(mr);
+
+		/* mr is now rectangle in mask; clip it */
+		if(!mask.repl && !rectclip(mr, mask.r))
+			return false;
+		if(!rectclip(mr, mask.clipr))
+			return false;
+
+		/* reflect any clips back to source */
+		sr.min = addpt(sr.min, subpt(mr.min, omr.min));
+		sr.max = addpt(sr.max, subpt(mr.max, omr.max));
+		p1 = Point.copy(mr.min);
+	}else{
+		if(!mask.repl && !rectclip(sr, mask.r))
+			return false;
+		if(!rectclip(sr, mask.clipr))
+			return false;
+		p1 = Point.copy(sr.min);
+	}
+
+	/* move source clipping back to destination */
+	delta = subpt(r.min, p0);
+	r = rectaddpt(sr, delta);
+
+	/* move source rectangle so sr->min is in src->r */
+	if(src.repl){
+		delta = subpt(drawrepl(src.r, sr.min), sr.min);
+		sr = rectaddpt(sr, delta);
+	}
+	p0 = sr.min;
+
+	/* move mask point so it is in mask->r */
+	p1 = drawrepl(mask.r, p1);
+	mr.min = p1;
+	mr.max = addpt(p1, Dxy(sr));
+
+	Rect.copyTo(ior, r);
+	Point.copyTo(iop0, p0);
+	Point.copyTo(iop1, p1);
+	Rect.copyTo(iosr, sr);
+	Rect.copyTo(iomr, mr);
+	return true;
+}
+
 /* XXX Seems to misbehave on non-(0,0) src.r.min. */
 var draw = function(dst, r, src, sp, op){
 	dst.ctx.save();

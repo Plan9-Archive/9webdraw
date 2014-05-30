@@ -9,6 +9,11 @@ Point.copy = function(p){
 	return new Point(p.x, p.y);
 }
 
+Point.copyTo = function(p, q){
+	p.x = q.x;
+	p.y = q.y;
+}
+
 Point.prototype.add = function(p){
 	this.x += p.x;
 	this.y += p.y;
@@ -42,6 +47,11 @@ Rect.copy = function(r){
 	var min = Point.copy(r.min);
 	var max = Point.copy(r.max);
 	return new Rect(min, max);
+}
+
+Rect.copyTo = function(r, s){
+	Point.copyTo(r.min, s.min);
+	Point.copyTo(r.max, s.max);
 }
 
 Rect.prototype.inset = function(n){
@@ -161,4 +171,35 @@ var combinerect = function(r1, r2){
 		r1.max.x = r2.max.x;
 	if(r1.max.y < r2.max.y)
 		r1.max.y = r2.max.y;
+}
+
+/* See /sys/src/libdraw/rectclip.c */
+
+var rectclip = function(r, b){
+
+	/* They must overlap */
+	if(rectXrect(r, b) == false)
+		return false;
+
+	if(r.min.x < b.min.x)
+		r.min.x = b.min.x;
+	if(r.min.y < b.min.y)
+		r.min.y = b.min.y;
+	if(r.max.x > b.max.x)
+		r.max.x = b.max.x;
+	if(r.max.y > b.max.y)
+		r.max.y = b.max.y;
+	return true;
+}
+
+var Dx = function(r){
+	return r.max.x - r.min.x;
+}
+
+var Dy = function(r){
+	return r.max.y - r.min.y;
+}
+
+var Dxy = function(r){
+	return new Point(Dx(r), Dy(r));
 }
