@@ -128,9 +128,7 @@ Draw9p.drawdatahandlers = {
 		if(mask == undefined){
 			throw("invalid image id");
 		}
-		/* XXX should be drawmasked() */
-		/* XXX calling unintentionally global draw(). */
-		draw(dst, dstr, src, srcp, conn.op);
+		drawmasked(dst, dstr, src, srcp, mask, maskp, conn.op);
 	},
 	"D": function(conn, offset, ai){
 		try{
