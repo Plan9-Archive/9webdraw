@@ -151,14 +151,16 @@ var drawmasked = function(dst, ior, src, iosp, mask, iomp, op){
 	var r, sr, mr, sp, mp;
 	var img;
 
+	if(mask == undefined){
+		mask = memopaque;
+		iomp = new Point(0, 0);
+	}
+
 	r = Rect.copy(ior);
 	sr = new Rect(new Point(0, 0), new Point(0, 0));
 	mr = new Rect(new Point(0, 0), new Point(0, 0));
 	sp = Point.copy(iosp);
 	mp = Point.copy(iomp);
-
-	if(mask == undefined)
-		mask = memopaque;
 
 	/* XXX modifies r, sp, mp, sr, mr */
 	if(!drawclip(dst, r, src, sp, mask, mp, sr, mr))
