@@ -249,7 +249,7 @@ var drawchar = function(dst, p, src, sp, bg, bp, font, fc, op){
 	}
 
 	if(bg){
-		draw(dst, r, bg, bp, op);
+		drawmasked(dst, r, bg, bp, undefined, undefined, op);
 	}
 	drawmasked(dst, r, src, sp1, font, fc.r.min, op);
 	p.x += fc.width;
