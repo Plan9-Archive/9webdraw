@@ -26,19 +26,19 @@ Testdraw.line = function(){
 Testdraw.fillpoly = function(){
 	var root = Draw9p.RootImage();
 
-	var src = new Draw9p.Image(0, "r8g8b8", 1,
-		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
-		{min: {x: 0, y: 0}, max: {x: 1, y: 1}},
+	var src = new Draw9p.Image(0, Chan.fmts.CMAP8, 1,
+		new Rect(new Point(0, 0), new Point(1, 1)),
+		new Rect(new Point(0, 0), new Point(1048576, 1048576)),
 		0x00FF00FF);
 
 	var pts = [
 		{x: 20, y: 20},
-		{x: 20, y: 80},
-		{x: 40, y: 40},
+		{x: 20, y: 400},
+		{x: 400, y: 400},
 		{x: 20, y: 20}
 	]
 
-	Memdraw.fillpoly(root, pts, 0, src, {x: 0, y: 0}, 0);
+	Memdraw.fillpoly(root, pts, 0, src, {x: 0, y: 0}, 11);
 }
 
 Testdraw.poly = function(){

@@ -143,7 +143,7 @@ var maskalpha = function(img){
 memopaque = new Draw9p.Image(
 	0, Chan.fmts.GREY1, 1,
 	new Rect(new Point(0, 0), new Point(1, 1)),
-	new Rect(new Point(0, 0), new Point(1, 1)),
+	new Rect(new Point(-0x3FFFFFF, -0x3FFFFFF), new Point(0x3FFFFFF, 0x3FFFFFF)),
 	0xFFFFFFFF
 );
 
@@ -327,21 +327,27 @@ Memdraw = {
 		draw(dst, dst.clipr, src, sp, op);
 		dst.ctx.restore();
 	},
-	/* XXX fillpoly seems to be broken on non-(0,0) imgs! */
+	/* XXX ignores w (winding rule) */
 	fillpoly: function(dst, vertices, w, src, sp, op){
+		var r;
+		var mask;
 		if(vertices.length < 1){
 			return;
 		}
-		dst.ctx.save();
-		dst.ctx.beginPath();
-		dst.ctx.pmoveTo(vertices[0]);
-		for(var i = 1; i < vertices.length; ++i){
-			dst.ctx.plineTo(vertices[i]);
+		r = new Rect(vertices[0], vertices[0]);
+		for(var i = 0; i < vertices.length; ++i){
+			rcombinept(r, vertices[i]);
 		}
-		dst.ctx.clip();
-		/* XXX fill background here */
-		draw(dst, {min: {x: 0, y: 0}, max: {x: 500, y: 500}}, src, sp, op);
-		dst.ctx.restore();
+		mask = new Draw9p.Image(0, Chan.fmts.GREY1, 0, r, r, 0x00000000);
+		mask.ctx.fillStyle = "white";
+		mask.ctx.beginPath();
+		mask.ctx.pmoveTo(subpt(vertices[0], r.min));
+		for(var i = 1; i < vertices.length; ++i){
+			mask.ctx.plineTo(subpt(vertices[i], r.min));
+		}
+		mask.ctx.plineTo(subpt(vertices[0], r.min));
+		mask.ctx.fill();
+		drawmasked(dst, r, src, sp, mask, r.min, op);
 		return;
 	},
 	poly: function(dst, points, end0, end1, radius, src, sp, op){
