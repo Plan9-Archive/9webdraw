@@ -39,8 +39,8 @@ Point.prototype.mul = function(n){
 }
 
 var Rect = function(min, max){
-	this.min = min;
-	this.max = max;
+	this.min = Point.copy(min);
+	this.max = Point.copy(max);
 }
 
 Rect.prototype.toString = function(){
@@ -175,6 +175,18 @@ var combinerect = function(r1, r2){
 		r1.max.x = r2.max.x;
 	if(r1.max.y < r2.max.y)
 		r1.max.y = r2.max.y;
+}
+
+var rcombinept = function(r, p){
+	if(r.min.x > p.x)
+		r.min.x = p.x;
+	if(r.min.y > p.y)
+		r.min.y = p.y;
+	if(r.max.x < p.x)
+		r.max.x = p.x;
+	if(r.max.y < p.y)
+		r.max.y = p.y;
+	return r;
 }
 
 /* See /sys/src/libdraw/rectclip.c */
