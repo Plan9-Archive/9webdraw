@@ -14,6 +14,9 @@ CtxWrap = function(ctx){
 	ctx.plineTo = function(p){
 		return ctx.lineTo(p.x, p.y);
 	}
+	ctx.ptranslate = function(p){
+		return ctx.translate(p.x, p.y);
+	}
 
 	return ctx;
 }

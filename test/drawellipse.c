@@ -17,7 +17,7 @@ int main(int argc, char **argv){
 		return 1;
 	}
 
-	im = allocimage(display, Rect(0, 0, 1, 1), CMAP8, 1, color);
+	im = allocimage(display, Rect(0, 0, 1024, 1024), CMAP8, 1, color);
 
 	ellipse(screen, (Point){200, 200}, 25, 25, 5,
 		im, (Point){0, 0});

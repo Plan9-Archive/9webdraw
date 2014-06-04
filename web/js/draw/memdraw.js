@@ -316,16 +316,20 @@ Memdraw = {
 	},
 	/* XXX behaves incorrectly for incomplete (non 2pi) ellipses. */
 	fillellipse: function(dst, c, horiz, vert, alpha, phi, src, sp, op){
-		dst.ctx.save();
-		dst.ctx.save();
-		dst.ctx.beginPath();
-		dst.ctx.translate(c.x, c.y);
-		dst.ctx.scale(horiz, vert);
-		dst.ctx.arc(0, 0, 1, alpha, phi, false);
-		dst.ctx.restore();
-		dst.ctx.clip();
-		draw(dst, dst.clipr, src, sp, op);
-		dst.ctx.restore();
+		var r, dxy;
+		var mask;
+
+		dxy = new Point(horiz, vert);
+		r = new Rect(subpt(c, dxy), addpt(c, dxy));
+		mask = new Draw9p.Image(0, Chan.fmts.GREY1, 0, r, r, 0x00000000);
+		mask.ctx.beginPath();
+		mask.ctx.ptranslate(subpt(c, r.min));
+		mask.ctx.scale(horiz, vert);
+		mask.ctx.arc(0, 0, 1, alpha, phi, true);
+		mask.ctx.fillStyle = "white";
+		mask.ctx.fill();
+
+		drawmasked(dst, r, src, sp, mask, r.min, op);
 	},
 	/* XXX ignores w (winding rule) */
 	fillpoly: function(dst, vertices, w, src, sp, op){
