@@ -243,8 +243,7 @@ Draw9p.drawdatahandlers = {
 			left: left,
 			width: width
 		};
-		/* XXX draw() is meant to be private to Memdraw! */
-		draw(cache, r, src, sp, Memdraw.Opdefs.SoverD.key);
+		drawmasked(cache, r, src, sp, undefined, undefined, Memdraw.Opdefs.SoverD.key);
 	},
 	"L": function(conn, offset, ai){
 		try{
