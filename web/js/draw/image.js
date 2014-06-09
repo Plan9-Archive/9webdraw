@@ -69,14 +69,6 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	/* XXX We should create a backing store, depending on refresh value. */
 	this.canvas = this.screen.backimg.canvas;
 	this.ctx = CtxWrap(this.canvas.getContext("2d"));
-	this.ctx.beginPath();
-	this.ctx.moveTo(r.min.x, r.min.y);
-	this.ctx.lineTo(r.max.x, r.min.y);
-	this.ctx.lineTo(r.max.x, r.max.y);
-	this.ctx.lineTo(r.min.x, r.max.y);
-	this.ctx.lineTo(r.min.x, r.min.y);
-	this.ctx.clip();
-
 	/* XXX Fill ScreenImage with background colour. */
 }
 
