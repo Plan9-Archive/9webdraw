@@ -36,7 +36,11 @@ function Cons(){
 		}
 
 		if(dir == cons.kbd.press){
-			if(compose.getmode()){
+			if(e.ctrlKey){
+				compose.reset();
+				this.buf += this.ctrl2str(e);
+				this.flushcallbacks();
+			}else if(compose.getmode()){
 				compose.push(String.fromCharCode(e.which));
 			}else{
 				this.buf += String.fromCharCode(e.which);
@@ -89,6 +93,10 @@ function Cons(){
 		}
 
 		return "[control character]";
+	}
+
+	this.ctrl2str = function(e){
+		return String.fromCharCode(e.which & 0x1F);
 	}
 
 	this.take = function(s){
