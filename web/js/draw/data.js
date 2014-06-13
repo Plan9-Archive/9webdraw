@@ -191,6 +191,7 @@ Draw9p.drawdatahandlers = {
 		if(screen){
 			delete screen.imgs[id];
 		}
+		img.canvas.parentNode.removeChild(img.canvas);
 		delete conn.imgs[id];
 	},
 	"F": function(conn, offset, ai){
@@ -314,6 +315,16 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(conn.imgs[id] == undefined){
+			throw("invalid image id");
+		}
+		var img = conn.imgs[id];
+		if(img.screen == undefined){
+			throw("image is not a window");
+		}
+		img.r = rectaddpt(img.r, subpt(rmin, img.r.min));
+		img.clipr = rectaddpt(img.clipr, subpt(rmin, img.clipr.min));
+		img.scrmove(scr);
 	},
 	"O": function(conn, offset, ai){
 		try{
@@ -488,7 +499,9 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"v": function(conn, offset, ai){
-		//cons.log("writedrawdata: 'v' (flush) unimplemented!");
+		for(var i in conn.screens){
+			conn.screens[i].repaint();
+		}
 	},
 	"y": function(conn, offset, ai){
 		try{

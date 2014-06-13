@@ -129,6 +129,9 @@ var draw = function(dst, r, src, sp, op){
 		dst.ctx.pdrawImage(src.canvas, addpt(subpt(r.min, dst.r.min), subpt(src.r.min, sp)));
 	}
 	dst.ctx.restore();
+
+	if(dst.screen != undefined)
+		dst.screen.dirty = true;
 	return;
 }
 

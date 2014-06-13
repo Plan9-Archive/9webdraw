@@ -48,17 +48,21 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 	this.ctx.putImageData(data, 0, 0);
 }
 
-/* XXX ScreenImage will not work as a drawing source */
-/* due to the assumption that the canvas maps 1-1 to the image data. */
 Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	if(screen == undefined || screen.backimg == undefined){
 		throw("invalid screen");
 	}
 	this.screen = screen;
+	this.scrmin = r.min;
 
 	/* if(chan != this.screen.backimg.chan){ */
 	/* 	throw("chan mismatch between image and screen"); */
 	/* } */
+
+	/* refresh methods */
+	/* Refbackup = 0, */
+	/* Refnone = 1, */
+	/* Refmesg = 2 */
 
 	this.refresh = refresh;
 	this.chan = chan;
@@ -66,10 +70,39 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.r = r;
 	this.clipr = clipr;
 
-	/* XXX We should create a backing store, depending on refresh value. */
-	this.canvas = this.screen.backimg.canvas;
+	this.canvas = document.createElement("canvas");
+	this.canvas.width = r.max.x - r.min.x;
+	this.canvas.height = r.max.y - r.min.y;
 	this.ctx = CtxWrap(this.canvas.getContext("2d"));
-	/* XXX Fill ScreenImage with background colour. */
+
+	var red = (color >> 24) & 0xFF;
+	var green = (color >> 16) & 0xFF;
+	var blue = (color >> 8) & 0xFF;
+	var alpha = (color) & 0xFF;
+
+	var data = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+	for(var i = 0; i < data.data.length; i += 4){
+		data.data[i + 0] = red;
+		data.data[i + 1] = green;
+		data.data[i + 2] = blue;
+		data.data[i + 3] = alpha;
+	}
+
+	this.ctx.putImageData(data, 0, 0);
+
+	this.screen.imgs.push(this);
+	this.screen.repaint();
+	this.canvas.style.position = "absolute";
+	document.getElementById("container").appendChild(this.canvas);
+	this.canvas.style.left = this.scrmin.x + "px";
+	this.canvas.style.top = this.scrmin.y + "px";
+}
+
+Draw9p.ScreenImage.prototype.scrmove = function(scrmin){
+	this.scrmin = scrmin;
+	this.canvas.style.left = this.scrmin.x + "px";
+	this.canvas.style.top = this.scrmin.y + "px";
+	this.screen.dirty = true;
 }
 
 /* XXX Creating a new rootwindow object for each connection will probably */

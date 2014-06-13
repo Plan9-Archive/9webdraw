@@ -24,6 +24,7 @@ window.onload = function(){
 	var wsurl = Socket.wsurl(window.location.toString());
 	//var wsurl = Socket.wsurl("http://wd.9atom.org/9wd.html");
 	var webdraw = elem("webdraw");
+	var cover = elem("cover");
 
 	basetime = Date.now();
 	cons = new Cons();
@@ -40,13 +41,13 @@ window.onload = function(){
 	Draw9p.imgnames["webdraw"] = Draw9p.RootImage();
 	Draw9p.label = "webdraw".toUTF8Array();
 
-	setevent(webdraw, "mousedown", function(e){
+	setevent(cover, "mousedown", function(e){
 		return mouse.handlebutton(e, 1);
 	});
-	setevent(webdraw, "mouseup", function(e){
+	setevent(cover, "mouseup", function(e){
 		return mouse.handlebutton(e, 0);
 	});
-	setevent(webdraw, "mousemove", function(e){
+	setevent(cover, "mousemove", function(e){
 		return mouse.handlemove(e);
 	});
 	setevent(window, "keydown", function(e){
@@ -58,24 +59,24 @@ window.onload = function(){
 	setevent(window, "keyup", function(e){
 		return cons.handlekeys(e, cons.kbd.up);
 	});
-	setevent(webdraw, "contextmenu", function(e){
+	setevent(cover, "contextmenu", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
 	});
-	setevent(webdraw, "click", function(e){
+	setevent(cover, "click", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		if(
-			document.pointerLockElement !== webdraw &&
-			document.mozPointerLockElement !== webdraw &&
-			document.webkitPointerLockElement !== webdraw
+			document.pointerLockElement !== cover &&
+			document.mozPointerLockElement !== cover &&
+			document.webkitPointerLockElement !== cover
 		){
-			webdraw.requestPointerLock =
-				webdraw.requestPointerLock ||
-				webdraw.mozRequestPointerLock ||
-				webdraw.webkitRequestPointerLock;
-			webdraw.requestPointerLock();
+			cover.requestPointerLock =
+				cover.requestPointerLock ||
+				cover.mozRequestPointerLock ||
+				cover.webkitRequestPointerLock;
+			cover.requestPointerLock();
 			return false;
 		}else{
 			return false;
