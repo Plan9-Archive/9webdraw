@@ -36,11 +36,7 @@ function Cons(){
 		}
 
 		if(dir == cons.kbd.press){
-			if(e.ctrlKey){
-				compose.reset();
-				this.buf += this.ctrl2str(e);
-				this.flushcallbacks();
-			}else if(compose.getmode()){
+			if(compose.getmode()){
 				compose.push(String.fromCharCode(e.which));
 			}else{
 				this.buf += String.fromCharCode(e.which);
@@ -53,6 +49,16 @@ function Cons(){
 
 		if(dir == cons.kbd.down){
 			/* XXX control characters should break compose mode! */
+			if(e.ctrlKey){
+				if(this.key2str(e) != "")
+					return 0;
+				compose.reset();
+				this.buf += this.ctrl2str(e);
+				this.flushcallbacks();
+				e.preventDefault();
+				e.stopPropagation();
+				return 0;
+			}
 			if(compose.getmode())
 				if(this.key2str(e) == "")
 					return 0;
@@ -85,6 +91,8 @@ function Cons(){
 			return "\t";
 		case 13:
 			return "\n";
+		case 17:
+			return "ctrl";
 		case 18:
 			compose.set();
 			/* fall through */
