@@ -17,7 +17,12 @@ CtxWrap = function(ctx){
 	ctx.ptranslate = function(p){
 		return ctx.translate(p.x, p.y);
 	}
-
+	ctx.rgetImageData = function(r){
+		return ctx.getImageData(r.min.x, r.min.y, Dx(r), Dy(r));
+	}
+	ctx.pputImageData = function(data, p){
+		return ctx.putImageData(data, p.x, p.y);
+	}
 	return ctx;
 }
 
@@ -118,4 +123,19 @@ Draw9p.RootImage = function(){
 	image.ctx = CtxWrap(image.canvas.getContext("2d"));
 
 	return image;
+}
+
+/* XXX fix Image inheritance, ``is-a''. */
+Draw9p.Image.prototype.getrect =
+Draw9p.ScreenImage.prototype.getrect =
+Draw9p.RootImage.prototype.getrect =
+function(r){
+	return this.ctx.rgetImageData(rectsubpt(r, this.r.min));
+}
+
+Draw9p.Image.prototype.putrect =
+Draw9p.ScreenImage.prototype.putrect =
+Draw9p.RootImage.prototype.putrect =
+function(data, p){
+	return this.ctx.pputImageData(data, subpt(p, this.r.min));
 }

@@ -219,3 +219,12 @@ var Dy = function(r){
 var Dxy = function(r){
 	return new Point(Dx(r), Dy(r));
 }
+
+var replmod = function(r, p){
+	var x, y;
+
+	x = ((p.x - r.min.x) % Dx(r)) + r.min.x;
+	y = ((p.y - r.min.y) % Dy(r)) + r.min.y;
+
+	return new Point(x, y);
+}
