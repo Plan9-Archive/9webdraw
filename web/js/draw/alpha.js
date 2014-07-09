@@ -7,8 +7,6 @@ function MUL(x, y){
 	return (t + (t >> 8)) >> 8;
 }
 
-// #define MUL(x, y) (((((x)*(y))+128) + ((((x)*(y))+128) >> 8)) >> 8)
-
 function alphacalcfake(dst, src, mask, dx, op){
 	var i;
 
@@ -29,15 +27,13 @@ function alphacalc11(dst, src, mask, dx, op){
 		fd = 255 - MUL(src.data[(sa * 4) + 3], mask.data[(ma * 4)]);
 
 		for(j = 0; j < 4; ++j){
+			if(j == 3){
+				dst.data[(i * 4) + j] = 255;
+			}else
 			dst.data[(i * 4) + j] =
-				MUL(src.data[(sa * 4) + j], mask.data[(ma * 4)]) +
-				MUL(dst.data[(sa * 4) + j], fd);
-				//mask.data[(ma * 4) + 0];
+				MUL(src.data[(sa * 4) + j], mask.data[(ma * 4) + 3]) +
+				MUL(dst.data[(i * 4) + j], fd);
 		}
-//		dst.data[(i * 4) + 0] = src.data[(sa * 4) + 0] * mask.data[(ma * 4) + 0];
-//		dst.data[(i * 4) + 1] = src.data[(sa * 4) + 1] * mask.data[(ma * 4) + 1];
-//		dst.data[(i * 4) + 2] = src.data[(sa * 4) + 2] * mask.data[(ma * 4) + 2];
-//		dst.data[(i * 4) + 3] = src.data[(sa * 4) + 3] * mask.data[(ma * 4) + 3];
 		if(++sa >= src.width)
 			sa = 0;
 		if(++ma >= mask.width)
@@ -70,17 +66,14 @@ function yydata(img, r, y){
 }
 
 function getrect(img, r){
-	var rr;
 
-	rr = Rect.copy(r);
-	if(!img.repl)
-		rectclip(rr, img.r);
-
-	return img.getrect(rr);
+	if(img.repl)
+		return img.getrect(img.r);
+	else
+		return img.getrect(r);
 }
 
 function drawY(dst, src, mask, op){
-	var dd, sd, md;
 
 	//if(op == 11)
 		return alphacalc11(dst, src, mask, dst.width, op);
@@ -93,7 +86,6 @@ function clipy(r, y){
 		return y;
 }
 
-/* XXX modifies sr, mr! */
 function drawalpha(dst, r, src, sr, mask, mr, op){
 	var dy;
 	var dd, sd, md;
@@ -101,6 +93,9 @@ function drawalpha(dst, r, src, sr, mask, mr, op){
 	var i;
 
 	dy = Dy(r);
+
+	sr = Rect.copy(sr);
+	mr = Rect.copy(mr);
 
 	rectclip(sr, src.r);
 	rectclip(mr, mask.r);
