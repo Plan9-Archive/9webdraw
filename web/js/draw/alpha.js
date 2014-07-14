@@ -16,6 +16,101 @@ function alphacalcfake(dst, src, mask, dx, op){
 	return;
 }
 
+function alphacalc0(dst, src, mask, dx, op){
+	var i;
+
+	for(i = 0; i < dx * 4; ++i)
+		dst.data[i] = 0;
+
+	return dst;
+}
+
+function alphacalc14(dst, src, mask, dx, op){
+	var i, j;
+	var fd;
+	var sa, ma;
+
+	sa = 0;
+	ma = 0;
+	for(i = 0; i < dx; ++i){
+		fd = MUL(src.data[(sa * 4) + 3], mask.data[(ma * 4) + 3]);
+		if(op == Memdraw.Opdefs.DoutS.key)
+			fd = 255 - fd;
+
+		for(j = 0; j < 4; ++j){
+			dst.data[(i * 4) + j] = MUL(fd, dst.data[(i * 4) + j]);
+		}
+		if(++sa >= src.width)
+			sa = 0;
+		if(++ma >= mask.width)
+			ma = 0;
+	}
+	return dst;
+}
+
+function alphacalc2810(dst, src, mask, dx, op){
+	var i, j;
+	var ma, sa, da;
+	var fs;
+
+	ma = 0;
+	sa = 0;
+	for(i = 0; i < dx; ++i){
+		da = dst.data[(i * 4) + 3];
+		if(op == Memdraw.Opdefs.SoutD)
+			da = 255 - da;
+		fs = mask.data[(ma * 4) + 3];
+		if(op != Memdraw.Opdefs.S)
+			fs = MUL(fs, da);
+
+		for(j = 0; j < 4; ++j){
+			dst.data[(i * 4) + j] = MUL(fs, src.data[(sa * 4) + j]);
+		}
+		if(++sa >= src.width)
+			sa = 0;
+		if(++ma >= mask.width)
+			ma = 0;
+	}
+	return dst;
+}
+
+function alphacalc3679(dst, src, mask, dx, op){
+	var i, j;
+	var sa, ma, da;
+	var fs, fd;
+
+	sa = 0;
+	ma = 0;
+	for(i = 0; i < dx; ++i){
+		if(op == Memdraw.Opdefs.SatopD.key)
+			fs = MUL(mask.data[(ma * 4) + 3], dst.data[(i * 4) + 3]);
+		else
+			fs = MUL(mask.data[(ma * 4) + 3], 255 - dst.data[(i * 4) + 3]);
+		if(op == Memdraw.Opdefs.DoverS.key)
+			fd = 255;
+		else{
+			fd = MUL(src.data[(sa * 4) + 3], mask.data[(ma * 4) + 3]);
+			if(op != Memdraw.Opdefs.DatopS.key)
+				fd = 255 - fd;
+		}
+
+		for(j = 0; j < 4; ++j){
+			dst.data[(i * 4) + j] =
+				MUL(fs, src.data[(sa * 4) + j]) +
+				MUL(fd, dst.data[(i * 4) + j]);
+		}
+		if(++sa >= src.width)
+			sa = 0;
+		if(++ma >= mask.width)
+			ma = 0;
+	}
+	return dst;
+}
+
+function alphacalc5(dst, src, mask, dx, op){
+	return dst;
+}
+
 function alphacalc11(dst, src, mask, dx, op){
 	var i, j;
 	var sa, ma;
@@ -42,13 +137,20 @@ function alphacalc11(dst, src, mask, dx, op){
 	return dst;
 }
 
-function alphacalc(dst, src, mask, dx, op){
-	switch(op){
-		case 11:
-		default:
-			return alphacalc11(dst, src, mask, dx, op);
-	}
-}
+var alphacalc = [
+	alphacalc0,		/* Clear */
+	alphacalc14,		/* DoutS */
+	alphacalc2810,		/* SoutD */
+	alphacalc3679,		/* DxorS */
+	alphacalc14,		/* DinS */
+	alphacalc5,		/* D */
+	alphacalc3679,		/* DatopS */
+	alphacalc3679,		/* DoverS */
+	alphacalc2810,		/* SinD */
+	alphacalc3679,		/* SatopD */
+	alphacalc2810,		/* S */
+	alphacalc11		/* SoverD */
+];
 
 function yydata(img, r, y){
 	var data;
@@ -74,9 +176,7 @@ function getrect(img, r){
 }
 
 function drawY(dst, src, mask, op){
-
-	//if(op == 11)
-		return alphacalc11(dst, src, mask, dst.width, op);
+	return alphacalc[op](dst, src, mask, dst.width, op);
 }
 
 function clipy(r, y){
