@@ -169,6 +169,10 @@ var drawmasked = function(dst, ior, src, iosp, mask, iomp, op){
 	if(!drawclip(dst, r, src, sp, mask, mp, sr, mr))
 		return false;
 
+	maskalpha(mask);
+
+	if(op == 11)return drawalpha(dst, r, src, sr, mask, mr, op)
+
 	img = new Draw9p.Image(0, Chan.fmts.RGBA32, 0, r, r, 0x00000000);
 	draw(img, r, mask, mp, Memdraw.Opdefs.SoverD.key);	
 	maskalpha(img);
@@ -186,7 +190,8 @@ var load = function(dst, r, data, iscompressed){
 
 	var offset = Memdraw.Load(arr.data, w, h, img.chan, data, iscompressed);
 	img.ctx.putImageData(arr, 0, 0);
-	draw(dst, r, img, r.min, Memdraw.Opdefs.SoverD.key);
+	img.updata()
+	drawmasked(dst, r, img, r.min, undefined, undefined, Memdraw.Opdefs.SoverD.key);
 	/* Append canvas for debugging. */
 	//document.body.appendChild(dst.canvas);
 	return offset;
@@ -331,7 +336,7 @@ Memdraw = {
 		mask.ctx.arc(0, 0, 1, alpha, phi, true);
 		mask.ctx.fillStyle = "white";
 		mask.ctx.fill();
-
+		mask.updata();
 		drawmasked(dst, r, src, sp, mask, r.min, op);
 	},
 	/* XXX ignores w (winding rule) */
@@ -354,6 +359,7 @@ Memdraw = {
 		}
 		mask.ctx.plineTo(subpt(vertices[0], r.min));
 		mask.ctx.fill();
+		mask.updata();
 		drawmasked(dst, r, src, sp, mask, r.min, op);
 		return;
 	},

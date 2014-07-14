@@ -65,6 +65,21 @@ function yydata(img, r, y){
 	}
 }
 
+/* XXX should use point manipulation. */
+function yzdata(img, r, y){
+	var data;
+	var line;
+
+	line = img.data.width * (r.min.y - img.r.min.y + y);
+	data = img.data.data.subarray((line + r.min.x - img.r.min.x) * 4, (line + r.min.x - img.r.min.x+ Dx(r)) * 4);
+	return {
+		width: Dx(r),
+		height: 1,
+		y: y,
+		data: data
+	}
+}
+
 function getrect(img, r){
 
 	if(img.repl)
@@ -82,36 +97,72 @@ function drawY(dst, src, mask, op){
 function clipy(r, y){
 	if(y >= Dy(r))
 		return 0;
+	else if(y < 0)
+		return Dy(r);
 	else
 		return y;
+}
+
+function copysrc(data, srceq){
+	if(!srceq)
+		return data;
+
+	data.data = new Uint8ClampedArray(data.data);
+	return data;
 }
 
 function drawalpha(dst, r, src, sr, mask, mr, op){
 	var dy;
 	var dd, sd, md;
-	var srcy, masky;
+	var dsty, srcy, masky;
+	var starty, endy;
 	var i;
+	var needbuf, dir;
 
 	dy = Dy(r);
 
 	sr = Rect.copy(sr);
 	mr = Rect.copy(mr);
 
+	needbuf = src.data == dst.data;
+	//if(needbuf && (r.min.y * Dx(dst.r) + r.min.x) > (sr.min.y * Dx(src.r) + sr.min.x))
+	if(needbuf && byteaddr(dst, r.min) > byteaddr(src, sr.min))
+		dir = -1;
+	else
+		dir = 1;
+
+	//dir = 1;
+
 	rectclip(sr, src.r);
 	rectclip(mr, mask.r);
-	dd = getrect(dst, r);
-	sd = getrect(src, sr);
-	md = getrect(mask, mr);
-	srcy = 0;
-	masky = 0;
+	//dd = getrect(dst, r);
+	//sd = getrect(src, sr);
+	//md = getrect(mask, mr);
+	if(dir == 1){
+		starty = 0;
+		endy = dy;
+	}else{
+		starty = dy - 1;
+		endy = -1;
+	}
+	srcy = starty;//(starty + sr.min.y - src.r.min.y) % Dy(src.r);
+	masky = starty;//(starty + mr.min.y - mask.r.min.y) % Dy(mask.r)
+	dsty = starty; // + r.min.y - dst.r.min.y;
 
 	for(i = 0; i < dy; ++i){
+		dsty = clipy(dst.r, dsty);
 		srcy = clipy(src.r, srcy);
 		masky = clipy(mask.r, masky);
-		drawY(yydata(dd, r, i), yydata(sd, sr, srcy), yydata(md, mr, masky), op);
-		srcy += 1;
-		masky += 1;
+		//drawY(yydata(dd, r, i), yydata(sd, sr, srcy), yydata(md, mr, masky), op);
+		drawY(
+			yzdata(dst, r, dsty),
+			copysrc(yzdata(src, sr, srcy), needbuf),
+			yzdata(mask, mr, masky),
+			op);
+		dsty += dir;
+		srcy += dir;
+		masky += dir;
 	}
 
-	dst.putrect(dd, r.min);
+	dst.putrect(dst.data, dst.r.min);
 }

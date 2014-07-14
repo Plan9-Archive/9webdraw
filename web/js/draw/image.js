@@ -51,6 +51,7 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 	}
 
 	this.ctx.putImageData(data, 0, 0);
+	this.updata();
 }
 
 Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
@@ -101,6 +102,8 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	document.getElementById("container").appendChild(this.canvas);
 	this.canvas.style.left = this.scrmin.x + "px";
 	this.canvas.style.top = this.scrmin.y + "px";
+
+	this.updata();
 }
 
 Draw9p.ScreenImage.prototype.scrmove = function(scrmin){
@@ -110,9 +113,7 @@ Draw9p.ScreenImage.prototype.scrmove = function(scrmin){
 	this.screen.dirty = true;
 }
 
-/* XXX Creating a new rootwindow object for each connection will probably */
-/* break once we start doing more advanced things. */
-Draw9p.RootImage = function(){
+Draw9p.mkRootImage = function(){
 	var sz = Draw9p.rootsz;
 	var image =  new this.Image(0, "r8g8b8", 0,
 		{min: {x: 0, y: 0}, max: {x: sz.w, y: sz.h}},
@@ -122,7 +123,18 @@ Draw9p.RootImage = function(){
 	image.canvas = Draw9p.rootcanvas;
 	image.ctx = CtxWrap(image.canvas.getContext("2d"));
 
+	image.updata();
+
 	return image;
+}
+
+/* RootImage singleton, hope this works. */
+/* XXX This is another reason we need a proper Draw9p constructor. */
+Draw9p.RootImage = function(){
+	if(Draw9p.therootimage == undefined)
+		Draw9p.therootimage = Draw9p.mkRootImage();
+
+	return Draw9p.therootimage;
 }
 
 /* XXX fix Image inheritance, ``is-a''. */
@@ -138,4 +150,15 @@ Draw9p.ScreenImage.prototype.putrect =
 Draw9p.RootImage.prototype.putrect =
 function(data, p){
 	return this.ctx.pputImageData(data, subpt(p, this.r.min));
+}
+
+Draw9p.Image.prototype.updata =
+Draw9p.ScreenImage.prototype.updata =
+Draw9p.RootImage.prototype.updata =
+function(){
+	this.data = this.ctx.getImageData(0, 0, Dx(this.r), Dy(this.r));
+}
+
+function byteaddr(img, p){
+	return Dx(img.r) * p.y + p.x;
 }
