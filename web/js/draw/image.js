@@ -101,6 +101,7 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	document.getElementById("container").appendChild(this.canvas);
 	this.canvas.style.left = this.scrmin.x + "px";
 	this.canvas.style.top = this.scrmin.y + "px";
+	this.canvas.style.zIndex = this.screen.imgs.length;
 }
 
 Draw9p.ScreenImage.prototype.scrmove = function(scrmin){
@@ -110,6 +111,49 @@ Draw9p.ScreenImage.prototype.scrmove = function(scrmin){
 	this.screen.dirty = true;
 }
 
+Draw9p.ScreenImage.prototype.tofront = function(){
+	var i;
+	var screen;
+
+	screen = this.screen;
+
+	for(i = 0; i < screen.imgs.length; ++i){
+		if(screen.imgs[i] == this){
+			delete screen.imgs[i];
+			screen.imgs.push(this);
+			break;
+		}
+	}
+	this.canvas.style.zIndex = screen.imgs.length;
+}
+
+Draw9p.ScreenImage.prototype.torear = function(){
+	var i;
+	var screen;
+	var imgs;
+
+	screen = this.screen;
+	imgs = [];
+	for(i = 0; i < screen.imgs.length; ++i){
+		if(screen.imgs[i] == this){
+			delete screen.imgs[i];
+			imgs.push(this);
+			break;
+		}
+	}
+	for(i = 0; i < screen.imgs.length; ++i){
+		if(screen.imgs[i] == undefined)
+			continue;
+		imgs.push(screen.imgs[i]);
+	}
+
+	for(i = 0; i < imgs.length; ++i){
+		imgs[i].canvas.style.zIndex = i;
+	}
+
+	screen.imgs = imgs;
+}
+			
 /* XXX Creating a new rootwindow object for each connection will probably */
 /* break once we start doing more advanced things. */
 Draw9p.RootImage = function(){

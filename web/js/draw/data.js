@@ -486,7 +486,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"t": function(conn, offset, ai){
-		cons.log("writedrawdata: 't' (top of window stack) unimplemented!");
+		var img;
 		try{
 			var top = ai.getChar();
 			var n = ai.getShort();
@@ -497,6 +497,13 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
+		if(n > 1)
+			cons.log("t (windows to top): XXX more than one window!");
+		img = conn.imgs[ids[0]];
+		if(top)
+			img.tofront();
+		else
+			img.torear();
 	},
 	"v": function(conn, offset, ai){
 		for(var i in conn.screens){
