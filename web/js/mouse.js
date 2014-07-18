@@ -167,23 +167,27 @@ function Mouse(cursorelem){
 				}
 			};
 		})(cursorelem),
+		pos: {x: 0, y: 0},
 		offset: {x: 0, y: 0},
 		write: function(data){
+			var offset;
 			if(data.length != 72){
 				data = this.arrow;
 			}
 			this.img.clear();
+			offset = this.offset;
 			var ai = new ArrayIterator(data);
 			this.offset = ai.getPoint();
 			this.img.fill(ai.getBytes(32), 0xFF);
 			this.img.fill(ai.getBytes(32), 0x00);
+			this.goto(addpt(this.pos, subpt(this.offset, offset)));
 			return data.length;
 		},
 		goto: function(pos){
-			var x = pos.x - this.offset.x;
-			var y = pos.y - this.offset.y;
-			this.img.canvas.style.left = x + "px";
-			this.img.canvas.style.top = y + "px";
+			this.pos.x = pos.x - this.offset.x;
+			this.pos.y = pos.y - this.offset.y;
+			this.img.canvas.style.left = this.pos.x + "px";
+			this.img.canvas.style.top = this.pos.y + "px";
 		}
 	}
 	this.cursor.write([]);
