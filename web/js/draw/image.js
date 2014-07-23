@@ -26,6 +26,31 @@ CtxWrap = function(ctx){
 	return ctx;
 }
 
+var DNofill = 0xFFFFFF00;
+
+function fill(ctx, w, h, color){
+	var red, green, blue, alpha;
+	var data;
+	var i;
+
+	if(color == DNofill)
+		return;
+
+	red = (color >> 24) & 0xFF;
+	green = (color >> 16) & 0xFF;
+	blue = (color >> 8) & 0xFF;
+	alpha = (color) & 0xFF;
+
+	data = ctx.createImageData(w, h);
+	for(i = 0; i < data.data.ength; i += 4){
+		data.data[i + 0] = red;
+		data.data[i + 1] = green;
+		data.data[i + 2] = blue;
+		data.data[i + 3] = alpha;
+	}
+	ctx.putImageData(data, 0, 0);
+}
+
 Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 	this.refresh = refresh;
 	this.chan = chan;
@@ -37,20 +62,7 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 	this.canvas.height = r.max.y - r.min.y;
 	this.ctx = CtxWrap(this.canvas.getContext("2d"));
 
-	var red = (color >> 24) & 0xFF;
-	var green = (color >> 16) & 0xFF;
-	var blue = (color >> 8) & 0xFF;
-	var alpha = (color) & 0xFF;
-
-	var data = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-	for(var i = 0; i < data.data.length; i += 4){
-		data.data[i + 0] = red;
-		data.data[i + 1] = green;
-		data.data[i + 2] = blue;
-		data.data[i + 3] = alpha;
-	}
-
-	this.ctx.putImageData(data, 0, 0);
+	fill(this.ctx, this.canvas.width, this.canvas.height, color);
 }
 
 Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
@@ -84,20 +96,7 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.canvas.height = r.max.y - r.min.y;
 	this.ctx = CtxWrap(this.canvas.getContext("2d"));
 
-	var red = (color >> 24) & 0xFF;
-	var green = (color >> 16) & 0xFF;
-	var blue = (color >> 8) & 0xFF;
-	var alpha = (color) & 0xFF;
-
-	var data = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-	for(var i = 0; i < data.data.length; i += 4){
-		data.data[i + 0] = red;
-		data.data[i + 1] = green;
-		data.data[i + 2] = blue;
-		data.data[i + 3] = alpha;
-	}
-
-	this.ctx.putImageData(data, 0, 0);
+	fill(this.ctx, this.canvas.width, this.canvas.height, color);
 
 	this.screen.imgs.push(this);
 	this.front = this.screen.rearmost;
