@@ -189,9 +189,9 @@ Draw9p.drawdatahandlers = {
 		}
 		var screen = img.screen;
 		if(screen){
+			console.log("XXX f(free) should call memlwhatever to delete!");
 			delete screen.imgs[id];
 		}
-		img.canvas.parentNode.removeChild(img.canvas);
 		delete conn.imgs[id];
 	},
 	"F": function(conn, offset, ai){
@@ -307,7 +307,6 @@ Draw9p.drawdatahandlers = {
 		conn.imgs[id] = imgnames[name];
 	},
 	"o": function(conn, offset, ai){
-		cons.log("writedrawdata: 'o' (translate window) unimplemented!");
 		try{
 			var id = ai.getLong();
 			var rmin = ai.getPoint();
@@ -322,9 +321,7 @@ Draw9p.drawdatahandlers = {
 		if(img.screen == undefined){
 			throw("image is not a window");
 		}
-		img.r = rectaddpt(img.r, subpt(rmin, img.r.min));
-		img.clipr = rectaddpt(img.clipr, subpt(rmin, img.clipr.min));
-		img.scrmove(scr);
+		memlorigin(img, rmin, scr);
 	},
 	"O": function(conn, offset, ai){
 		try{
@@ -486,7 +483,7 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"t": function(conn, offset, ai){
-		var img;
+		var imgs;
 		try{
 			var top = ai.getChar();
 			var n = ai.getShort();
@@ -497,13 +494,15 @@ Draw9p.drawdatahandlers = {
 		}catch(e){
 			throw("short draw message");
 		}
-		if(n > 1)
-			cons.log("t (windows to top): XXX more than one window!");
-		img = conn.imgs[ids[0]];
+		for(var i = 0; i < ids.length; ++i){
+			imgs[i] = conn.imgs[ids[i]];
+			if(imgs[i] == undefined)
+				throw("invalid image id");
+		}
 		if(top)
-			img.tofront();
+			return memltofrontn(imgs);
 		else
-			img.torear();
+			return memltorearn(imgs);
 	},
 	"v": function(conn, offset, ai){
 		for(var i in conn.screens){

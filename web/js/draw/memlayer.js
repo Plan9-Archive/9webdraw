@@ -117,6 +117,11 @@ function memltofront(img, front, fill){
 	}
 }
 
+function memltofrontfill(img, fill){
+	memltofront(img, undefined, fill);
+	memlsetclear(img.screen);
+}
+
 function memltofrontn(imgs){
 	var i;
 	var front;
@@ -190,6 +195,10 @@ function memlhide(img, r){
 
 function memlexpose(img, r){
 	throw("memlexpose is unimplemented");
+}
+
+function memlsetclear(screen){
+	throw("memlsetclear is unimplemented");
 }
 
 function memlorigin(img, log, scr){
