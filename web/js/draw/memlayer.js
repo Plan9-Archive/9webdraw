@@ -198,7 +198,19 @@ function memlexpose(img, r){
 }
 
 function memlsetclear(screen){
-	throw("memlsetclear is unimplemented");
+	var i, j;
+
+	for(i = screen.rearmost; i != undefined; i = i.front){
+		i.clear = rectinrect(i.screenr, i.screen.backimg.clipr);
+		if(i.clear){
+			for(j = i.front; j != undefined; j = j.front){
+				if(rectXrect(img.screenr, j.screenr)){
+					i.clear = 0;
+					break;
+				}
+			}
+		}
+	}
 }
 
 function memlorigin(img, log, scr){
