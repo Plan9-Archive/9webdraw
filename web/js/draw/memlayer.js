@@ -189,12 +189,43 @@ function memlsetrefresh(img, fn, ptr){
 	throw("memlsetrefresh is unimplemented");
 }
 
-function memlhide(img, r){
-	throw("memlhide is unimplemented");
+function lhideop(src, screenr, clipr, img, insave){
+	var r;
+
+	if(src != img.save){
+		r = rectsubpt(screenr, img.delta);
+		memdraw(img.save, r, src, screenr.min, undefined, screenr.min, Memdraw.Opdefs.S.key);
+	}
 }
 
-function memlexpose(img, r){
-	throw("memlexpose is unimplemented");
+function memlhide(img, screenr){
+	screenr = Rect.copy(screenr);
+
+	if(img.save == undefined)
+		return;
+	if(rectclip(screenr, img.screen.backimg.r) == 0)
+		return;
+	memlayerop(lhideop, img, screenr, screenr, img);
+}
+
+function lexposeop(dst, screenr, clipr, img, insave){
+	var r;
+
+	if(insave)
+		return;
+	r = rectsubpt(screenr, img.delta);
+	if(img.save)
+		memdraw(dst, screenr, img.save, r.min, undefined, r.min, Memdraw.Opdefs.S);
+	else
+		img.refreshfn(dst, r, img.refreshpt);
+}
+
+function memlexpose(img, screenr){
+	screenr = Rect.copy(screenr);
+
+	if(rectclip(screenr, img.screen.backimg.r) == 0)
+		return;
+	memlayerop(lexposeop, img, screenr, screenr, img);
 }
 
 function memlsetclear(screen){
