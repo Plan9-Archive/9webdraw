@@ -59,6 +59,10 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	}
 	this.screen = screen;
 	this.scrmin = r.min;
+	/* XXX remember to update screenr */
+	/* XXX should screenr be clipr? */
+	this.screenr = r;
+	this.clear = false;
 
 	/* if(chan != this.screen.backimg.chan){ */
 	/* 	throw("chan mismatch between image and screen"); */
@@ -96,7 +100,17 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.ctx.putImageData(data, 0, 0);
 
 	this.screen.imgs.push(this);
-	this.screen.repaint();
+	this.front = this.screen.rearmost;
+	this.rear = undefined;
+	if(this.screen.rearmost != undefined)
+		this.screen.rearmost.rear = this;
+	this.screen.rearmost = this;
+	if(this.screen.frontmost == undefined)
+		this.screen.frontmost = this;
+	this.clear = false;
+	/* XXX calculate fill value correctly */
+	memltofrontfill(this, true);
+	//this.screen.repaint();
 	this.canvas.style.position = "absolute";
 	document.getElementById("container").appendChild(this.canvas);
 	this.canvas.style.left = this.scrmin.x + "px";
@@ -104,6 +118,7 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.canvas.style.zIndex = this.screen.imgs.length;
 }
 
+/* XXX set screenr, delta */
 Draw9p.ScreenImage.prototype.scrmove = function(scrmin){
 	this.scrmin = scrmin;
 	this.canvas.style.left = this.scrmin.x + "px";

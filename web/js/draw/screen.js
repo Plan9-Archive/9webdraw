@@ -7,6 +7,8 @@ Draw9p.Screen = function(id, backimg, fillimg, public){
 	cons.log("new screen");
 	/* Memdraw.draw(this.backimg, this.fillimg); */
 	this.imgs = []; /* not sure how this should be represented? */
+	this.frontmost = undefined;
+	this.rearmost = undefined;
 }
 
 Draw9p.Screen.prototype.repaint = function(){
