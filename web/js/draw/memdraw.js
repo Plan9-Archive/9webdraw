@@ -252,9 +252,9 @@ var drawchar = function(dst, p, src, sp, bg, bp, font, fc, op){
 	}
 
 	if(bg){
-		drawmasked(dst, r, bg, bp, undefined, undefined, op);
+		memdraw(dst, r, bg, bp, undefined, undefined, op);
 	}
-	drawmasked(dst, r, src, sp1, font, fc.r.min, op);
+	memdraw(dst, r, src, sp1, font, fc.r.min, op);
 	p.x += fc.width;
 	sp.x += fc.width;
 	return p;
@@ -332,7 +332,7 @@ Memdraw = {
 		mask.ctx.fillStyle = "white";
 		mask.ctx.fill();
 
-		drawmasked(dst, r, src, sp, mask, r.min, op);
+		memdraw(dst, r, src, sp, mask, r.min, op);
 	},
 	/* XXX ignores w (winding rule) */
 	fillpoly: function(dst, vertices, w, src, sp, op){
@@ -354,7 +354,7 @@ Memdraw = {
 		}
 		mask.ctx.plineTo(subpt(vertices[0], r.min));
 		mask.ctx.fill();
-		drawmasked(dst, r, src, sp, mask, r.min, op);
+		memdraw(dst, r, src, sp, mask, r.min, op);
 		return;
 	},
 	poly: function(dst, points, end0, end1, radius, src, sp, op){

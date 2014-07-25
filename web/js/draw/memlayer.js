@@ -1,5 +1,142 @@
 /* /sys/src/libmemlayer/ */
 
+function ldrawop(dst, screenr, clipr, etc, insave){
+	var p0, p1;
+	var oclipr, srcr, r, mr;
+	var ok;
+
+	if(insave && etc.dstlayer.save == undefined)
+		return;
+	p0 = addpt(screenr.min, etc.deltas);
+	p1 = addpt(screenr.min, etc.deltasm);
+
+	if(insave){
+		r = rectsubpt(screenr, etc.dstlayer.delta);
+		clipr = rectsubpt(clipr, etc.dstlayer.delta);
+	}else{
+		r = Rect.copy(screenr);
+	}
+
+	/* now in logical coordinates */
+
+	if(!rectinrect(r, clipr)){
+		oclipr = Rect.copy(dst.clipr);
+		dst.clipr = Rect.copy(clipr);
+		ok = drawclip(dst, r, etc.src, p0, etc.mask, p1, srcr, mr);
+		dst.clipr = oclipr;
+		if(!ok)
+			return;
+	}
+	memdraw(dst, r, etc.src, p0, etc.mask, p1, etc.op);
+}
+
+function memdraw(dst, r, src, p0, mask, p1, op){
+	var d;
+	var srcr, tr, mr;
+
+	r = Rect.copy(r);
+	p0 = Rect.copy(p0);
+	p1 = Rect.copy(p1);
+	srcr = new Rect(new Point(0, 0), new Point(0, 0));
+	mr = new Rect(new Point(0, 0), new Point(0, 0));
+
+	if(mask == undefined)
+		mask = memopaque;
+
+	if(mask.screen != undefined)
+		return;
+
+	Top: do{
+		if(dst.screen == undefined && src.screen == undefined)
+			return drawmasked(dst, r, src, p0, mask, p1, op);
+
+		if(drawclip(dst, r, src, p0, mask, p1, srcr, mr) == 0)
+			return;
+
+		/* convert to screen coordinates */
+		if(dst.screen)
+			r = rectaddpt(r, dst.delta);
+
+		Clearlayer: do{
+			if(dst.screen && dst.clear){
+				if(src == dst){
+					p0 = addpt(p0, dst.delta);
+					src = dst.screen.backimg;
+				}
+				dst = dst.screen.backimg;
+				continue Top;
+			}
+			if(src.screen){
+				p0 = addpt(p0, src.delta);
+				srcr = rectaddpt(srcr, src.delta);
+			}
+
+			/* Now everything is in screen coordinates. */
+
+			if(dst.screen != undefined && dst == src){
+				if(dst.save == undefined)
+					return;
+				if(rectXrect(r, srcr)){
+					tr = Rect.copy(r);
+					if(srcr.min.x < tr.min.x){
+						p1.x += tr.min.x - srcr.min.x;
+						tr.min.x = srcr.min.x;
+					}
+					if(srcr.min.y < tr.min.y){
+						p1.y += tr.min.y - srcr.min.y;
+						tr.min.y = srcr.min.y;
+					}
+					if(srcr.max.x > tr.max.x)
+						tr.max.x = srcr.max.x;
+					if(srcr.max.y > tr.max.y)
+						tr.max.y = srcr.max.y;
+					memlhide(dst, tr);
+				}else{
+					memlhide(dst, r);
+					memlhide(dst, srcr);
+				}
+				memdraw(dst.save, rectsubpt(r, dst.delta), dst.save,
+					subpt(srcr.min, src.delta), mask, p1, op);
+				memlexpose(dst, r);
+				return;
+			}
+			if(src.screen){
+				if(src.clear){
+					src = src.screen.backimg;
+					if(dst.screen)
+						r = rectsubpt(r, dst.delta);
+					continue Top;
+				}
+				/* relatively rare case; use save area */
+				if(src.save == undefined)
+					return;
+				memlhide(src, srcr);
+				/* convert back to logical coordinates */
+				p0 = subpt(p0, src.delta);
+				srcr = rectsubpt(srcr, src.delta);
+				src = src.save;
+			}
+			/* src is now an image.  dst may be an image or a clear layer. */
+			if(dst.screen == undefined)
+				continue Top;
+			if(dst.clear)
+				continue Clearlayer;
+			/* dst is an obscured layer */
+			d = {
+				deltas: subpt(p0, r.min),
+				deltam: subpt(p1, r.min),
+				dst: dst,
+				src: src,
+				op: op,
+				mask: mask
+			};
+			memlayerop(ldrawop, dst, r, r, d);
+			break;
+		}while(true);
+		break;
+	}while(true);
+}
+
 function layerop(fn, img, r, clipr, etc, front){
 	var fr;
 
