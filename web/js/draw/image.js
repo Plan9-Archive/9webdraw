@@ -69,12 +69,14 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	if(screen == undefined || screen.backimg == undefined){
 		throw("invalid screen");
 	}
+
 	this.screen = screen;
 	this.scrmin = r.min;
 	/* XXX remember to update screenr */
 	/* XXX should screenr be clipr? */
 	this.screenr = r;
 	this.clear = false;
+	this.delta = subpt(this.screenr.min, r.min);
 
 	/* if(chan != this.screen.backimg.chan){ */
 	/* 	throw("chan mismatch between image and screen"); */
@@ -91,12 +93,13 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.r = r;
 	this.clipr = clipr;
 
-	this.canvas = document.createElement("canvas");
-	this.canvas.width = r.max.x - r.min.x;
-	this.canvas.height = r.max.y - r.min.y;
-	this.ctx = CtxWrap(this.canvas.getContext("2d"));
+	this.refreshfn = function(){
+		throw("you should not be calling refreshfn");
+	}
 
-	fill(this.ctx, this.canvas.width, this.canvas.height, color);
+	this.canvas = this.screen.backimg.canvas;
+	this.ctx = this.screen.backimg.ctx;
+	this.save = new Draw9p.Image(0, Chan.fmts.RGBA32, 0, r, r, DNofill);
 
 	this.screen.imgs.push(this);
 	this.front = this.screen.rearmost;

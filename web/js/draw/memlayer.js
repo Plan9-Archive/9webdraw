@@ -5,14 +5,14 @@ function ldrawop(dst, screenr, clipr, etc, insave){
 	var oclipr, srcr, r, mr;
 	var ok;
 
-	if(insave && etc.dstlayer.save == undefined)
+	if(insave && etc.dst.save == undefined)
 		return;
 	p0 = addpt(screenr.min, etc.deltas);
 	p1 = addpt(screenr.min, etc.deltasm);
 
 	if(insave){
-		r = rectsubpt(screenr, etc.dstlayer.delta);
-		clipr = rectsubpt(clipr, etc.dstlayer.delta);
+		r = rectsubpt(screenr, etc.dst.delta);
+		clipr = rectsubpt(clipr, etc.dst.delta);
 	}else{
 		r = Rect.copy(screenr);
 	}
@@ -35,8 +35,8 @@ function memdraw(dst, r, src, p0, mask, p1, op){
 	var srcr, tr, mr;
 
 	r = Rect.copy(r);
-	p0 = Rect.copy(p0);
-	p1 = Rect.copy(p1);
+	p0 = Point.copy(p0);
+	p1 = Point.copy(p1);
 	srcr = new Rect(new Point(0, 0), new Point(0, 0));
 	mr = new Rect(new Point(0, 0), new Point(0, 0));
 
@@ -172,7 +172,6 @@ function layerop(fn, img, r, clipr, etc, front){
 		RECUR(r.min, r.min, fr.min, r.max);
 		r.min.x = fr.min.x;
 	}
-	/* XXX what is img.save?  just backing img? */
 	fn(img.save, r, clipr, etc, 1);
 }
 
@@ -195,27 +194,27 @@ function memlayerop(fn, img, screenr, clipr, etc){
 
 	if(!rectXrect(r, src)){
 		/* completely offscreen */
-		fn(img, r, clipr, etc, 1);
+		fn(img.save, r, clipr, etc, 1);
 		return;
 	}
 	if(r.min.y < scr.min.y){
 		/* above screen */
-		fn(img, new Rect(r.min, new Point(r.max.x, scr.min.y)), clipr, etc, 1);
+		fn(img.save, new Rect(r.min, new Point(r.max.x, scr.min.y)), clipr, etc, 1);
 		r.min.y = scr.min.y;
 	}
 	if(r.max.y > scr.max.y){
 		/* below screen */
-		fn(img, new Rect(new Point(r.min.x, scr.max.y), r.max), clipr, etc, 1);
+		fn(img.save, new Rect(new Point(r.min.x, scr.max.y), r.max), clipr, etc, 1);
 		r.max.y = scr.max.y;
 	}
 	if(r.min.x < scr.min.x){
 		/* left of screen */
-		fn(img, new Rect(r.min, new Point(scr.min.x, r.max.y)), clipr, etc, 1);
+		fn(img.save, new Rect(r.min, new Point(scr.min.x, r.max.y)), clipr, etc, 1);
 		r.min.x = scr.min.x;
 	}
 	if(r.max.x > scr.max.x){
 		/* right of screen */
-		fn(img, new Rect(new Point(scr.max.x, r.min.y), r.max), clipr, etc, 1);
+		fn(img.save, new Rect(new Point(scr.max.x, r.min.y), r.max), clipr, etc, 1);
 	}
 }
 
@@ -240,7 +239,7 @@ function memltofront(img, front, fill){
 		if(ff == undefined)
 			s.frontmost = img;
 		else
-			ff.rear = i;
+			ff.rear = img;
 		if(rr == undefined)
 			s.rearmost = f;
 		else
@@ -351,10 +350,10 @@ function lexposeop(dst, screenr, clipr, img, insave){
 	if(insave)
 		return;
 	r = rectsubpt(screenr, img.delta);
-	if(img.save)
+	if(img.save != undefined)
 		memdraw(dst, screenr, img.save, r.min, undefined, r.min, Memdraw.Opdefs.S);
 	else
-		img.refreshfn(dst, r, img.refreshpt);
+		img.refreshfn(dst, r, img.refreshptr);
 }
 
 function memlexpose(img, screenr){
@@ -372,7 +371,7 @@ function memlsetclear(screen){
 		i.clear = rectinrect(i.screenr, i.screen.backimg.clipr);
 		if(i.clear){
 			for(j = i.front; j != undefined; j = j.front){
-				if(rectXrect(img.screenr, j.screenr)){
+				if(rectXrect(i.screenr, j.screenr)){
 					i.clear = 0;
 					break;
 				}
