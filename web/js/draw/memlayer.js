@@ -184,7 +184,7 @@ function memlayerop(fn, img, screenr, clipr, etc){
 	if(!rectclip(screenr, img.screenr))
 		return;
 	if(img.clear){
-		fn(screen.backimg, screenr, clipr, etc, 0);
+		fn(img.screen.backimg, screenr, clipr, etc, 0);
 		return;
 	}
 	r = screenr;
@@ -274,7 +274,7 @@ function memltofront(img, front, fill){
 		f.front = img;
 		f.rear = rr;
 		if(overlap && fill)
-			memlexpose(i, x);
+			memlexpose(img, x);
 	}
 }
 
