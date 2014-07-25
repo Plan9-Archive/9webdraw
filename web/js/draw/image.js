@@ -101,7 +101,6 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.ctx = this.screen.backimg.ctx;
 	this.save = new Draw9p.Image(0, Chan.fmts.RGBA32, 0, r, r, DNofill);
 
-	this.screen.imgs.push(this);
 	this.front = this.screen.rearmost;
 	this.rear = undefined;
 	if(this.screen.rearmost != undefined)

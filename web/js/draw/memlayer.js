@@ -218,6 +218,29 @@ function memlayerop(fn, img, screenr, clipr, etc){
 	}
 }
 
+function memldelete(img){
+	var screen;
+
+	delete img.save;
+	img.save = undefined;
+	img.refreshptr = undefined;
+	memltorear(img);
+
+	screen = img.screen;
+	if(screen.fill){
+		img.clipr = img.r;
+		memdraw(img, img.r, screen.fill, img.r.min, undefined, img.r.min, Memdraw.Opdefs.S.key);
+	}
+	if(img.front){
+		img.front.rear = undefined;
+		screen.rearmost = img.front;
+	}else{
+		screen.frontmost = undefined;
+		screen.rearmost = undefined;
+	}
+	delete img;
+}
+
 function memltofront(img, front, fill){
 	var s;
 	var f, ff, rr;

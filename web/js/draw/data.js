@@ -83,7 +83,7 @@ Draw9p.drawdatahandlers = {
 			if(conn.screens[screenid] == undefined){
 				throw("invalid screen id");
 			}
-			conn.screens[screenid].imgs[id] = conn.imgs[id] =
+			conn.imgs[id] =
 				new ScreenImage(conn.screens[screenid],
 					refresh, chan, repl, r, clipr, color);
 		}else{
@@ -187,10 +187,8 @@ Draw9p.drawdatahandlers = {
 		if(img == undefined){
 			throw("invalid image id");
 		}
-		var screen = img.screen;
-		if(screen){
-			console.log("XXX f(free) should call memlwhatever to delete!");
-			delete screen.imgs[id];
+		if(img.screen){
+			memldelete(img)
 		}
 		delete conn.imgs[id];
 	},
