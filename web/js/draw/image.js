@@ -66,6 +66,8 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 }
 
 Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
+	var paint;
+
 	if(screen == undefined || screen.backimg == undefined){
 		throw("invalid screen");
 	}
@@ -76,7 +78,7 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	/* XXX should screenr be clipr? */
 	this.screenr = r;
 	this.clear = false;
-	this.delta = subpt(this.screenr.min, r.min);
+	this.delta = new Point(0, 0);
 
 	/* if(chan != this.screen.backimg.chan){ */
 	/* 	throw("chan mismatch between image and screen"); */
@@ -99,7 +101,7 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 
 	this.canvas = this.screen.backimg.canvas;
 	this.ctx = this.screen.backimg.ctx;
-	this.save = new Draw9p.Image(0, Chan.fmts.RGBA32, 0, r, r, DNofill);
+	this.save = new Draw9p.Image(0, Chan.fmts.RGBA32, 0, r, r, color);
 
 	this.front = this.screen.rearmost;
 	this.rear = undefined;
@@ -109,9 +111,12 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	if(this.screen.frontmost == undefined)
 		this.screen.frontmost = this;
 	this.clear = false;
-	/* XXX calculate fill value correctly */
-	memltofrontfill(this, true);
-	//this.screen.repaint();
+	memltofrontfill(this, color != DNofill);
+
+	paint = new Draw9p.Image(0, Chan.fmts.RGBA32, 0,
+		new Rect(new Point(0, 0), new Point(1, 1)),
+		new Rect(new Point(0, 0), new Point(1, 1)), color);
+	memdraw(this, this.r, paint, this.r.min, undefined, this.r.min, Memdraw.Opdefs.S.key);
 }
 			
 /* XXX Creating a new rootwindow object for each connection will probably */

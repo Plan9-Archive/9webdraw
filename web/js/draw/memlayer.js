@@ -34,14 +34,16 @@ function memdraw(dst, r, src, p0, mask, p1, op){
 	var d;
 	var srcr, tr, mr;
 
+	if(mask == undefined){
+		mask = memopaque;
+		p1 = new Point(0, 0);
+	}
 	r = Rect.copy(r);
 	p0 = Point.copy(p0);
 	p1 = Point.copy(p1);
 	srcr = new Rect(new Point(0, 0), new Point(0, 0));
 	mr = new Rect(new Point(0, 0), new Point(0, 0));
 
-	if(mask == undefined)
-		mask = memopaque;
 
 	if(mask.screen != undefined)
 		return;
@@ -141,7 +143,7 @@ function layerop(fn, img, r, clipr, etc, front){
 	var fr;
 
 	var RECUR = function(a, b, c, d){
-		return layerop(fn, img, new Rect(a.x, b.y, c.x, d.y), clipr, etc, front.rear);
+		return layerop(fn, img, new Rect(new Point(a.x, b.y), new Point(c.x, d.y)), clipr, etc, front.rear);
 	}
 
 	r = Rect.copy(r);
