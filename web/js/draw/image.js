@@ -65,6 +65,7 @@ Draw9p.Image = function(refresh, chan, repl, r, clipr, color){
 	fill(this.ctx, this.canvas.width, this.canvas.height, color);
 }
 
+/* XXX break out memlalloc so we can set the refresh function properly */
 Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	var paint;
 

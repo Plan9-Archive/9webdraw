@@ -404,11 +404,18 @@ function memlsetclear(screen){
 	}
 }
 
+function memlnorefresh(){
+	;
+}
+
 function memlorigin(img, log, scr){
 	var s;
+	var t;
 	var x, newr, oldr;
 	var delta;
 	var overlap, eqlog, eqscr, wasclear;
+	var nsave, nsaver;
+	var shad;
 
 	s = img.screen;
 	oldr = Rect.copy(img.screenr);
@@ -418,11 +425,20 @@ function memlorigin(img, log, scr){
 	if(eqscr && eqlog)
 		return 0;
 
-	/* XXX memlorigin handle save rectangle */
+	nsave = undefined;
+	if(eqlog == 0 && img.save != undefined){
+		nsaver = new Rect(log, new Point(log.x + Dx(oldr), log.y + Dy(oldr)));
+		nsave = new Draw9p.Image(0, img.chan, 0, nsaver, nsaver, DNofill);
+	}
 
 	memltofront(img);
 	wasclear = img.clear;
-
+	if(nsave){
+		if(!wasclear)
+			drawmasked(nsave, nsave.r, img.save, img.save.r.min,
+				undefined, undefined, Memdraw.Opdefs.S.key);
+		img.save = nsave;
+	}
 	delta = subpt(log, img.r.min);
 	img.r = rectaddpt(img.r, delta);
 	img.clipr = rectaddpt(img.clipr, delta);
@@ -430,5 +446,41 @@ function memlorigin(img, log, scr){
 	if(eqscr)
 		return 0;
 
-	/* XXX clean up background with shadow window. */
+	/* clean up background with shadow window. */
+	shad = new Draw9p.ScreenImage(s, 1, img.chan, 0, oldr, oldr, DNofill);
+	/* XXX use memlsetrefresh */
+	shad.save = undefined;
+	shad.refreshfn = memlnorefresh;
+
+	s.frontmost = img;
+	if(s.rearmost == img)
+		s.rearmost = shad;
+	else
+		img.rear.front = shad;
+	shad.front = img;
+	shad.rear = img.rear;
+	img.rear = shad;
+	img.front = undefined;
+	shad.clear = 0;
+
+	for(t = img.rear.rear; t != undefined; t = t.rear){
+		x = Rect.copy(newr);
+		overlap = rectclip(x, t.screenr);
+		if(overlap){
+			memlhide(t, x);
+			t.clear = 0;
+		}
+	}
+	img.screenr = newr;
+	img.delta = subpt(scr, img.r.min);
+	img.clear = rectinrect(newr, img.screen.backimg.clipr);
+
+	if(wasclear)
+		memdraw(s.backimg, newr, s.backimg, oldr.min,
+			undefined, undefined, Memdraw.Opdefs.S.key);
+	else
+		memlexpose(img, newr);
+	memldelete(shad);
+
+	return 1;
 }
