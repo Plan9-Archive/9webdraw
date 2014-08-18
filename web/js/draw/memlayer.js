@@ -193,7 +193,7 @@ function memlayerop(fn, img, screenr, clipr, etc){
 	if(rectinrect(r, scr))
 		return;
 
-	if(!rectXrect(r, src)){
+	if(!rectXrect(r, scr)){
 		/* completely offscreen */
 		fn(img.save, r, clipr, etc, 1);
 		return;
