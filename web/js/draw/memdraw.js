@@ -119,7 +119,7 @@ var draw = function(dst, r, src, sp, op){
 	dst.ctx.globalCompositeOperation = Memdraw.Ops[op];
 
 	dst.ctx.beginPath();
-	dst.ctx.rrect(new Rect(subpt(r.min, dst.r.min), subpt(r.max, r.min)));
+	dst.ctx.rrect(rectsubpt(r, dst.r.min));
 	dst.ctx.clip();
 
 	if(src.repl){

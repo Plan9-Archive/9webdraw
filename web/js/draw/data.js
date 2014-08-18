@@ -10,7 +10,7 @@ Draw9p.writedrawdata = function(connid, offset, data){
 		var c = String.fromCharCode(ai.getChar());
 		//cons.log("writedrawdata: " + c);
 		if(this.drawdatahandlers[c] == undefined){
-			throw("bad draw command");
+			throw("bad draw command: " + c);
 		}else{
 			this.drawdatahandlers[c](conn, offset, ai);
 		}
@@ -128,7 +128,7 @@ Draw9p.drawdatahandlers = {
 		if(mask == undefined){
 			throw("invalid image id");
 		}
-		drawmasked(dst, dstr, src, srcp, mask, maskp, conn.op);
+		memdraw(dst, dstr, src, srcp, mask, maskp, conn.op);
 	},
 	"D": function(conn, offset, ai){
 		try{
@@ -481,13 +481,13 @@ Draw9p.drawdatahandlers = {
 		}
 	},
 	"t": function(conn, offset, ai){
-		var imgs;
+		var imgs = [];
 		try{
 			var top = ai.getChar();
 			var n = ai.getShort();
 			var ids = [];
 			for(var i = 0; i < n; ++i){
-				ids[i] = ai.getShort();
+				ids[i] = ai.getLong();
 			}
 		}catch(e){
 			throw("short draw message");

@@ -1,6 +1,6 @@
 CtxWrap = function(ctx){
 	ctx.rrect = function(r){
-		return ctx.rect(r.min.x, r.min.y, r.max.x, r.max.y);
+		return ctx.rect(r.min.x, r.min.y, Dx(r), Dy(r));
 	}
 	ctx.pdrawImage = function(canvas, p){
 		return ctx.drawImage(canvas, p.x, p.y);
@@ -42,7 +42,7 @@ function fill(ctx, w, h, color){
 	alpha = (color) & 0xFF;
 
 	data = ctx.createImageData(w, h);
-	for(i = 0; i < data.data.ength; i += 4){
+	for(i = 0; i < data.data.length; i += 4){
 		data.data[i + 0] = red;
 		data.data[i + 1] = green;
 		data.data[i + 2] = blue;
@@ -113,7 +113,7 @@ Draw9p.ScreenImage = function(screen, refresh, chan, repl, r, clipr, color){
 	this.clear = false;
 	memltofrontfill(this, color != DNofill);
 
-	paint = new Draw9p.Image(0, Chan.fmts.RGBA32, 0,
+	paint = new Draw9p.Image(0, Chan.fmts.RGBA32, true,
 		new Rect(new Point(0, 0), new Point(1, 1)),
 		new Rect(new Point(0, 0), new Point(1, 1)), color);
 	memdraw(this, this.r, paint, this.r.min, undefined, this.r.min, Memdraw.Opdefs.S.key);

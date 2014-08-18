@@ -8,7 +8,7 @@ function ldrawop(dst, screenr, clipr, etc, insave){
 	if(insave && etc.dst.save == undefined)
 		return;
 	p0 = addpt(screenr.min, etc.deltas);
-	p1 = addpt(screenr.min, etc.deltasm);
+	p1 = addpt(screenr.min, etc.deltam);
 
 	if(insave){
 		r = rectsubpt(screenr, etc.dst.delta);
@@ -44,9 +44,8 @@ function memdraw(dst, r, src, p0, mask, p1, op){
 	srcr = new Rect(new Point(0, 0), new Point(0, 0));
 	mr = new Rect(new Point(0, 0), new Point(0, 0));
 
-
 	if(mask.screen != undefined)
-		return;
+		throw("mask is a screenimage");
 
 	Top: do{
 		if(dst.screen == undefined && src.screen == undefined)
